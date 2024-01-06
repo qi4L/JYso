@@ -105,7 +105,7 @@ public class Config {
 
         //获取当前 Jar 的名称
         String jarPath = Starter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        jc.setProgramName("java -jar JNDI-NU.jar");
+        jc.setProgramName("java -jar JYso.jar");
         jc.setUsageFormatter(new UnixStyleUsageFormatter(jc));
 
         if (help) {
@@ -130,7 +130,7 @@ public class Config {
     public static Boolean IS_OBSCURE = false;
 
     // 各种方式的内存马映射的路径
-    public static String URL_PATTERN = "/nu1r";
+    public static String URL_PATTERN = "/qi4l";
 
     // 是否使用落地文件的方式隐藏内存马
     public static Boolean HIDE_MEMORY_SHELL = false;

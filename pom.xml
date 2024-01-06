@@ -53,9 +53,9 @@
                 </executions>
             </plugin>
             <plugin>
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
+                <!-- <groupId>org.apache.maven.plugins</groupId> -->
                 <artifactId>maven-assembly-plugin</artifactId>
-<!--                <version>3.0.0</version>-->
+                <!-- <version>3.0.0</version> -->
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
@@ -72,7 +72,7 @@
                         <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>single</goal> <!-- 修改此处为 single -->
                         </goals>
                     </execution>
                 </executions>
@@ -274,11 +274,11 @@
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.python</groupId>-->
-<!--            <artifactId>jython-standalone</artifactId>-->
-<!--            <version>2.7.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.python</groupId>-->
+        <!--            <artifactId>jython-standalone</artifactId>-->
+        <!--            <version>2.7.0</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>

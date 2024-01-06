@@ -45,7 +45,6 @@ public class Serializer implements Callable<byte[]> {
         } else {
             objOut = new ObjectOutputStream(out);
         }
-
         objOut.writeObject(obj);
     }
 

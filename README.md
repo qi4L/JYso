@@ -1,4 +1,4 @@
-![](https://socialify.git.ci/qi4L/JYso/image?font=Raleway&forks=1&language=1&logo=https%3A%2F%2Fs1.ax1x.com%2F2022%2F09%2F12%2FvXqOUI.jpg&name=1&owner=1&pattern=Charlie%20Brown&stargazers=1&theme=Dark)
+![](https://socialify.git.ci/qi4L/JYso/image?font=KoHo&logo=https%3A%2F%2Fs1.ax1x.com%2F2022%2F09%2F12%2FvXqOUI.jpg&name=1&pattern=Circuit%20Board&theme=Dark)
 
 # ✨404StarLink 2.0 - Galaxy
 
