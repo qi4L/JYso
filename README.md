@@ -1,4 +1,4 @@
-![](https://socialify.git.ci/qi4L/JYso/image?font=KoHo&logo=https%3A%2F%2Fs1.ax1x.com%2F2022%2F09%2F12%2FvXqOUI.jpg&name=1&pattern=Circuit%20Board&theme=Dark)
+![](https://socialify.git.ci/qi4L/JYso/image?description=1&font=KoHo&forks=1&issues=1&language=1&logo=https%3A%2F%2Fs11.ax1x.com%2F2024%2F01%2F11%2FpF97rkT.png&name=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Auto)
 
 # ✨404StarLink 2.0 - Galaxy
 
