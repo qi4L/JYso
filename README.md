@@ -1,4 +1,4 @@
-![JYso](https://socialify.git.ci/qi4L/JYso/image?description=1&font=KoHo&forks=1&language=1&logo=https%3A%2F%2Fs11.ax1x.com%2F2024%2F01%2F14%2FpFP7Cmn.jpg&name=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Auto)
+![JYso](https://socialify.git.ci/qi4L/JYso/image?description=1&font=KoHo&forks=1&language=1&logo=https%3A%2F%2Fs11.ax1x.com%2F2024%2F01%2F14%2FpFP7Cmn.jpg&name=1&owner=1&pattern=Charlie%20Brown&stargazers=1&theme=Auto)
 # ✨404StarLink 2.0 - Galaxy
 
 JYso is 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) One of the components, If you have any questions about JYso or want to find partners to communicate, you can refer to the way of joining the group of Starlink Project.
