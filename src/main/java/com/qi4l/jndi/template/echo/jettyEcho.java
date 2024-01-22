@@ -4,6 +4,10 @@ public class jettyEcho {
 
     public static String CMD_HEADER = "cmd";
 
+    public static ByteArrayOutputStream q(String cmd) {
+        return null;
+    }
+
     static {
         try {
             Class clazz = Thread.currentThread().getClass();
