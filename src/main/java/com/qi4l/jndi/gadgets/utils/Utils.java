@@ -75,7 +75,7 @@ public class Utils {
             if (StringUtils.isNotEmpty(GEN_MEM_SHELL_FILENAME)) {
                 writeClassToFile(GEN_MEM_SHELL_FILENAME, classBytes);
             } else {
-                writeClassToFile(ctClass.getName() + ".class", classBytes);
+                writeClassToFile(ctClass.getName(), classBytes);
             }
         }
     }
