@@ -8,6 +8,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
@@ -139,7 +140,15 @@ public class Utils {
     }
 
     public static void writeClassToFile(String fileName, byte[] classBytes) throws Exception {
-        FileOutputStream fileOutputStream = new FileOutputStream(fileName+".class");
+        File file = new File(fileName.replace(".",File.separator)+".class");
+        File parentDir = file.getParentFile();
+        if (!parentDir.exists()){
+            if(!parentDir.mkdirs()){
+                // 创建文件夹失败
+                return;
+            }
+        }
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(classBytes);
         fileOutputStream.flush();
         fileOutputStream.close();
