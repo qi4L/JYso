@@ -17,12 +17,6 @@ You can download the latest version of [releases](https://github.com/qi4L/JNDIEx
 
 It can be either a JNDIExploit or a ysoserial.
 
-## Contributor
-
-<a href="https://github.com/qi4L/JYso/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=qi4L/JYso" />
-</a>
-
 # 🤖TODO
 
 Is there a possibility of incorporating machine learning?
