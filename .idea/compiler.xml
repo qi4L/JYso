@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="JYso" />
+        <module name="JNDIExploit-master" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="JNDIExploit-zh" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="JNDIExploit-master" options="-extdirs $PROJECT_DIR$/lib" />
+      <module name="JNDIExploit-zh" options="-extdirs C:\lang\JAVA\JNDIExploit/lib -XDignore.symbol.file" />
+      <module name="JYso" options="-extdirs C:\lang\JAVA\JYso-master/lib -XDignore.symbol.file" />
+    </option>
+  </component>
+</project>
