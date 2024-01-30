@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - master
 name: Generate a list of contributors
 jobs:
   contrib-readme-en-job:
