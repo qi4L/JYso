@@ -7,11 +7,9 @@ JYso is 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) One o
 
 # 🦜Help!
 
-Please check out the [wiki](https://github.com/qi4L/JYso/wiki/JYso%E2%80%90EN). 
+Please check out the [wiki](https://github.com/qi4L/JYso/wiki).
 
-[中文文档](https://github.com/qi4L/JYso/wiki/JYso%E2%80%90CN)
-
-You can download the latest version of [releases](https://github.com/qi4L/JNDIExploit/releases) from here.
+You can download the latest version of [releases](https://github.com/qi4L/JYso/releases) from here.
 
 # 🐲Features
 
@@ -20,6 +18,14 @@ It can be either a JNDIExploit or a ysoserial.
 # 🤖TODO
 
 Is there a possibility of incorporating machine learning?
+
+# 👮Disclaimer
+
+This tool is only intended for self-check and security purposes.
+
+The user is solely responsible for any direct or indirect consequences and losses arising from the dissemination or use of the information provided by this tool. The author shall not be held liable for any such consequences.
+
+I have the right to modify and interpret this tool. Without permission from the cybersecurity department or relevant authorities, it is prohibited to misuse this tool for any attack activities, and it must not be used for commercial purposes in any way.
 
 # 📷reference project
 
