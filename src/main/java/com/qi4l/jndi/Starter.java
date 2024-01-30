@@ -200,7 +200,7 @@ public class Starter {
 
     private static void printUsage(Options options) {
 
-        System.err.println("[root]#~  Usage: java -jar JNDIExploit-[version].jar -yso -g [payload] -p [command] [options]");
+        System.err.println("[root]#~  Usage: java -jar JYso-[version].jar -yso -g [payload] -p [command] [options]");
         System.err.println("[root]#~  Available payload types:");
 
         final List<Class<? extends ObjectPayload>> payloadClasses =
@@ -227,12 +227,12 @@ public class Starter {
         System.err.println("\r\n");
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.setWidth(Math.min(200, jline.Terminal.getTerminal().getTerminalWidth()));
-        helpFormatter.printHelp("JNDIExploit-[version].jar", options, true);
+        helpFormatter.printHelp("JYso-[version].jar", options, true);
 
         System.err.println("\r\n");
         System.err.println("Recommended Usage: -yso -g [payload] -p '[command]' -dt 1 -dl 50000 -o -i -f evil.ser");
         System.err.println("If you want your payload being extremely short，you could just use:");
-        System.err.println("java -jar JNDIExploit-[version].jar -yso -g [payload] -p '[command]' -i -f evil.ser");
+        System.err.println("java -jar JYso-[version].jar -yso -g [payload] -p '[command]' -i -f evil.ser");
         System.exit(0);
     }
 }
