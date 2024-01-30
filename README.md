@@ -19,8 +19,8 @@ It can be either a JNDIExploit or a ysoserial.
 
 ## Contributor
 
-<a href="https://github.com/eryajf/learn-github/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=eryajf/learn-github" />
+<a href="https://github.com/qi4L/JYso/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=qi4L/JYso" />
 </a>
 
 # 🤖TODO
