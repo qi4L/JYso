@@ -24,7 +24,7 @@ public class Starter {
 
     public static String JYsoMode = "qi4L";
 
-    public static Object      PAYLOAD = null;
+    public static Object PAYLOAD = null;
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && args[0].equals("--jndi")) {
@@ -148,10 +148,11 @@ public class Starter {
                 }
             }
 
-            final String payloadType = cmdLine.getOptionValue("gadget");
-            final String command     = cmdLine.getOptionValue("parameters");
+            final String payloadType  = cmdLine.getOptionValue("gadget");
+            final String command      = cmdLine.getOptionValue("parameters");
+            final String payloadType1 = payloadType.toLowerCase();
 
-            final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
+            final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType1);
             if (payloadClass == null) {
                 System.err.println("Invalid payload type '" + payloadType + "'");
                 printUsage(options);
