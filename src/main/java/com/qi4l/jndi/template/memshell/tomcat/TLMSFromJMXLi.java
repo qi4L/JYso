@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * 使用 JMX Bean 注入 Tomcat Listener 型内存马
- * @author nu1r
+ * @author QI4L
  */
 public class TLMSFromJMXLi implements ServletRequestListener {
 

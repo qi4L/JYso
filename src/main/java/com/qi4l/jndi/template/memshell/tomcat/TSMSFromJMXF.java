@@ -18,7 +18,7 @@ import java.util.Set;
 
 /**
  * 使用 JMX Bean 注入 Tomcat Filter 型内存马
- * @author nu1r
+ * @author QI4L
  */
 public class TSMSFromJMXF implements Filter{
     public static String pattern;

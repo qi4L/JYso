@@ -8,7 +8,7 @@ import static com.qi4l.jndi.gadgets.utils.Util.base64Encode;
 /**
  * SnakeYaml 写入 Jar 包 poc 生成工具类
  *
- * @author nu1r
+ * @author QI4L
  */
 public class SnakeYamlUtils {
     public static String createPoC(String srcPath, String destPath) throws Exception {

