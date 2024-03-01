@@ -6,10 +6,17 @@
 
     <groupId>org.example</groupId>
     <artifactId>JYso</artifactId>
-    <version>3.5.3</version>
+    <version>3.5.4</version>
 
     <name>JYso</name>
     <url>https://qi4l.co</url>
+
+    <repositories>
+        <repository>
+            <id>jenkins-releases</id>
+            <url>https://repo.jenkins-ci.org/releases/</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -199,9 +206,24 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <artifactId>remoting</artifactId>
+            <groupId>org.jenkins-ci.main</groupId>
+            <version>2.55</version>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-core</artifactId>
             <version>1.1.33.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.remoting</groupId>
+            <artifactId>jboss-remoting</artifactId>
+            <version>4.0.19.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.remotingjmx</groupId>
+            <artifactId>remoting-jmx</artifactId>
+            <version>2.0.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.interceptor</groupId>
