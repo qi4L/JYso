@@ -2,6 +2,7 @@ package com.qi4l.jndi.gadgets.utils;
 
 import com.qi4l.jndi.controllers.SerializedDataController;
 import com.qi4l.jndi.gadgets.Config.Config;
+import com.qi4l.jndi.gadgets.utils.utf8OverlongEncoding.CustomObjectOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
 import static com.qi4l.jndi.gadgets.Config.Config.IS_DIRTY_IN_TC_RESET;
+import static com.qi4l.jndi.gadgets.Config.Config.IS_UTF_Bypass;
 
 public class Serializer implements Callable<byte[]> {
     private final Object object;
@@ -45,6 +47,12 @@ public class Serializer implements Callable<byte[]> {
         } else {
             objOut = new ObjectOutputStream(out);
         }
+        objOut.writeObject(obj);
+    }
+
+    public static void qiserialize4l(Object obj, final OutputStream out) throws Exception {
+        final ObjectOutputStream objOut;
+        objOut = new CustomObjectOutputStream(out);
         objOut.writeObject(obj);
     }
 

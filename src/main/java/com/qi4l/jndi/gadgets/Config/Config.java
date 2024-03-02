@@ -176,6 +176,10 @@ public class Config {
     // 是否在序列化数据流中的 TC_RESET 中填充脏数据
     public static Boolean IS_DIRTY_IN_TC_RESET = false;
 
+    // 是否使用UTF-8 Overlong Encoding Bypass waf
+
+    public static Boolean IS_UTF_Bypass = false;
+
     // 填充的脏数据长度
     public static int DIRTY_LENGTH_IN_TC_RESET = 0;
 
