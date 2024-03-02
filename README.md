@@ -38,5 +38,8 @@ I have the right to modify and interpret this tool. Without permission from the 
 - https://github.com/WhiteHSBG/JNDIExploit
 - https://github.com/su18/ysoserial
 - https://github.com/rebeyond/Behinder
+- https://t.zsxq.com/17LkqCzk8
+- https://mp.weixin.qq.com/s/fcuKNfLXiFxWrIYQPq7OCg
+- https://xz.aliyun.com/t/11640?time__1311=mqmx0DBDuDnQ340vo4%2BxCwg%3DQai%3DYzaq4D&alichlgref=https%3A%2F%2Fxz.aliyun.com%2Fu%2F8697
 
 </details>
