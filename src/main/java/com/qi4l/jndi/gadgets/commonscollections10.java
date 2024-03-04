@@ -44,7 +44,7 @@ public class commonscollections10 implements ObjectPayload<Object> {
 
         Reflections.setFieldValue(outerMap, "factory", factoryTransformer);
 
-        outerMap.remove("QI6L");
+        outerMap.remove("QI4L");
 
         return expMap;
     }
