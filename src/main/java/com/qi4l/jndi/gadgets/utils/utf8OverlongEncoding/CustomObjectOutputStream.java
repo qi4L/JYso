@@ -169,12 +169,17 @@ public class CustomObjectOutputStream extends ObjectOutputStream {
         StringBuffer str=new StringBuffer();
         for (int i = 0; i < name.length(); i++) {
             int[] bs = bytesMap.get(name.charAt(i));
-            bytes[k++]= (byte) bs[0];
-            bytes[k++]= (byte) bs[1];
-            bytes[k++]= (byte) bs[2];
-            str.append(Integer.toHexString(bs[0])+",");
-            str.append(Integer.toHexString(bs[1])+",");
-            str.append(Integer.toHexString(bs[2])+",");
+            if (bs != null && bs.length >= 3 && bytes != null && bytes.length >= 3) {
+                bytes[k++] = (byte) (bs.length > 0 ? bs[0] : 0);
+                bytes[k++] = (byte) (bs.length > 1 ? bs[1] : 0);
+                bytes[k++] = (byte) (bs.length > 2 ? bs[2] : 0);
+                str.append(Integer.toHexString(bs[0])+",");
+                str.append(Integer.toHexString(bs[1])+",");
+                str.append(Integer.toHexString(bs[2])+",");
+            } else {
+                // 处理空引用的情况
+                // System.err.println("数组为空或长度不足");
+            }
         }
         //System.out.println(str);
         try {
