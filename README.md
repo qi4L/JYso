@@ -46,5 +46,8 @@ I have the right to modify and interpret this tool. Without permission from the 
 - https://t.zsxq.com/17LkqCzk8
 - https://mp.weixin.qq.com/s/fcuKNfLXiFxWrIYQPq7OCg
 - https://xz.aliyun.com/t/11640?time__1311=mqmx0DBDuDnQ340vo4%2BxCwg%3DQai%3DYzaq4D&alichlgref=https%3A%2F%2Fxz.aliyun.com%2Fu%2F8697
+- https://archive.conference.hitb.org/hitbsecconf2021sin/sessions/make-jdbc-attacks-brilliant-again/
+- https://tttang.com/archive/1405/#toc_0x03-jdbc-rce
+- https://xz.aliyun.com/t/10656?time__1311=mq%2BxBDy7G%3DLOD%2FD0DoYg0%3DDR0HG8KeD&alichlgref=https%3A%2F%2Ftttang.com%2F#toc-7
 
 </details>
