@@ -59,3 +59,7 @@ purposes in any way.
 - https://github.com/Whoopsunix/utf-8-overlong-encoding
 
 </details>
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=qi4L/JYso&type=Date)](https://star-history.com/#qi4L/JYso&Date)
