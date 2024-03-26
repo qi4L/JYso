@@ -1,4 +1,6 @@
-![JYso](https://socialify.git.ci/qi4L/JYso/image?font=KoHo&forks=1&language=1&logo=https%3A%2F%2Fs21.ax1x.com%2F2024%2F03%2F26%2FpF5B4IA.jpg&name=1&owner=1&pattern=Charlie%20Brown&stargazers=1&theme=Auto)
+# JYso
+
+It can be either a JNDIExploit or a ysoserial.
 
 # 🦜Help!
 
