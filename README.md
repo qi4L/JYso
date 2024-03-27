@@ -1,7 +1,3 @@
-# JYso
-
-It can be either a JNDIExploit or a ysoserial.
-
 # 🦜Help!
 
 Please check out the [wiki](https://github.com/qi4L/JYso/wiki).
@@ -12,9 +8,17 @@ You can download the latest version of [releases](https://github.com/qi4L/JYso/r
 
 It can be either a JNDIExploit or a ysoserial.
 
-# 🤖TODO
+# ✨404StarLink 2.0 - Galaxy
 
-Is there a possibility of incorporating machine learning?
+JYso is 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) One of the components, If you have any
+questions about JYso or want to find partners to communicate, you can refer to the way of joining the group of Starlink
+Project.
+
++ https://github.com/knownsec/404StarLink2.0-Galaxy#community
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=qi4L/JYso&type=Date)](https://star-history.com/#qi4L/JYso&Date)
 
 # 👮Disclaimer
 
@@ -53,15 +57,3 @@ purposes in any way.
 - https://github.com/Whoopsunix/utf-8-overlong-encoding
 
 </details>
-
-# ✨404StarLink 2.0 - Galaxy
-
-JYso is 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) One of the components, If you have any
-questions about JYso or want to find partners to communicate, you can refer to the way of joining the group of Starlink
-Project.
-
-+ https://github.com/knownsec/404StarLink2.0-Galaxy#community
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=qi4L/JYso&type=Date)](https://star-history.com/#qi4L/JYso&Date)
