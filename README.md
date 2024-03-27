@@ -22,9 +22,6 @@ Project.
 
 # 👮Disclaimer
 
-<details>
-  <summary></summary>
-
 This tool is only intended for self-check and security purposes.
 
 The user is solely responsible for any direct or indirect consequences and losses arising from the dissemination or use
@@ -34,12 +31,7 @@ I have the right to modify and interpret this tool. Without permission from the 
 authorities, it is prohibited to misuse this tool for any attack activities, and it must not be used for commercial
 purposes in any way.
 
-</details>
-
 # 📷reference project
-
-<details>
-  <summary></summary>
 
 - https://github.com/veracode-research/rogue-jndi
 - https://github.com/welk1n/JNDI-Injection-Exploit
@@ -56,4 +48,3 @@ purposes in any way.
 - https://whoopsunix.com/docs/PPPYSO/advance/UTFMIX/
 - https://github.com/Whoopsunix/utf-8-overlong-encoding
 
-</details>
