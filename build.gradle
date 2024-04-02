@@ -22,17 +22,6 @@ repositories {
     }
 }
 
-//jar {
-//    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-//    from {
-//        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
-//    }
-//    manifest {
-//        attributes 'Main-Class': 'com.qi4l.jndi.Starter'
-//    }
-//    zip64=true
-//}
-
 shadowJar {
     manifest {
         attributes 'Main-Class': 'com.qi4l.jndi.Starter'

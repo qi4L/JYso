@@ -1,6 +1,8 @@
 # 🐦‍⬛ JYso
 
 ![](https://img.shields.io/badge/JDK-1.6+-orange)
+![](https://img.shields.io/badge/gradle-8.7-blue)
+![](https://img.shields.io/badge/SDL-Groovy-green)
 
 JYso是一款可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同时具备多种JNDI高版本、WAF、RASP的Bypass功能。
 
