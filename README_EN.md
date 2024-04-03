@@ -1,7 +1,8 @@
 # 🐦‍⬛JYso
 
 ![](https://img.shields.io/badge/JDK-1.6+-orange)
-
+![](https://img.shields.io/badge/gradle-8.7-blue)
+![](https://img.shields.io/badge/SDL-Groovy-green)
 
 JYso is a tool that can be used as both ysoserial and JNDIExploit. It also has bypass functions of multiple JNDI high versions, WAF, and RASP.
 

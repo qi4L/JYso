@@ -38,10 +38,6 @@ JYso 是 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) 中�
 
 + https://github.com/knownsec/404StarLink2.0-Galaxy#community
 
-# 🪸 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=qi4L/JYso&type=Date)](https://star-history.com/#qi4L/JYso&Date)
-
 # 📷 参考
 
 - https://github.com/veracode-research/rogue-jndi
