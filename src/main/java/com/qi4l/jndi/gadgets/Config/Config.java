@@ -124,13 +124,6 @@ public class Config {
     }
 
     public static void applyCmdArgs(String[] args) {
-        System.out.println("     ██╗███╗   ██╗██████╗ ██╗\n" +
-                "     ██║████╗  ██║██╔══██╗██║\n" +
-                "     ██║██╔██╗ ██║██║  ██║██║\n" +
-                "██   ██║██║╚██╗██║██║  ██║██║\n" +
-                "╚█████╔╝██║ ╚████║██████╔╝██║\n" +
-                " ╚════╝ ╚═╝  ╚═══╝╚═════╝ ╚═╝\n" +
-                "                             ");
         //process cmd args
         JCommander jc = JCommander.newBuilder()
                 .addObject(new Config())
@@ -168,15 +161,6 @@ public class Config {
         }
 
         if (showVersion) {
-            System.out.println("" +
-                    "    /█████ /██       /██                 \n" +
-                    "   |__  ██|  ██     /██/                 \n" +
-                    "      | ██ \\  ██  /██//███████  /██████ \n" +
-                    "      | ██  \\  ████//██_____/ /██__  ██\n" +
-                    " /██  | ██   \\  ██/|  ██████ | ██  \\ ██\n" +
-                    "| ██  | ██     | ██ \\____  ██| ██  | ██\n" +
-                    "|  ██████/     | ██  /███████/|  ██████/\n" +
-                    " \\______/     |__/ |_______/  \\______/");
             System.exit(0);
         }
 
