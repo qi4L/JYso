@@ -166,12 +166,6 @@ public class ysoserial {
         System.exit(0);
     }
     private static Options getOptions() {
-        System.out.println("██╗   ██╗███████╗ ██████╗ \n" +
-                "╚██╗ ██╔╝██╔════╝██╔═══██╗\n" +
-                " ╚████╔╝ ███████╗██║   ██║\n" +
-                "  ╚██╔╝  ╚════██║██║   ██║\n" +
-                "   ██║   ███████║╚██████╔╝\n" +
-                "   ╚═╝   ╚══════╝ ╚═════╝ \n");
         Options options = new Options();
         options.addOption("y", "ysoserial", false, "Java deserialization");
         options.addOption("g", "gadget", true, "Java deserialization gadget");

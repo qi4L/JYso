@@ -19,7 +19,7 @@ You can download the latest version [releases](https://github.com/qi4L/JYso/rele
 + JNDI high version Bypass
 + 12 available echo classes
 + 18 available memshell classes, and supports modifying the memshell path, password, authentication HTTP header and value
-+ 75 available Gadgets and provide multiple ways to use them
++ 76 available Gadgets and provide multiple ways to use them
 + Memory horse supports [No file landing Agent entry](https://xz.aliyun.com/t/10075?time__1311=mq%2BxBD9QDQe4yDBkPoN%2BuDAO%3DnB5x&alichlgref=https%3A%2F%2Fxz.aliyun.com%2Fsearch%3Fkeyword%3Drebeyond)
 + write the memshell to JRE or environment variable to hide
 + Serialized data plus dirty data

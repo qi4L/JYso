@@ -27,8 +27,8 @@ shadowJar {
         attributes 'Main-Class': 'com.qi4l.jndi.Starter'
     }
     zip64=true
+    minimize()
 }
-
 
 dependencies {
     api libs.io.projectreactor.reactor.core
@@ -92,17 +92,22 @@ dependencies {
     api libs.org.apache.click.click.nodeps
     api libs.org.clojure.clojure
     api libs.cn.hutool.hutool.all
-    api libs.commons.beanutils.commons.beanutils
+//    api libs.commons.beanutils.commons.beanutils
     api libs.javax.websocket.javax.websocket.api
     api libs.com.caucho.resin
-    testImplementation libs.junit.junit
     implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
+    implementation('commons-beanutils:commons-beanutils:1.6.1') {
+        version {
+            strictly '1.6.1'
+        }
+    }
+    implementation files('lib/CB161.jar')
     runtimeOnly libs.org.aspectj.aspectjweaver
     compileOnly libs.org.apache.tomcat.tomcat.websocket
 }
 
 group = 'org.example'
-version = '1.2.8'
+version = '1.2.9'
 description = 'JYso'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 

@@ -21,7 +21,7 @@ JYso是一款可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同�
 + JNDI 高版本Bypass
 + 12个可用回显类
 + 18个可用的内存马类，且支持修改内存马的路径、密码、验证的HTTP头与值
-+ 75条可用 Gadget，并提供多种利用方式
++ 76条可用 Gadget，并提供多种利用方式
 + 内存马支持[无文件落地Agent打入](https://xz.aliyun.com/t/10075?time__1311=mq%2BxBD9QDQe4yDBkPoN%2BuDAO%3DnB5x&alichlgref=https%3A%2F%2Fxz.aliyun.com%2Fsearch%3Fkeyword%3Drebeyond)
 + 内存马写入 JRE 或环境变量来隐藏
 + 序列化数据加脏数据
