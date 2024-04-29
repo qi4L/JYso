@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.6.1"})
-@Authors({Authors.PEIQIF4CK})
 public class CommonsBeanutils5 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
