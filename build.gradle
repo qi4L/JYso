@@ -96,12 +96,6 @@ dependencies {
     api libs.javax.websocket.javax.websocket.api
     api libs.com.caucho.resin
     implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
-    implementation('commons-beanutils:commons-beanutils:1.6.1') {
-        version {
-            strictly '1.6.1'
-        }
-    }
-    implementation files('lib/CB161.jar')
     runtimeOnly libs.org.aspectj.aspectjweaver
     compileOnly libs.org.apache.tomcat.tomcat.websocket
 }
