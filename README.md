@@ -31,6 +31,13 @@ JYso是一款可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同�
 + 动态生成混淆的类名
 + MSF/CS 上线
 
+# 🐯编译
+
+下载 gradle8.7+ 并配置到全局环境变量中，在项目根目录下执行
+
+```shell
+./gradlew shadowJar
+```
 
 # ✨ 404StarLink 2.0 - Galaxy
 

