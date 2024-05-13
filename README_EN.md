@@ -29,6 +29,14 @@ You can download the latest version [releases](https://github.com/qi4L/JYso/rele
 + Dynamically generate obfuscated class names
 + MSF/CS online
 
+# 🐯Compile
+
+Download gradle8.7+ and configure it in the global environment variable, execute it in the project root directory
+
+```shell
+./gradlew shadowJar
+```
+
 # ✨404StarLink 2.0 - Galaxy
 
 JYso is a part of 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink). If you have questions about JYso or want to find a partner to communicate, you can refer to the Starlink group project.
