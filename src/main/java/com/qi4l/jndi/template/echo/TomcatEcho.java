@@ -2,7 +2,7 @@ package com.qi4l.jndi.template.echo;
 
 public class TomcatEcho {
 
-    public static String CMD_HEADER = "cmd";
+    public static String CMD_HEADER;
 
     static {
         try {
