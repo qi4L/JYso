@@ -124,5 +124,5 @@ tasks.withType(Javadoc) {
 compileJava {
     options.compilerArgs << '-XDignore.symbol.file'
     options.fork = true
-    options.forkOptions.executable = 'C:\\env\\JAVA\\jdk1.8.0_402\\bin\\javac.exe'
+    options.forkOptions.executable = 'C:\\env\\JAVA\\corretto_jdk1.8.0_412\\bin\\javac.exe'
 }
