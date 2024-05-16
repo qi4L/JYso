@@ -4,13 +4,15 @@
 ![](https://img.shields.io/badge/gradle-8.7-blue)
 ![](https://img.shields.io/badge/SDL-Groovy-green)
 
-JYso is a tool that can be used as both ysoserial and JNDIExploit. It also has bypass functions of multiple JNDI high versions, WAF, and RASP.
+👊**JYso** is a tool that can be used as both ysoserial and JNDIExploit. It also has bypass functions of multiple JNDI high versions, WAF, and RASP.
 
-# 🦜Help!
+# 🚀 Getting Started Guide
 
-Please check [wiki](https://github.com/qi4L/JYso/wiki) for specific usage.
+📢 Please be sure to take a moment to read this document, which will help you quickly become familiar with JYso!
 
-You can download the latest version [releases](https://github.com/qi4L/JYso/releases) from here.
+🧐 Use documentation [Wiki](https://github.com/qi4L/JYso/wiki).
+
+✔ Download the latest version of [Releases](https://github.com/qi4L/JYso/releases).
 
 # 🐲Features
 
@@ -28,6 +30,9 @@ You can download the latest version [releases](https://github.com/qi4L/JYso/rele
 + To solve the problem that the Shiro Header header is too long, obtain the value of the specified parameter from the request for class loading.
 + Dynamically generate obfuscated class names
 + MSF/CS online
++ Code execution via JDBC
+
+If you have any other great ideas be sure to let me know! 😎
 
 # 🐯Compile
 
@@ -37,27 +42,32 @@ Download gradle8.7+ and configure it in the global environment variable, execute
 ./gradlew shadowJar
 ```
 
+# 🌲Directory structure
+
+For more information, see [Directory Structure Description](https://github.com/shmiylty/OneForAll/tree/master/docs/directory_structure.md).
+
+# ⌛ Follow-up plan
+
+- [ ] Continuous optimization and improvement of each module
+- [ ] Add more Bypass functions
+- [ ] Optimize the traversal effect through machine learning and graph theory
+
+# 🙏Contribute
+
+We warmly welcome all of you to work together to improve this project!
+
 # ✨404StarLink 2.0 - Galaxy
 
 JYso is a part of 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink). If you have questions about JYso or want to find a partner to communicate, you can refer to the Starlink group project.
 
 + https://github.com/knownsec/404StarLink2.0-Galaxy#community
 
-# 👮免责声明
+# 📜 Disclaimer
 
-This tool is only for legally authorized enterprise security construction activities. If you need to test the usability of this tool, please build a target drone environment yourself.
-
-In order to avoid malicious use, all POCs included in this project are theoretical judgments of vulnerabilities. There is no vulnerability exploitation process, and no real attacks or exploits will be launched on the target.
-
-When using this tool for testing, you should ensure that your behavior complies with local laws and regulations and that you have obtained sufficient authorization. Do not scan unauthorized targets.
-
-If you commit any illegal behavior while using this tool, you shall bear the corresponding consequences yourself, and we will not assume any legal and joint liability.
-
-Before installing and using this tool, please be sure to read carefully and fully understand the contents of each clause. Restrictions, disclaimers, or other clauses involving your major rights and interests may be bolded, underlined, etc. to remind you to pay attention. Please do not install and use this tool unless you have fully read, fully understood and accepted all the terms of this agreement. Your usage behavior or your acceptance of this Agreement in any other express or implicit manner shall be deemed to have read and agreed to be bound by this Agreement.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=qi4L/JYso&type=Date)](https://star-history.com/#qi4L/JYso&Date)
+This tool can only be used in the security construction of enterprises that have obtained sufficient legal authorization. When using this tool, you should ensure that all your actions comply with local laws and regulations.
+If you commit any illegal behavior while using this tool, you will bear all the consequences yourself. All developers and contributors of this tool do not assume any legal and joint liability.
+Please do not install and use this tool unless you have fully read, fully understood and accepted all the terms of this agreement.
+Your usage behavior or your acceptance of this Agreement in any other express or implicit manner shall be deemed to have read and agreed to be bound by this Agreement.
 
 # 📷reference project
 
