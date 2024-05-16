@@ -7,7 +7,7 @@
 
 👊**JYso**是一款可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同时具备多种JNDI高版本、WAF、RASP的Bypass功能。📝[English Document](README_EN.md)
 
-# 🚀 上手指南
+## 🚀 上手指南
 
 📢 请务必花一点时间阅读此文档，有助于你快速熟悉JYso！
 
@@ -15,7 +15,7 @@
 
 ✔ 下载最新版本的[Releases](https://github.com/qi4L/JYso/releases)。
 
-# 👍 功能特性
+## 👍 功能特性
 
 + JNDI 账号密码启动
 + JNDI 路由隐藏或加密
@@ -35,7 +35,7 @@
 
 如果你有其他很棒的想法请务必告诉我！😎
 
-# 🐯 编译
+## 🐯 编译
 
 下载 gradle8.7+ 并配置到全局环境变量中，在项目根目录下执行
 
@@ -43,34 +43,34 @@
 ./gradlew shadowJar
 ```
 
-# 🌲目录结构
+## 🌲目录结构
 
 更多信息请参阅[目录结构说明](https://github.com/shmilylty/OneForAll/tree/master/docs/directory_structure.md)。
 
-# ⌛ 后续计划
+## ⌛ 后续计划
 
 - [ ] 各模块持续优化和完善
 - [ ] 加入更多Bypass功能
 - [ ] 通过机器学习与图论优化
 
-# 🙏贡献
+## 🙏贡献
 
 非常热烈欢迎各位大佬一起完善本项目！
 
-# ✨ 404StarLink 2.0 - Galaxy
+## ✨ 404StarLink 2.0 - Galaxy
 
 JYso 是 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) 中的一环，如果您有 关于JYso的问题或者想找伙伴交流，可以参考星链加群方式项目。
 
 + https://github.com/knownsec/404StarLink2.0-Galaxy#community
 
-# 📜 免责声明
+## 📜 免责声明
 
 本工具仅能在取得足够合法授权的企业安全建设中使用，在使用本工具过程中，您应确保自己所有行为符合当地的法律法规。
 如您在使用本工具的过程中存在任何非法行为，您将自行承担所有后果，本工具所有开发者和所有贡献者不承担任何法律及连带责任。
 除非您已充分阅读、完全理解并接受本协议所有条款，否则，请您不要安装并使用本工具。
 您的使用行为或者您以其他任何明示或者默示方式表示接受本协议的，即视为您已阅读并同意本协议的约束。
 
-# 📷 参考
+## 📷 参考
 
 - https://github.com/veracode-research/rogue-jndi
 - https://github.com/welk1n/JNDI-Injection-Exploit
