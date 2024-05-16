@@ -44,7 +44,7 @@ public class TomcatJdbcController implements LdapController {
             // com.alibaba.druid.pool.DruidDataSourceFactory
             // org.apache.tomcat.jdbc.pool.DataSourceFactory
             Entry                                   e      = new Entry(base);
-            Reference                               ref    = new Reference("javax.sql.DataSource", "org.apache.tomcat.jdbc.pool.DataSourceFactory", null);
+            Reference                               ref    = new Reference("javax.sql.DataSource", factoryType, null);
             TomcatJdbcController.TomcatBypassHelper helper = new TomcatJdbcController.TomcatBypassHelper();
             String                                  code   = null;
 

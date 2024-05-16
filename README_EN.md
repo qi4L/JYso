@@ -75,4 +75,6 @@ Before installing and using this tool, please be sure to read carefully and full
 - https://xz.aliyun.com/t/10656?time__1311=mq%2BxBDy7G%3DLOD%2FD0DoYg0%3DDR0HG8KeD&alichlgref=https%3A%2F%2Ftttang.com%2F#toc-7
 - https://whoopsunix.com/docs/PPPYSO/advance/UTFMIX/
 - https://github.com/Whoopsunix/utf-8-overlong-encoding
+- https://tttang.com/archive/1405/#toc_groovyclassloader
+- https://xz.aliyun.com/t/10656?time__1311=mq%2BxBDy7G%3DLOD%2FD0DoY4AKqiKD%3DOQjqx&alichlgref=https%3A%2F%2Ftttang.com%2F
 
