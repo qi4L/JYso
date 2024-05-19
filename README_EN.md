@@ -44,7 +44,7 @@ Download gradle8.7+ and configure it in the global environment variable, execute
 
 # 🌲Directory structure
 
-For more information, see [Directory Structure Description](https://github.com/shmiylty/OneForAll/tree/master/docs/directory_structure.md).
+For more information, see [Directory Structure Description](docs/directory_structure.md).
 
 # ⌛ Follow-up plan
 

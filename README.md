@@ -45,7 +45,7 @@
 
 ## 🌲目录结构
 
-更多信息请参阅[目录结构说明](https://github.com/shmilylty/OneForAll/tree/master/docs/directory_structure.md)。
+更多信息请参阅[目录结构说明](docs/directory_structure.md)。
 
 ## ⌛ 后续计划
 
