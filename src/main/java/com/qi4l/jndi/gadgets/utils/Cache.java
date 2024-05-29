@@ -1,12 +1,12 @@
 package com.qi4l.jndi.gadgets.utils;
 
-import com.qi4l.jndi.template.echo.Meterpreter;
-import com.qi4l.jndi.template.echo.SpringEcho;
-import com.qi4l.jndi.template.echo.TomcatEcho;
+import com.qi4l.jndi.template.echoStatic.Meterpreter;
+import com.qi4l.jndi.template.echoStatic.SpringEcho;
+import com.qi4l.jndi.template.echoStatic.TomcatEcho;
 import com.qi4l.jndi.template.isOK;
 import com.qi4l.jndi.template.isSuccess;
-import com.qi4l.jndi.template.memshell.Websphere.WebsphereMemshellTemplate;
-import com.qi4l.jndi.template.memshell.jboss.JBFMSFromContextF;
+import com.qi4l.jndi.template.memshellStatic.Websphere.WebsphereMemshellTemplate;
+import com.qi4l.jndi.template.memshellStatic.jboss.JBFMSFromContextF;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 

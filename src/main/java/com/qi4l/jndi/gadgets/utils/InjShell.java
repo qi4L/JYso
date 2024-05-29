@@ -2,7 +2,7 @@ package com.qi4l.jndi.gadgets.utils;
 
 import com.qi4l.jndi.gadgets.Config.Config;
 import com.qi4l.jndi.template.Agent.WinMenshell;
-import com.qi4l.jndi.template.memshell.tomcat.TSMSFromJMXF;
+import com.qi4l.jndi.template.memshellStatic.tomcat.TSMSFromJMXF;
 import javassist.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,7 +16,6 @@ import java.util.List;
 
 import static com.qi4l.jndi.gadgets.Config.MemShellPayloads.*;
 import static com.qi4l.jndi.gadgets.utils.HexUtils.generatePassword;
-import static com.qi4l.jndi.template.memshell.shell.MemShellPayloads.SUO5.CMD_SHELL_FOR_WEBFLUX;
 
 public class InjShell {
 

