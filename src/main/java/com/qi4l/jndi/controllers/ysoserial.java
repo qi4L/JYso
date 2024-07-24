@@ -142,7 +142,6 @@ public class ysoserial {
 
             // 储存生成的 payload
             PAYLOAD = object;
-
             if (isFromExploit()) {
                 return;
             }

