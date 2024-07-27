@@ -46,6 +46,10 @@ public @interface Authors {
     String QI4L       = "QI4L";
     String PEIQIF4CK = "peiqiF4ck";
 
+    String Jayl1n = "Jayl1n";
+
+    String N1ght = "N1ght";
+
     String KILLER = "killer";
 
     String[] value() default {};
