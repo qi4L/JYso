@@ -101,6 +101,14 @@ public class ysoserial {
             Config.IS_UTF_Bypass = true;
         }
 
+        if (cmdLine.hasOption("Hessian1")) {
+            Config.IS_Hessian1 = true;
+        }
+
+        if (cmdLine.hasOption("Hessian2")) {
+            Config.IS_Hessian2 = true;
+        }
+
         if (cmdLine.hasOption("gen-mem-shell")) {
             Config.GEN_MEM_SHELL = true;
 
@@ -189,6 +197,8 @@ public class ysoserial {
         options.addOption("mcl", "mozilla-class-loader", false, "Using org.mozilla.javascript.DefiningClassLoader in TransformerUtil");
         options.addOption("dcfp", "define-class-from-parameter", true, "Customize parameter name when using DefineClassFromParameter");
         options.addOption("utf", "utf8-Overlong-Encoding", false, "UTF-8 Overlong Encoding Bypass waf");
+        options.addOption("he1", "Hessian1", false, "Hessian1 Output");
+        options.addOption("he2", "Hessian2", false, "Hessian2 Output");
         return options;
     }
 
