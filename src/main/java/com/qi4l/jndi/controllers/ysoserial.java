@@ -9,6 +9,7 @@ import com.qi4l.jndi.gadgets.utils.StringUtil;
 import com.qi4l.jndi.gadgets.utils.dirty.DirtyDataWrapper;
 import org.apache.commons.cli.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
@@ -19,7 +20,7 @@ import static com.qi4l.jndi.gadgets.utils.StringUtil.isFromExploit;
 public class ysoserial {
 
     public static CommandLine cmdLine;
-    public static Object PAYLOAD = null;
+    public static Object      PAYLOAD = null;
 
     public static void ysoserial(String[] args) {
         final Options options = getOptions();
@@ -66,6 +67,10 @@ public class ysoserial {
         if (cmdLine.hasOption("file")) {
             Config.WRITE_FILE = true;
             Config.FILE = cmdLine.getOptionValue("file");
+        }
+
+        if (cmdLine.hasOption("base64")) {
+            Config.BASE64 = true;
         }
 
         if (cmdLine.hasOption("password")) {
@@ -172,6 +177,7 @@ public class ysoserial {
         }
         System.exit(0);
     }
+
     private static Options getOptions() {
         Options options = new Options();
         options.addOption("y", "ysoserial", false, "Java deserialization");
@@ -199,6 +205,7 @@ public class ysoserial {
         options.addOption("utf", "utf8-Overlong-Encoding", false, "UTF-8 Overlong Encoding Bypass waf");
         options.addOption("he1", "Hessian1", false, "Hessian1 Output");
         options.addOption("he2", "Hessian2", false, "Hessian2 Output");
+        options.addOption("b64", "base64", false, "base64 encoding");
         return options;
     }
 

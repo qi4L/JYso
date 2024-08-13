@@ -3,6 +3,7 @@ package com.qi4l.jndi.gadgets.utils;
 import com.caucho.hessian.io.*;
 import com.qi4l.jndi.gadgets.utils.utf8OverlongEncoding.UTF8OverlongObjectOutputStream;
 
+import java.util.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -36,25 +37,40 @@ public class Serializer implements Callable<byte[]> {
     public static void qiserialize(Object obj, final OutputStream out) throws Exception {
         ObjectOutputStream    objOut  = null;
         AbstractHessianOutput AobjOut = null;
+        ByteArrayOutputStream outB64  = new ByteArrayOutputStream();
 
-        if (IS_DIRTY_IN_TC_RESET) {
-            objOut = new SuObjectOutputStream(out);
-        } else if (IS_UTF_Bypass) {
-            objOut = new UTF8OverlongObjectOutputStream(out);
+        if (IS_UTF_Bypass) {
+            if (BASE64) {
+                objOut = new UTF8OverlongObjectOutputStream(outB64);
+            } else {
+                objOut = new UTF8OverlongObjectOutputStream(out);
+            }
         } else if (IS_Hessian1) {
-            AobjOut = new HessianOutput(out);
+            if (BASE64) {
+                AobjOut = new HessianOutput(outB64);
+            } else {
+                AobjOut = new HessianOutput(out);
+            }
             NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
             sf.setAllowNonSerializable(true);
             AobjOut.setSerializerFactory(sf);
         } else if (IS_Hessian2) {
-            AobjOut = new Hessian2Output(out);
+            if (BASE64) {
+                AobjOut = new Hessian2Output(outB64);
+            } else {
+                AobjOut = new Hessian2Output(out);
+            }
             NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
             sf.setAllowNonSerializable(true);
             AobjOut.setSerializerFactory(sf);
             AobjOut.writeObject(obj);
             AobjOut.close();
-        }else {
-            objOut = new ObjectOutputStream(out);
+        } else {
+            if (BASE64) {
+                objOut = new SuObjectOutputStream(outB64);
+            } else {
+                objOut = new SuObjectOutputStream(out);
+            }
         }
 
         if (IS_Hessian1 || IS_Hessian2) {
@@ -62,6 +78,12 @@ public class Serializer implements Callable<byte[]> {
         } else {
             objOut.writeObject(obj);
         }
+
+        if (BASE64) {
+            String encodedString = Base64.getEncoder().encodeToString(outB64.toByteArray());
+            System.out.println(encodedString);
+        }
+
     }
 
     public byte[] call() throws Exception {
@@ -96,7 +118,7 @@ public class Serializer implements Callable<byte[]> {
          * @see com.caucho.hessian.io.SerializerFactory#getObjectSerializer(java.lang.Class)
          */
         @Override
-        public com.caucho.hessian.io.Serializer getObjectSerializer (Class<?> cl ) throws HessianProtocolException {
+        public com.caucho.hessian.io.Serializer getObjectSerializer(Class<?> cl) throws HessianProtocolException {
             return super.getObjectSerializer(cl);
         }
 
@@ -106,10 +128,10 @@ public class Serializer implements Callable<byte[]> {
          * @see com.caucho.hessian.io.SerializerFactory#getSerializer(java.lang.Class)
          */
         @Override
-        public com.caucho.hessian.io.Serializer getSerializer (Class cl ) throws HessianProtocolException {
+        public com.caucho.hessian.io.Serializer getSerializer(Class cl) throws HessianProtocolException {
             com.caucho.hessian.io.Serializer serializer = super.getSerializer(cl);
 
-            if ( serializer instanceof WriteReplaceSerializer ) {
+            if (serializer instanceof WriteReplaceSerializer) {
                 return UnsafeSerializer.create(cl);
             }
             return serializer;

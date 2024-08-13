@@ -94,6 +94,7 @@ public class Config {
     // 将输入直接写在文件里
     public static String FILE = "out.ser";
     public static Boolean WRITE_FILE = false;
+    public static Boolean BASE64 = false;
     // 是否强制使用 org.apache.XXX.TemplatesImpl
     public static Boolean FORCE_USING_ORG_APACHE_TEMPLATESIMPL = false;
     // 在 Transformer[] 中使用 org.mozilla.javascript.DefiningClassLoader

