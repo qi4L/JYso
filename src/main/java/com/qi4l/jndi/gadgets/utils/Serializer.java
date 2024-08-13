@@ -51,12 +51,14 @@ public class Serializer implements Callable<byte[]> {
             NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
             sf.setAllowNonSerializable(true);
             AobjOut.setSerializerFactory(sf);
+            AobjOut.writeObject(obj);
+            AobjOut.close();
         }else {
             objOut = new ObjectOutputStream(out);
         }
 
         if (IS_Hessian1 || IS_Hessian2) {
-            AobjOut.writeObject(AobjOut);
+            AobjOut.writeObject(obj);
         } else {
             objOut.writeObject(obj);
         }
