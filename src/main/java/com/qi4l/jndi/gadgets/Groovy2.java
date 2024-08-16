@@ -1,4 +1,5 @@
-import com.qi4l.jndi.gadgets.ObjectPayload;
+package com.qi4l.jndi.gadgets;
+
 import com.qi4l.jndi.gadgets.annotation.Authors;
 import com.qi4l.jndi.gadgets.annotation.Dependencies;
 import com.qi4l.jndi.gadgets.utils.Reflections;
