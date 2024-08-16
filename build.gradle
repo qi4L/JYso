@@ -31,12 +31,14 @@ shadowJar {
 }
 
 dependencies {
+    implementation files('libs/jai-core-1.1.3.jar')
+    implementation files('libs/weblogic-server.jar')
     api libs.io.projectreactor.reactor.core
     api libs.com.ibm.websphere.appserver.api.com.ibm.websphere.appserver.api.wsoc
     api libs.org.glassfish.tyrus.tyrus.server
-    api libs.javax.media.jai.jai.core
+//    api libs.javax.media.jai.jai.core
     api libs.org.javassist.javassist
-    api libs.com.oracle.weblogic.weblogic.server
+//    api libs.com.oracle.weblogic.weblogic.server
     api libs.xerces.xercesimpl
     api libs.com.fasterxml.jackson.core.jackson.databind
     api libs.com.teradata.jdbc.terajdbc
@@ -95,6 +97,7 @@ dependencies {
 //    api libs.commons.beanutils.commons.beanutils
     api libs.javax.websocket.javax.websocket.api
     api libs.com.caucho.resin
+    api libs.com.thoughtworks.xstream
     implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
     runtimeOnly libs.org.aspectj.aspectjweaver
     compileOnly libs.org.apache.tomcat.tomcat.websocket
