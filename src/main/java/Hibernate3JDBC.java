@@ -1,6 +1,6 @@
-package com.qi4l.jndi.gadgets;
-
 import com.alibaba.fastjson.JSONArray;
+import com.qi4l.jndi.gadgets.DynamicDependencies;
+import com.qi4l.jndi.gadgets.ObjectPayload;
 import com.qi4l.jndi.gadgets.annotation.Authors;
 import com.qi4l.jndi.gadgets.annotation.Dependencies;
 import org.hibernate.service.jdbc.connections.internal.DriverManagerConnectionProviderImpl;

