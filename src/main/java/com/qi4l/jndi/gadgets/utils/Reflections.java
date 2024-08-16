@@ -4,6 +4,9 @@ import com.nqzero.permit.Permit;
 import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 @SuppressWarnings("restriction")
 public class Reflections extends ClassLoader {
@@ -44,7 +47,9 @@ public class Reflections extends ClassLoader {
     public static Object newInstance(String className, Object... args) throws Exception {
         return getFirstCtor(className).newInstance(args);
     }
-
+    public static Object createWithoutConstructor(String classname) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return createWithoutConstructor(Class.forName(classname));
+    }
     public static <T> T createWithoutConstructor(Class<T> classToInstantiate)
             throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         return createWithConstructor(classToInstantiate, Object.class, new Class[0], new Object[0]);
@@ -83,5 +88,4 @@ public class Reflections extends ClassLoader {
         }
         return null;
     }
-
 }
