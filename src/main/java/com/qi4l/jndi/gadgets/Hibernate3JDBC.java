@@ -18,9 +18,9 @@ import javax.management.BadAttributeValueExpException;
 
 import static com.qi4l.jndi.gadgets.utils.InjShell.insertField;
 
-@Dependencies({" org.hibernate<=4.12"})
+@Dependencies({" org.hibernate.hibernate-core:hibernate-core <= 4.1.12.Fina"})
 @Authors({Authors.Unam4})
-public class Hibernate3JDBC implements ObjectPayload<Object>{
+public class Hibernate3JDBC implements ObjectPayload<Object>, DynamicDependencies {
     @Override
     public Object getObject(String command) throws Exception {
         ClassPool pool = ClassPool.getDefault();
