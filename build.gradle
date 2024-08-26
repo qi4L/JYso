@@ -18,7 +18,7 @@ repositories {
 
 shadowJar {
     manifest {
-        attributes 'Main-Class': 'com.qi4l.jndi.Starter'
+        attributes 'Main-Class': 'com.qi4l.JYso.Starter'
     }
     zip64=true
     minimize()
@@ -96,7 +96,7 @@ dependencies {
 }
 
 group = 'org.example'
-version = '1.3.2'
+version = '1.3.3'
 description = 'JYso'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
