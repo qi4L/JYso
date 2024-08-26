@@ -115,7 +115,7 @@ public class ClassNameHandler {
 
 
     public static String searchClassByName(String name) {
-        Set<String> set = getClassSet("com.qi4l.jndi.template.");
+        Set<String> set = getClassSet("com.qi4l.JYso.template.");
         for (String fullName : set) {
             if (fullName.endsWith(name)) {
                 return fullName.replace("\\", ".");

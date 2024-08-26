@@ -108,7 +108,7 @@ public class Utils {
     }
 
     public static CtClass encapsulationByClassLoaderTemplate(byte[] bytes) throws Exception {
-        CtClass ctClass = POOL.get("com.qi4l.jndi.template.ClassLoaderTemplate");
+        CtClass ctClass = POOL.get("com.qi4l.JYso.template.ClassLoaderTemplate");
         ctClass.setName(generateClassName());
         ByteArrayOutputStream outBuf           = new ByteArrayOutputStream();
         GZIPOutputStream      gzipOutputStream = new GZIPOutputStream(outBuf);

@@ -118,7 +118,7 @@ public class GlassHandler {
                 case 1:
                     break;
                 case 2:
-                    CtClass newClass = Config.POOL.get("com.qi4l.jndi.template.HideMemShellTemplate");
+                    CtClass newClass = Config.POOL.get("com.qi4l.JYso.template.HideMemShellTemplate");
                     newClass.setName(ClassNameHandler.generateClassName());
                     String content = "b64=\"" + Base64.encodeBase64String(byteCodes) + "\";";
                     String cName = "className=\"" + ctClass.getName() + "\";";
