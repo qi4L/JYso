@@ -97,6 +97,7 @@ dependencies {
 //    api libs.commons.beanutils.commons.beanutils
     api libs.javax.websocket.javax.websocket.api
     api libs.com.caucho.resin
+    api libs.com.thoughtworks.xstream
     implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
     runtimeOnly libs.org.aspectj.aspectjweaver
     compileOnly libs.org.apache.tomcat.tomcat.websocket

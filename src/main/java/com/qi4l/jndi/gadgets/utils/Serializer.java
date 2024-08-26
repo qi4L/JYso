@@ -2,6 +2,7 @@ package com.qi4l.jndi.gadgets.utils;
 
 import com.caucho.hessian.io.*;
 import com.qi4l.jndi.gadgets.utils.utf8OverlongEncoding.UTF8OverlongObjectOutputStream;
+import com.thoughtworks.xstream.XStream;
 
 import java.util.Base64;
 import java.io.ByteArrayOutputStream;
@@ -65,6 +66,8 @@ public class Serializer implements Callable<byte[]> {
             AobjOut.setSerializerFactory(sf);
             AobjOut.writeObject(obj);
             AobjOut.close();
+        } else if (IS_XSTREAM) {
+            xStreamSerialize(obj);
         } else {
             if (BASE64) {
                 objOut = new SuObjectOutputStream(outB64);
@@ -75,6 +78,8 @@ public class Serializer implements Callable<byte[]> {
 
         if (IS_Hessian1 || IS_Hessian2) {
             AobjOut.writeObject(obj);
+        } else if (IS_XSTREAM){
+            return;
         } else {
             objOut.writeObject(obj);
         }
@@ -88,6 +93,12 @@ public class Serializer implements Callable<byte[]> {
 
     public byte[] call() throws Exception {
         return serialize(object);
+    }
+
+    public static void xStreamSerialize(Object payload) {
+        XStream xstream = new XStream();
+        String xml = xstream.toXML(payload);
+        System.out.println(xml);
     }
 
     public static class SuObjectOutputStream extends ObjectOutputStream {

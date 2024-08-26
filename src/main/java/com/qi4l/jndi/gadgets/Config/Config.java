@@ -83,6 +83,7 @@ public class Config {
     public static Boolean IS_UTF_Bypass = false;
     public static Boolean IS_Hessian1 = false;
     public static Boolean IS_Hessian2 = false;
+    public static Boolean IS_XSTREAM = false;
     // 填充的脏数据长度
     public static int DIRTY_LENGTH_IN_TC_RESET = 0;
 
