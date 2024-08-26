@@ -1,4 +1,4 @@
-import com.qi4l.jndi.LdapServer;
+import com.qi4l.JYso.LdapServer;
 
 public class Main {
     public static void main(String[] args) {
