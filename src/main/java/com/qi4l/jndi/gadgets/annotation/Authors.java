@@ -52,6 +52,8 @@ public @interface Authors {
 
     String KILLER = "killer";
 
+    String Unam4 = "Unam4";
+
     String[] value() default {};
 
     class Utils {
