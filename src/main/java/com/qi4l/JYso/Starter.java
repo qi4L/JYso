@@ -20,6 +20,9 @@ public class Starter {
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && args[0].equals("-j")) {
             Config.applyCmdArgs(args);
+            if (Config.TLSProxy) {
+                TLSProxy.start();
+            }
             LdapServer.start();
             HTTPServer.start();
             RMIServer.start();

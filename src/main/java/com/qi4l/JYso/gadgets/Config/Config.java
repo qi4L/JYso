@@ -21,6 +21,9 @@ public class Config {
     @Parameter(names = {"-lP", "--ldapPort"}, description = "Ldap bind port", order = 2)
     public static int ldapPort = 1389;
 
+    @Parameter(names = {"-lPs", "--ldapsPort"}, description = "Ldaps bind port", order = 2)
+    public static int ldapsPort = 1669;
+
     @Parameter(names = {"-rP", "--rmiPort"}, description = "rmi bind port", order = 2)
     public static int rmiPort = 1099;
 
@@ -36,8 +39,15 @@ public class Config {
     public static String AESkey = "123";
     @Parameter(names = {"-u", " --user"}, description = "ldap bound account", order = 5)
     public static String USER = "";
+    @Parameter(names = {"-tP", " --TLSProxy"}, description = "TLS port forwarding", order = 5)
+    public static boolean TLSProxy = false;
     @Parameter(names = {"-p", " --PASSWD"}, description = "ldap binding password", order = 5)
     public static String PASSWD = "";
+    @Parameter(names = {"-kF", " --keyFile"}, description = "Path to the TLS private key file", order = 5)
+    public static String keyFile = "";
+    @Parameter(names = {"-cF", " --certFile"}, description = "Path to the TLS certificate file", order = 5)
+    public static String certFile = "";
+
     @Parameter(names = {"-j", "--jndi"}, description = "starter", order = 5)
     public static boolean jndi = false;
     public static String rhost;

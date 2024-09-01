@@ -51,6 +51,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
     public static void start() {
         try {
             InMemoryDirectoryServerConfig serverConfig = new InMemoryDirectoryServerConfig("dc=example,dc=com");
+
             serverConfig.setListenerConfigs(new InMemoryListenerConfig(
                     "listen",
                     InetAddress.getByName("0.0.0.0"),
@@ -73,13 +74,6 @@ public class LdapServer extends InMemoryOperationInterceptor {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see com.unboundid.ldap.listener.interceptor.InMemoryOperationInterceptor#processSearchResult(com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult)
-     * 关键在这个类里进行了处理
-     * 官方说明：在提供的搜索结果返回给客户端之前，调用应该对其执行的任何处理。
-     */
     @Override
     public void processSearchResult(InMemoryInterceptedSearchResult result) {
         String base;
