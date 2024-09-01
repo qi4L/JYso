@@ -28,95 +28,95 @@ public class Config {
     public static int rmiPort = 1099;
 
     @Parameter(names = {"-hP", "--httpPort"}, description = "Http bind port", order = 3)
-    public static int httpPort = 3456;
+    public static int     httpPort = 3456;
     @Parameter(names = {"-c", " --command"}, help = true, description = "RMI this command")
-    public static String command = "whoami";
-    @Parameter(names = {"-v", " --version"}, description = "Show version", order = 5)
+    public static String  command  = "whoami";
+    @Parameter(names = {"-v", " --version"}, help = true, description = "Show version", order = 5)
     public static boolean showVersion;
-    @Parameter(names = {"-ga", " --gadgets"}, description = "Show gadgets", order = 5)
+    @Parameter(names = {"-ga", " --gadgets"}, help = true, description = "Show gadgets", order = 5)
     public static boolean showGadgets;
     @Parameter(names = {"-ak", " --AESkey"}, description = "AES+BAse64 decryption of routes", order = 5)
-    public static String AESkey = "123";
-    @Parameter(names = {"-u", " --user"}, description = "ldap bound account", order = 5)
-    public static String USER = "";
-    @Parameter(names = {"-tP", " --TLSProxy"}, description = "TLS port forwarding", order = 5)
+    public static String  AESkey   = "123";
+    @Parameter(names = {"-u", " --user"}, help = true, description = "ldap bound account", order = 5)
+    public static String  USER     = "";
+    @Parameter(names = {"-tP", " --TLSProxy"}, help = true, description = "TLS port forwarding", order = 5)
     public static boolean TLSProxy = false;
-    @Parameter(names = {"-p", " --PASSWD"}, description = "ldap binding password", order = 5)
-    public static String PASSWD = "";
-    @Parameter(names = {"-kF", " --keyFile"}, description = "Path to the TLS private key file", order = 5)
-    public static String keyFile = "";
-    @Parameter(names = {"-cF", " --certFile"}, description = "Path to the TLS certificate file", order = 5)
-    public static String certFile = "";
+    @Parameter(names = {"-p", " --PASSWD"}, help = true, description = "ldap binding password", order = 5)
+    public static String  PASSWD   = "";
+    @Parameter(names = {"-kF", " --keyFile"}, help = true, description = "Path to the TLS private key file", order = 5)
+    public static String  keyFile  = "";
+    @Parameter(names = {"-cF", " --certFile"}, help = true, description = "Path to the TLS certificate file", order = 5)
+    public static String  certFile = "";
 
-    @Parameter(names = {"-j", "--jndi"}, description = "starter", order = 5)
-    public static boolean jndi = false;
-    public static String rhost;
-    public static String rport;
+    @Parameter(names = {"-j", "--jndi"}, help = true, description = "starter", order = 5)
+    public static boolean jndi                         = false;
+    public static String  rhost;
+    public static String  rport;
     // 从HTTP外部获取路由值
-    public static String ROUTE = "";
+    public static String  ROUTE                        = "";
     // 从HTTP外部获取参数值
-    public static String BCEL1 = "";
+    public static String  BCEL1                        = "";
     // 恶意类是否继承 AbstractTranslet
     public static Boolean IS_INHERIT_ABSTRACT_TRANSLET = false;
     //是否使用反射绕过RASP
-    public static Boolean IS_OBSCURE = false;
+    public static Boolean IS_OBSCURE                   = false;
     // 各种方式的内存马映射的路径
-    public static String URL_PATTERN = "/qi4l";
+    public static String  URL_PATTERN                  = "/qi4l";
     // 是否使用落地文件的方式隐藏内存马
-    public static Boolean HIDE_MEMORY_SHELL = false;
+    public static Boolean HIDE_MEMORY_SHELL            = false;
     // 是否生成内存马文件
-    public static Boolean GEN_MEM_SHELL = false;
+    public static Boolean GEN_MEM_SHELL                = false;
     // 内存马文件名
-    public static String GEN_MEM_SHELL_FILENAME = "";
+    public static String  GEN_MEM_SHELL_FILENAME       = "";
     // 落地文件姿势，1 charsets.jar 2 classes
-    public static int HIDE_MEMORY_SHELL_TYPE = 0;
+    public static int     HIDE_MEMORY_SHELL_TYPE       = 0;
     // 内存马的密码MD5
-    public static String PASSWORD = "0f359740bd1cda99";
+    public static String  PASSWORD                     = "0f359740bd1cda99";
     // Referer 校验
-    public static String HEADER_KEY = "Referer";
+    public static String  HEADER_KEY                   = "Referer";
     // 用于额外校验的 Http Header 值，默认值 https://QI4L.cn/
-    public static String HEADER_VALUE = "https://QI4L.cn/";
+    public static String  HEADER_VALUE                 = "https://QI4L.cn/";
     // 哥斯拉的 key，默认是 key
-    public static String GODZILLA_KEY = "3c6e0b8a9c15224a";
+    public static String  GODZILLA_KEY                 = "3c6e0b8a9c15224a";
     // 密码原文
-    public static String PASSWORD_ORI = "p@ssw0rd";
+    public static String  PASSWORD_ORI                 = "p@ssw0rd";
     // 命令执行回显时，传递执行命令的 Header 头
-    public static String CMD_HEADER_STRING = "X-Token-Data";
+    public static String  CMD_HEADER_STRING            = "X-Token-Data";
     //内存马的类型
-    public static String Shell_Type = "bx";
+    public static String  Shell_Type                   = "bx";
     //是否使用windows下Agent写入
-    public static Boolean winAgent = false;
+    public static Boolean winAgent                     = false;
     //是否使用Linux下Agent写入
-    public static Boolean linAgent = false;
+    public static Boolean linAgent                     = false;
     // 是否在序列化数据流中的 TC_RESET 中填充脏数据
-    public static Boolean IS_DIRTY_IN_TC_RESET = false;
-    public static Boolean IS_UTF_Bypass = false;
-    public static Boolean IS_Hessian1 = false;
-    public static Boolean IS_Hessian2 = false;
-    public static Boolean IS_XSTREAM = false;
+    public static Boolean IS_DIRTY_IN_TC_RESET         = false;
+    public static Boolean IS_UTF_Bypass                = false;
+    public static Boolean IS_Hessian1                  = false;
+    public static Boolean IS_Hessian2                  = false;
+    public static Boolean IS_XSTREAM                   = false;
     // 填充的脏数据长度
-    public static int DIRTY_LENGTH_IN_TC_RESET = 0;
+    public static int     DIRTY_LENGTH_IN_TC_RESET     = 0;
 
     // 是否使用UTF-8 Overlong Encoding Bypass waf
     // jboss
-    public static Boolean IS_JBOSS_OBJECT_INPUT_STREAM = false;
+    public static  Boolean                 IS_JBOSS_OBJECT_INPUT_STREAM         = false;
     // DefineClassFromParameter 的路径
-    public static String PARAMETER = "dc";
+    public static  String                  PARAMETER                            = "dc";
     // 将输入直接写在文件里
-    public static String FILE = "out.ser";
-    public static Boolean WRITE_FILE = false;
-    public static Boolean BASE64 = false;
+    public static  String                  FILE                                 = "out.ser";
+    public static  Boolean                 WRITE_FILE                           = false;
+    public static  Boolean                 BASE64                               = false;
     // 是否强制使用 org.apache.XXX.TemplatesImpl
-    public static Boolean FORCE_USING_ORG_APACHE_TEMPLATESIMPL = false;
+    public static  Boolean                 FORCE_USING_ORG_APACHE_TEMPLATESIMPL = false;
     // 在 Transformer[] 中使用 org.mozilla.javascript.DefiningClassLoader
-    public static Boolean USING_MOZILLA_DEFININGCLASSLOADER = false;
+    public static  Boolean                 USING_MOZILLA_DEFININGCLASSLOADER    = false;
     // ScriptEngineManager 是否为 RHINO 引擎
-    public static boolean USING_RHINO = false;
-    public static ClassPool POOL = ClassPool.getDefault();
+    public static  boolean                 USING_RHINO                          = false;
+    public static  ClassPool               POOL                                 = ClassPool.getDefault();
     // 不同类型内存马的父类/接口与其关键参数的映射
-    public static HashMap<String, String> KEY_METHOD_MAP = new HashMap<>();
+    public static  HashMap<String, String> KEY_METHOD_MAP                       = new HashMap<>();
     @Parameter(names = {"-he", " --help"}, help = true, description = "Show this help")
-    private static boolean help = false;
+    private static boolean                 help                                 = false;
 
     static {
         // Servlet 型内存马，关键方法 service
