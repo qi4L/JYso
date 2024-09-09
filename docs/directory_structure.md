@@ -1,4 +1,3 @@
-C:.
 ├─.gradle     Gradle构建配置文件  
 │  ├─8.7
 │  │  ├─checksums
