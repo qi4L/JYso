@@ -18,6 +18,11 @@ public class Starter {
     public static boolean JYsoMode = false;
 
     public static void main(String[] args) throws Exception {
+        String logo = "" +
+                " ┏┳┓┏    \n" +
+                "  ┃┗┫┏┏┓ \n" +
+                " ┗┛┗┛┛┗┛ version: 1.33  ";
+        System.out.println(logo);
         if (args.length > 0 && args[0].equals("-j")) {
             Config.applyCmdArgs(args);
             if (Config.TLSProxy) {
