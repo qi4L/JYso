@@ -150,7 +150,7 @@ public class Gadgets extends ClassLoader {
         }
 
         // required to make TemplatesImpl happy
-        Reflections.setFieldValue(templates, "_name", "a");
+        Reflections.setFieldValue(templates, "_name", "anyStr");
         Reflections.setFieldValue(templates, "_tfactory", TRANS_FACTORY.newInstance());
         return templates;
     }
