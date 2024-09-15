@@ -20,13 +20,12 @@
 + JNDI 账号密码启动
 + JNDI 路由隐藏或加密
 + JNDI 高版本Bypass
-+ 12个可用回显类
-+ 18个可用的内存马类，且支持修改内存马的路径、密码、验证的HTTP头与值
-+ 76条可用 Gadget，并提供多种利用方式
++ 自定义修改内存马的路径、密码、验证的HTTP头与值
 + 内存马支持[无文件落地Agent打入](https://xz.aliyun.com/t/10075?time__1311=mq%2BxBD9QDQe4yDBkPoN%2BuDAO%3DnB5x&alichlgref=https%3A%2F%2Fxz.aliyun.com%2Fsearch%3Fkeyword%3Drebeyond)
 + 内存马写入 JRE 或环境变量来隐藏
 + 序列化数据加脏数据
 + [序列化数据进行3字节对应的UTF-8编码](https://whoopsunix.com/docs/PPPYSO/advance/UTFMIX/)
++ TemplatesImpl 的 _bytecodes 特征消除且做了大小缩减
 + SignedObject 二次反序列化，可用于绕过如 TemplatesImpl 黑名单，CTF 中常出现的 CC 无数组加黑名单等
 + 解决 Shiro Header 头部过长，从 request 中获取指定参数的值进行类加载
 + 动态生成混淆的类名
