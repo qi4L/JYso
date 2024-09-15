@@ -89,7 +89,15 @@ dependencies {
 //    api libs.commons.beanutils.commons.beanutils
     api libs.javax.websocket.javax.websocket.api
     api libs.com.caucho.resin
+    api libs.com.rometools.rome
+    api libs.org.apache.xbean.xbean.naming
     api libs.com.thoughtworks.xstream
+    api libs.commons.configuration
+    api libs.com.esotericsoftware.kryo
+    api libs.org.jyaml.jyaml
+    api libs.com.cedarsoftware.json.io
+    api libs.org.codehaus.castor.castor.xml
+
     implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
     implementation 'org.apache.directory.server:apacheds-xdbm-partition:2.0.0.AM26'
     runtimeOnly libs.org.aspectj.aspectjweaver
@@ -120,5 +128,5 @@ tasks.withType(Javadoc) {
 compileJava {
     options.compilerArgs << '-XDignore.symbol.file'
     options.fork = true
-    options.forkOptions.executable = 'C:\\env\\JAVA\\corretto_jdk1.8.0_412\\bin\\javac.exe'
+    options.forkOptions.executable = '/Users/topsry/security-tools/java/amazon-corretto-8.jdk/Contents/Home/bin/javac'
 }
