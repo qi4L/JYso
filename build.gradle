@@ -128,5 +128,5 @@ tasks.withType(Javadoc) {
 compileJava {
     options.compilerArgs << '-XDignore.symbol.file'
     options.fork = true
-    options.forkOptions.executable = '/Users/topsry/security-tools/java/amazon-corretto-8.jdk/Contents/Home/bin/javac'
+    options.forkOptions.executable = 'C:\\env\\JAVA\\corretto_jdk1.8.0_412\\bin\\javac.exe'
 }
