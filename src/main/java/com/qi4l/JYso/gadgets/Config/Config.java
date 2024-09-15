@@ -93,7 +93,13 @@ public class Config {
     public static Boolean IS_UTF_Bypass                = false;
     public static Boolean IS_Hessian1                  = false;
     public static Boolean IS_Hessian2                  = false;
-    public static Boolean IS_XSTREAM                   = false;
+    public static Boolean IS_Xstream = false;
+    public static Boolean IS_Kryo = false;
+    public static Boolean IS_JYAML = false;
+    public static Boolean IS_JsonIO = false;
+    public static Boolean IS_YamlBeans = false;
+    public static Boolean IS_Castor = false;
+    public static Boolean IS_Jackson = false;
     // 填充的脏数据长度
     public static int     DIRTY_LENGTH_IN_TC_RESET     = 0;
 
