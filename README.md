@@ -15,7 +15,7 @@
 
 ✔ 下载最新版本的[Releases](https://github.com/qi4L/JYso/releases)。
 
-## 👍 功能特性
+## 👍 特点
 
 + JNDI 账号密码启动
 + JNDI 路由隐藏或加密
