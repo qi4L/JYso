@@ -21,7 +21,7 @@ shadowJar {
         attributes 'Main-Class': 'com.qi4l.JYso.Starter'
     }
     zip64=true
-    minimize()
+    //minimize()
 }
 
 dependencies {

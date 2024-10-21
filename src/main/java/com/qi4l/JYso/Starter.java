@@ -8,6 +8,7 @@ import static com.qi4l.JYso.controllers.ysoserial.ysoserial;
 
 public class Starter {
 
+    // 用于存储所有的ObjectPayload类
     public static CaseInsensitiveMap<String,Class<? extends ObjectPayload>> caseInsensitiveObjectPayloadMap = new CaseInsensitiveMap();
     static {
         for (Class<? extends ObjectPayload> clazz : ObjectPayload.Utils.getPayloadClasses()) {
@@ -21,8 +22,10 @@ public class Starter {
         String logo = "" +
                 " ┏┳┓┏    \n" +
                 "  ┃┗┫┏┏┓ \n" +
-                " ┗┛┗┛┛┗┛ version: 1.33";
+                " ┗┛┗┛┛┗┛ ";
         System.out.println(logo);
+
+        // 如果参数中包含-j，则启动LDAP、HTTP、RMI服务
         if (args.length > 0 && args[0].equals("-j")) {
             Config.applyCmdArgs(args);
             if (Config.TLSProxy) {
@@ -32,6 +35,8 @@ public class Starter {
             HTTPServer.start();
             RMIServer.start();
         }
+
+        // 如果参数中包含-y，则启动ysoserial
         if (args.length > 0 && args[0].equals("-y")) {
             JYsoMode = true;
             ysoserial(args);

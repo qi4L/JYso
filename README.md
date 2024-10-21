@@ -82,4 +82,5 @@ JYso 是 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) 中�
 - https://tttang.com/archive/1405/#toc_groovyclassloader
 - https://xz.aliyun.com/t/10656?time__1311=mq%2BxBDy7G%3DLOD%2FD0DoY4AKqiKD%3DOQjqx&alichlgref=https%3A%2F%2Ftttang.com%2F
 - https://www.leavesongs.com/PENETRATION/use-tls-proxy-to-exploit-ldaps.html
+- https://github.com/mbechler/marshalsec
 

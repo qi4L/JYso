@@ -89,6 +89,7 @@ public class Serializer implements Callable<byte[]> {
             XStream xstream = new XStream();
             String xml = xstream.toXML(obj);
             System.out.println(xml);
+            return;
         } else if (IS_Kryo) {
             Kryo kryo = new Kryo();
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

