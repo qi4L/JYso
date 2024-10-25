@@ -8,7 +8,9 @@
 <img src="https://img.shields.io/badge/gradle-8.7-blue" />
 <img src="https://img.shields.io/badge/SDL-Groovy-green" />
 
-<p align="center"> 可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同时具备多种JNDI高版本、WAF、RASP的Bypass功能 
+<p align="center"> 可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同时具备多种JNDI高版本、WAF、RASP的Bypass功能 </p>
+
+<p align="center"> 中文文档 | <a href="README.en.md">English</a> </p>
 
 ## 🚀 上手指南
 
