@@ -53,7 +53,7 @@ For more information, please refer to [Directory structure description](docs/dir
 
 <img src="https://ctstack-oss.oss-cn-beijing.aliyuncs.com/CT%20Stack-2.png" width="30%" />
 
-JYso has joined the [CTStack](https://stack.chaitin.com/tool/detail?id=3) community
+JYso has joined the [CTStack](https://stack.chaitin.com/tool/detail/1303) community
 
 ## ✨ 404StarLink 2.0 - Galaxy
 

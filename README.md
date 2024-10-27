@@ -55,7 +55,7 @@
 
 <img src="https://ctstack-oss.oss-cn-beijing.aliyuncs.com/CT%20Stack-2.png" width="30%" />
 
-JYso 现已加入 [CTStack](https://stack.chaitin.com/tool/detail?id=3) 社区
+JYso 现已加入 [CTStack](https://stack.chaitin.com/tool/detail/1303) 社区
 
 ## ✨ 404StarLink 2.0 - Galaxy
 
