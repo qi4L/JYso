@@ -22,6 +22,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 @LdapMapping(uri = {"/basic"})
 public class BasicController implements LdapController {
+
     private static String     payloadType;
     //最后的反斜杠不能少
     private final  String     codebase = Config.codeBase;

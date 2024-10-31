@@ -33,7 +33,9 @@ public class Starter {
             }
             LdapServer.start();
             HTTPServer.start();
-            RMIServer.start();
+            if (Config.CloseRMI) {
+                RMIServer.start();
+            }
         }
 
         // 如果参数中包含-y，则启动ysoserial
