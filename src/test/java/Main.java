@@ -1,8 +1,3 @@
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
-
-import java.util.Random;
-
 
 public class Main {
 

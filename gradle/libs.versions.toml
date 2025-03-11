@@ -15,7 +15,6 @@ com-teradata-jdbc-terajdbc = "20.00.00.06"
 com-unboundid-unboundid-ldapsdk = "4.0.9"
 com-vaadin-vaadin-server = "7.7.14"
 commons-cli-commons-cli = "1.5.0"
-commons-collections-commons-collections = "3.2.1"
 io-projectreactor-reactor-core = "3.4.26"
 io-undertow-undertow-core = "2.2.2.Final"
 io-undertow-undertow-servlet = "2.2.2.Final"
@@ -80,7 +79,6 @@ com-teradata-jdbc-terajdbc = { module = "com.teradata.jdbc:terajdbc", version.re
 com-unboundid-unboundid-ldapsdk = { module = "com.unboundid:unboundid-ldapsdk", version.ref = "com-unboundid-unboundid-ldapsdk" }
 com-vaadin-vaadin-server = { module = "com.vaadin:vaadin-server", version.ref = "com-vaadin-vaadin-server" }
 commons-cli-commons-cli = { module = "commons-cli:commons-cli", version.ref = "commons-cli-commons-cli" }
-commons-collections-commons-collections = { module = "commons-collections:commons-collections", version.ref = "commons-collections-commons-collections" }
 io-projectreactor-reactor-core = { module = "io.projectreactor:reactor-core", version.ref = "io-projectreactor-reactor-core" }
 io-undertow-undertow-core = { module = "io.undertow:undertow-core", version.ref = "io-undertow-undertow-core" }
 io-undertow-undertow-servlet = { module = "io.undertow:undertow-servlet", version.ref = "io-undertow-undertow-servlet" }

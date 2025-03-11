@@ -68,7 +68,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
             serverConfig.addInMemoryOperationInterceptor(new LdapServer());
             InMemoryDirectoryServer ds = new InMemoryDirectoryServer(serverConfig);
             ds.startListening();
-            System.out.println(ansi().render("@|green [+]|@ LDAP Server Start Listening on >>" + Config.ldapPort + "..."));
+            System.out.println(ansi().render("@|green [+]|@ LDAP Server Start Listening on >> " + Config.ldapPort + "..."));
         } catch (Exception e) {
             e.printStackTrace();
         }

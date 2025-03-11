@@ -82,7 +82,7 @@ public class HTTPServer {
 
         httpServer.setExecutor(null);
         httpServer.start();
-        System.out.println(ansi().render("@|green [+]|@ HTTP Server Start Listening on >>" + Config.httpPort + "..."));
+        System.out.println(ansi().render("@|green [+]|@ HTTP Server Start Listening on >> " + Config.httpPort + "..."));
     }
 
     private static void handleFileRequest(HttpExchange exchange) throws Exception {
