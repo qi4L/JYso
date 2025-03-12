@@ -12,10 +12,12 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+/**
+ * CC6的简化写法
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.SCRISTALLI, Authors.HANYRAX, Authors.EDOARDOVIGNATI})
-
 public class CommonsCollections7 implements ObjectPayload<Hashtable> {
 
     public Hashtable getObject(String command) throws Exception {

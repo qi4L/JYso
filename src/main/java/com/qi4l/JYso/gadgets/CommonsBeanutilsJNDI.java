@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.PriorityQueue;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "commons-collections:commons-collections:3.1"})
-public class CommonsBeanutils3 implements ObjectPayload<Object> {
+public class CommonsBeanutilsJNDI implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {

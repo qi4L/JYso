@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2"})
 @Authors({"水滴"})
-public class CommonsBeanutilsAttrCompare implements ObjectPayload<Object> {
+public class CommonsBeanutilsAttrCompare192 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         final Object template;

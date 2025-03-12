@@ -16,7 +16,6 @@ import java.util.Map;
 
 
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
-
 public class CommonsCollections10 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {

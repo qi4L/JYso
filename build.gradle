@@ -141,6 +141,7 @@ tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
 
+
 compileJava {
     options.compilerArgs << '-XDignore.symbol.file'
     options.fork = true

@@ -10,7 +10,7 @@ import java.util.PriorityQueue;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "commons-collections:commons-collections:3.1", "commons-logging:commons-logging:1.2"})
 @Authors({Authors.FROHOFF})
-public class CommonsBeanutils1 implements ObjectPayload<Object> {
+public class CommonsBeanutils192 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
         final Object template;

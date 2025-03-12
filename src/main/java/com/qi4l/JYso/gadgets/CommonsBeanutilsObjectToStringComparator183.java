@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 
-@Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "org.apache.commons:commons-lang3:3.10"})
+@Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "org.apache.commons:commons-lang3:3.10", "commons-beanutils:commons-beanutils:1.7X"})
 @Authors({"SummerSec"})
 public class CommonsBeanutilsObjectToStringComparator183 implements ObjectPayload<Object> {
     @Override

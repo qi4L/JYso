@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 
-@Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "org.apache.logging.log4j:log4j-core:2.17.1"})
+@Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "commons-beanutils:commons-beanutils:1.7X"})
 @Authors({"SummerSec"})
 public class CommonsBeanutilsPropertySource183 implements ObjectPayload<Object> {
     @Override

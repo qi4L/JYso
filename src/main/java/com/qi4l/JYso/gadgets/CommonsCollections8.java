@@ -14,9 +14,7 @@ import java.util.Comparator;
 
 @Dependencies({"org.apache.commons:commons-collections4:4.0"})
 @Authors({"navalorenzo"})
-
 public class CommonsCollections8 implements ObjectPayload<TreeBag> {
-
 
     public TreeBag getObject(String command) throws Exception {
         final Object templates;
