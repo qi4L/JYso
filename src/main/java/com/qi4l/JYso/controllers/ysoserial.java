@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
+import static com.qi4l.JYso.gadgets.Config.Config.logo;
 import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
 import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;
 
@@ -240,7 +241,7 @@ public class ysoserial {
     }
 
     private static void printUsage(Options options) {
-
+        logo();
         System.err.println("[root]#~  Usage: java -jar JYso-[version].jar -y -g [payload] -p [command] [options]");
         System.err.println("[root]#~  Available payload types:");
 

@@ -20,10 +20,9 @@ public class Starter {
     public static boolean JYsoMode = false;
 
     public static void main(String[] args) throws Exception {
-        logo();
-
         // 如果参数中包含-j，则启动LDAP、HTTP、RMI服务
         if (args.length > 0 && args[0].equals("-j")) {
+            logo();
             Config.applyCmdArgs(args);
             if (Config.TLSProxy) {
                 TLSProxy.start();

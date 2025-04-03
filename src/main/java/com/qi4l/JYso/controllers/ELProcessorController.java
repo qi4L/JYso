@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
-@LdapMapping(uri = {"/ELProcessor"})
+@LdapMapping(uri = {"/elprocessor"})
 public class ELProcessorController implements LdapController {
     private String     payloadType;
     private String[]   params;
