@@ -59,7 +59,7 @@ JYso 现已加入 [CTStack](https://stack.chaitin.com/tool/detail/1303) 社区
 
 ## ✨ 404StarLink 2.0 - Galaxy
 
-JYso 是 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) 中的一环，如果您有 关于JYso的问题或者想找伙伴交流，可以参考星链加群方式项目。
+JYso 是 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) 中的一环，如果您有 关于JYso的问题或者想找伙伴交流，可以参考星链加群方式。
 
 + https://github.com/knownsec/404StarLink2.0-Galaxy#community
 
