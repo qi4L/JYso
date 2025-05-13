@@ -57,11 +57,11 @@
 
 JYso 现已加入 [CTStack](https://stack.chaitin.com/tool/detail/1303) 社区
 
-## ✨ 404StarLink 2.0 - Galaxy
+## ✨ 404星链计划
 
-JYso 是 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink) 中的一环，如果您有 关于JYso的问题或者想找伙伴交流，可以参考星链加群方式。
+<img src="https://raw.githubusercontent.com/knownsec/404StarLink-Project/master/logo.png" alt="404StarLink Project Logo" width="30%" loading="lazy">
 
-+ https://github.com/knownsec/404StarLink2.0-Galaxy#community
+JYso 现已加入 [404星链计划](https://github.com/knownsec/404StarLink)
 
 1. [入选2024年KCon兵器谱](https://kcon.knownsec.com/index.php?s=bqp&c=category&id=3)
 

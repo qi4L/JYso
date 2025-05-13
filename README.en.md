@@ -55,11 +55,11 @@ For more information, please refer to [Directory structure description](docs/dir
 
 JYso has joined the [CTStack](https://stack.chaitin.com/tool/detail/1303) community
 
-## ✨ 404StarLink 2.0 - Galaxy
+## ✨ 404Starlink
 
-JYso is a member of the 404Team [404StarLink 2.0](https://github.com/knownsec/404StarLink). If you have questions about JYso or want to find a partner to communicate, you can refer to the Starlink group project.
+<img src="https://raw.githubusercontent.com/knownsec/404StarLink-Project/master/logo.png" alt="404StarLink Project Logo" width="30%" loading="lazy">
 
-+ https://github.com/knownsec/404StarLink2.0-Galaxy#community
+JYso has joined [404Starlink](https://github.com/knownsec/404StarLink)
 
 1. [入选2024年KCon兵器谱](https://kcon.knownsec.com/index.php?s=bqp&c=category&id=3)
 
