@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.zip.GZIPOutputStream;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
@@ -38,7 +39,7 @@ public class Utils {
     public static String[] handlerCommand(String command) {
         String info  = command.split("[-]")[1];
         int    index = info.indexOf("#");
-        String par1  = info.substring(0, index);
+        String par1  = new String(Base64.decodeBase64(info.substring(0, index)));
         String par2  = info.substring(index + 1);
         return new String[]{par1, par2};
     }
