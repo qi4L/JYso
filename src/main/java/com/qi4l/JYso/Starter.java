@@ -32,7 +32,7 @@ public class Starter {
             RMIServer.start();
         }
 
-        // 如果参数中包含-y，则启动ysoserial
+        // 如果参数中包含-y，则启动 ysuserial
         if (args.length > 0 && args[0].equals("-y")) {
             JYsoMode = true;
             ysoserial(args);
