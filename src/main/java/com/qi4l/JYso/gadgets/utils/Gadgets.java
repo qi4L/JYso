@@ -1,6 +1,5 @@
 package com.qi4l.JYso.gadgets.utils;
 
-import com.qi4l.JYso.gadgets.CommonsCollectionsK2;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;

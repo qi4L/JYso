@@ -16,7 +16,7 @@ import java.util.Map;
  * 需要调用其 connect 方法，因此需要调用任意方法的 Gadget，这里选择了 InvokerTransformer
  * 直接传入 Base64 编码的序列化数据即可
  */
-public class CommonsCollections11 implements ObjectPayload<Object> {
+public class cc11 implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {

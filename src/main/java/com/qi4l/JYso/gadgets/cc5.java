@@ -40,7 +40,7 @@ import java.util.Map;
 @SuppressWarnings({"rawtypes", "unused"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.MATTHIASKAISER, Authors.JASINNER})
-public class CommonsCollections5 implements ObjectPayload<BadAttributeValueExpException> {
+public class cc5 implements ObjectPayload<BadAttributeValueExpException> {
 
     public static boolean isApplicableJavaVersion() {
         return JavaVersion.isBadAttrValExcReadObj();

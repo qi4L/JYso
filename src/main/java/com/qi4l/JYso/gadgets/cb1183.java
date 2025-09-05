@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "commons-beanutils:commons-beanutils:1.7X"})
-public class CommonsBeanutils1183 implements ObjectPayload<Object> {
+public class cb1183 implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {

@@ -14,7 +14,7 @@ import java.util.Queue;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Dependencies({"org.apache.commons:commons-collections4:4.0"})
 @Authors({Authors.FROHOFF})
-public class CommonsCollections2 implements ObjectPayload<Queue<Object>> {
+public class cc2 implements ObjectPayload<Queue<Object>> {
 
     public Queue<Object> getObject(String command) throws Exception {
         final Object templates;

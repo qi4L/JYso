@@ -40,10 +40,14 @@ public class Config {
     public static String  AESkey   = "123";
     @Parameter(names = {"-u", " --user"}, help = true, description = "ldap bound account", order = 5)
     public static String  USER     = "";
-    @Parameter(names = {"-tP", " --TLSProxy"}, help = true, description = "TLS port forwarding", order = 5)
-    public static boolean TLSProxy = false;
     @Parameter(names = {"-p", " --PASSWD"}, help = true, description = "ldap binding password", order = 5)
     public static String  PASSWD   = "";
+    @Parameter(names = {"-t", " --TLSProxy"}, help = true, description = "TLS port forwarding", order = 5)
+    public static boolean TLSProxy = false;
+    @Parameter(names = {"-tP", " --TLSPort"}, help = true, description = "TLS port", order = 5)
+    public static String  TLSPort  = "";
+    @Parameter(names = {"-kS", " --keyPass"}, help = true, description = "TLS private key", order = 5)
+    public static String  keyPass  = "";
     @Parameter(names = {"-kF", " --keyFile"}, help = true, description = "Path to the TLS private key file", order = 5)
     public static String  keyFile  = "";
     @Parameter(names = {"-cF", " --certFile"}, help = true, description = "Path to the TLS certificate file", order = 5)
@@ -94,13 +98,13 @@ public class Config {
     public static Boolean IS_UTF_Bypass                = false;
     public static Boolean IS_Hessian1                  = false;
     public static Boolean IS_Hessian2                  = false;
-    public static Boolean IS_Xstream = false;
-    public static Boolean IS_Kryo = false;
-    public static Boolean IS_JYAML = false;
-    public static Boolean IS_JsonIO = false;
-    public static Boolean IS_YamlBeans = false;
-    public static Boolean IS_Castor = false;
-    public static Boolean IS_Jackson = false;
+    public static Boolean IS_Xstream                   = false;
+    public static Boolean IS_Kryo                      = false;
+    public static Boolean IS_JYAML                     = false;
+    public static Boolean IS_JsonIO                    = false;
+    public static Boolean IS_YamlBeans                 = false;
+    public static Boolean IS_Castor                    = false;
+    public static Boolean IS_Jackson                   = false;
     // 填充的脏数据长度
     public static int     DIRTY_LENGTH_IN_TC_RESET     = 0;
 

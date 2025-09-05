@@ -50,4 +50,18 @@ public class jdk17Bypass {
             e.printStackTrace();
         }
     }
+
+    public static void patchModule(Class clazz, Class goalclass){
+        try {
+            Class UnsafeClass = Class.forName("sun.misc.Unsafe");
+            Field unsafeField = UnsafeClass.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            Unsafe unsafe       = (Unsafe)unsafeField.get(null);
+            Object ObjectModule = Class.class.getMethod("getModule").invoke(goalclass);
+            Class  currentClass = clazz;
+            long   addr         =unsafe.objectFieldOffset(Class.class.getDeclaredField("module"));
+            unsafe.getAndSetObject(currentClass,addr,ObjectModule);
+        } catch (Exception e) {
+        }
+    }
 }

