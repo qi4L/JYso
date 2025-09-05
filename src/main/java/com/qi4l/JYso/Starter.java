@@ -24,12 +24,13 @@ public class Starter {
         if (args.length > 0 && args[0].equals("-j")) {
             logo();
             Config.applyCmdArgs(args);
-            if (Config.TLSProxy) {
-                TLSProxy.start();
-            }
             LdapServer.start();
             HTTPServer.start();
-            RMIServer.start();
+            if (Config.TLSProxy) {
+                TLSProxy.start();
+            } else {
+                //RMIServer.start();
+            }
         }
 
         // 如果参数中包含-y，则启动 ysuserial

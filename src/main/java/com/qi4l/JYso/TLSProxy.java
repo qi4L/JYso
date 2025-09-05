@@ -29,8 +29,9 @@ public class TLSProxy {
     }
 
     public static void start() {
-        System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >>" + Config.TLSProxy + "..."));
-        new TLSProxy(Config.ip + ":" + Config.TLSProxy, Config.ip + ":" + Config.ldapPort, Config.certFile, Config.keyFile).run();
+        System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >> " + Config.TLSPort + "..."));
+
+        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapPort, Config.certFile, Config.keyFile).run();
     }
 
     public void run() {
@@ -43,13 +44,13 @@ public class TLSProxy {
         try (SSLServerSocket serverSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket()) {
             String[] addressParts = localAddr.split(":");
             serverSocket.bind(new InetSocketAddress(addressParts[0], Integer.parseInt(addressParts[1])));
-            System.out.println("TLS Proxy started on " + localAddr);
+            //System.out.println("TLS Proxy started on " + localAddr);
 
             ExecutorService executorService = Executors.newCachedThreadPool();
 
             while (true) {
                 SSLSocket clientSocket = (SSLSocket) serverSocket.accept();
-                System.out.println("New connection from " + clientSocket.getRemoteSocketAddress());
+                //System.out.println("New connection from " + clientSocket.getRemoteSocketAddress());
                 executorService.submit(() -> handleConnection(clientSocket));
             }
         } catch (IOException e) {
@@ -64,10 +65,10 @@ public class TLSProxy {
             KeyStore          keyStore          = KeyStore.getInstance("JKS");
 
             try (InputStream keyInput = new FileInputStream(certFile)) {
-                keyStore.load(keyInput, "".toCharArray());
+                keyStore.load(keyInput, Config.keyPass.toCharArray());
             }
 
-            keyManagerFactory.init(keyStore, "".toCharArray());
+            keyManagerFactory.init(keyStore, Config.keyPass.toCharArray());
 
             sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
             return sslContext.getServerSocketFactory();
@@ -78,24 +79,25 @@ public class TLSProxy {
     }
 
     private void handleConnection(SSLSocket clientSocket) {
-        try (Socket remoteSocket = new Socket(remoteAddr, getPort(remoteAddr))) {
+        String[] addressParts = localAddr.split(":");
+        try (Socket remoteSocket = new Socket(addressParts[0], Integer.parseInt(addressParts[1]))) {
             System.out.println("Connected to " + remoteAddr);
             ExecutorService executorService = Executors.newCachedThreadPool();
 
-            executorService.submit(() -> {
-                try {
-                    forwardData(clientSocket.getInputStream(), remoteSocket.getOutputStream());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            executorService.submit(() -> {
-                try {
-                    forwardData(remoteSocket.getInputStream(), clientSocket.getOutputStream());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            //executorService.submit(() -> {
+            //    try {
+            //        forwardData(clientSocket.getInputStream(), remoteSocket.getOutputStream());
+            //    } catch (IOException e) {
+            //        throw new RuntimeException(e);
+            //    }
+            //});
+            //executorService.submit(() -> {
+            //    try {
+            //        forwardData(remoteSocket.getInputStream(), clientSocket.getOutputStream());
+            //    } catch (IOException e) {
+            //        throw new RuntimeException(e);
+            //    }
+            //});
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,9 +114,5 @@ public class TLSProxy {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private int getPort(String address) {
-        return Integer.parseInt(address.substring(address.lastIndexOf(':') + 1));
     }
 }

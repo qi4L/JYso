@@ -18,7 +18,7 @@ import java.util.Map;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.SCRISTALLI, Authors.HANYRAX, Authors.EDOARDOVIGNATI})
-public class CommonsCollections7 implements ObjectPayload<Hashtable> {
+public class cc7 implements ObjectPayload<Hashtable> {
 
     public Hashtable getObject(String command) throws Exception {
 

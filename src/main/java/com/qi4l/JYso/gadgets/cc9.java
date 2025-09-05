@@ -17,7 +17,7 @@ import java.util.Map;
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
 @Authors({"梅子酒"})
 
-public class CommonsCollections9 implements ObjectPayload<BadAttributeValueExpException> {
+public class cc9 implements ObjectPayload<BadAttributeValueExpException> {
 
     public BadAttributeValueExpException getObject(String command) throws Exception {
 
