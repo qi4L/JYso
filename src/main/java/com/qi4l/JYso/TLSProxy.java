@@ -1,6 +1,7 @@
 package com.qi4l.JYso;
 
 import com.qi4l.JYso.gadgets.Config.Config;
+
 import javax.net.ssl.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,25 +13,32 @@ import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class TLSProxy {
     private final String localAddr;
     private final String remoteAddr;
     private final String certFile;
+    private final String keyPass;
 
-    public TLSProxy(String localAddr, String remoteAddr, String certFile) {
+    public TLSProxy(String localAddr, String remoteAddr, String certFile, String keyPass) {
         this.localAddr = localAddr;
         this.remoteAddr = remoteAddr;
         this.certFile = certFile;
+        this.keyPass = keyPass;
     }
 
     public static void start() {
         System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >> " + Config.TLSPort + "..."));
-        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapPort, Config.certFile).run();
+        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapPort, Config.certFile,Config.keyPass).run();
     }
 
     public void run() {
+        // 设置JDK信任证书
+        System.setProperty("javax.net.ssl.trustStore", certFile);
+        System.setProperty("javax.net.ssl.trustStorePassword", keyPass);
+
         SSLServerSocketFactory sslServerSocketFactory = createSSLServerSocketFactory();
         if (sslServerSocketFactory == null) {
             System.err.println("Failed to create SSLServerSocketFactory");
@@ -53,15 +61,15 @@ public class TLSProxy {
 
     private SSLServerSocketFactory createSSLServerSocketFactory() {
         try {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            SSLContext        sslContext        = SSLContext.getInstance("TLS");
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            KeyStore keyStore = KeyStore.getInstance("JKS");
+            KeyStore          keyStore          = KeyStore.getInstance("JKS");
 
             try (InputStream keyInput = Files.newInputStream(Paths.get(certFile))) {
-                keyStore.load(keyInput, Config.keyPass.toCharArray());
+                keyStore.load(keyInput, keyPass.toCharArray());
             }
 
-            keyManagerFactory.init(keyStore, Config.keyPass.toCharArray());
+            keyManagerFactory.init(keyStore, keyPass.toCharArray());
             sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
             return sslContext.getServerSocketFactory();
         } catch (Exception e) {
@@ -72,7 +80,7 @@ public class TLSProxy {
 
     private void handleConnection(SSLSocket clientSocket) {
         String[] remoteAddressParts = remoteAddr.split(":");
-        Socket remoteSocket = null;
+        Socket   remoteSocket       = null;
 
         try {
             // 修复：使用 remoteAddr 而不是 localAddr
@@ -130,7 +138,7 @@ public class TLSProxy {
 
     private void forwardData(InputStream input, OutputStream output) throws IOException {
         byte[] buffer = new byte[8192];
-        int bytesRead;
+        int    bytesRead;
 
         try {
             while ((bytesRead = input.read(buffer)) != -1) {

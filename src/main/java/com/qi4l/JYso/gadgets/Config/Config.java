@@ -46,10 +46,10 @@ public class Config {
     public static boolean TLSProxy = false;
     @Parameter(names = {"-tP", " --TLSPort"}, help = true, description = "TLS port", order = 5)
     public static String  TLSPort  = "1636";
-    @Parameter(names = {"-kS", " --keyPass"}, help = true, description = "TLS private key", order = 5)
-    public static String  keyPass  = "";
-    @Parameter(names = {"-cF", " --certFile"}, help = true, description = "Path to the TLS certificate file", order = 5)
-    public static String  certFile = "";
+    @Parameter(names = {"-kP", " --keyPass"}, help = true, description = "TLS private key", order = 5)
+    public static String  keyPass  = "326q999h80s8";
+    @Parameter(names = {"-cF", " --certFile"}, help = true, description = "JKS certificate file Path", order = 5)
+    public static String  certFile = "C:\\Users\\22393\\Downloads\\qi4l.top_jks\\qi4l.top.jks";
 
     @Parameter(names = {"-j", "--jndi"}, help = true, description = "starter", order = 5)
     public static boolean jndi                         = false;
