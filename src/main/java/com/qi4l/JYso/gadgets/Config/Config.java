@@ -45,11 +45,9 @@ public class Config {
     @Parameter(names = {"-t", " --TLSProxy"}, help = true, description = "TLS port forwarding", order = 5)
     public static boolean TLSProxy = false;
     @Parameter(names = {"-tP", " --TLSPort"}, help = true, description = "TLS port", order = 5)
-    public static String  TLSPort  = "";
+    public static String  TLSPort  = "1636";
     @Parameter(names = {"-kS", " --keyPass"}, help = true, description = "TLS private key", order = 5)
     public static String  keyPass  = "";
-    @Parameter(names = {"-kF", " --keyFile"}, help = true, description = "Path to the TLS private key file", order = 5)
-    public static String  keyFile  = "";
     @Parameter(names = {"-cF", " --certFile"}, help = true, description = "Path to the TLS certificate file", order = 5)
     public static String  certFile = "";
 

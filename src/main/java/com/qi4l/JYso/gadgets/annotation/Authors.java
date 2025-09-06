@@ -52,7 +52,8 @@ public @interface Authors {
 
     String KILLER = "killer";
 
-    String Unam4 = "Unam4";
+    String Unam4   = "Unam4";
+    String Jiecub3 = "jiecub3";
 
     String[] value() default {};
 

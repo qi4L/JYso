@@ -59,6 +59,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
                     ServerSocketFactory.getDefault(),
                     SocketFactory.getDefault(),
                     (SSLSocketFactory) SSLSocketFactory.getDefault()));
+
             if (!USER.equals("") || !PASSWD.equals("")) {
                 serverConfig.addAdditionalBindCredentials(USER, PASSWD);
             }
