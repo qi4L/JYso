@@ -9,7 +9,7 @@ import org.codehaus.groovy.runtime.MethodClosure;
 import javax.management.BadAttributeValueExpException;
 
 @Dependencies({"org.codehaus.groovy:groovy <2.4.3"})
-@Authors({Authors.Unam4})
+@Authors({Authors.UNAM4})
 public class Groovy2 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {

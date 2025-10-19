@@ -120,8 +120,8 @@ public class BasicController implements LdapController {
                 String[] results1     = Util.getIPAndPortFromBase(base);
                 Config.rhost = results1[0];
                 Config.rport = results1[1];
-                System.out.println("[+] RemotHost: " + results1[0]);
-                System.out.println("[+] RemotPort: " + results1[1]);
+                System.out.println("  RemotHost: " + results1[0]);
+                System.out.println("  RemotPort: " + results1[1]);
                 params = results1;
             }
         } catch (Exception e) {

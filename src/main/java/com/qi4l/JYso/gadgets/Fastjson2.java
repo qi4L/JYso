@@ -25,7 +25,6 @@ public class Fastjson2 implements ObjectPayload<Object> {
         final Object templates;
         templates = Gadgets.createTemplatesImpl(command);
 
-
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(templates);
 

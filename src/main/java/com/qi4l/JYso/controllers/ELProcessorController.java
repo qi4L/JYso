@@ -55,7 +55,7 @@ public class ELProcessorController implements LdapController {
                 jscode = helper.getExecCode(params[0]);
             }
 
-            if (payloadType.contains("meterpreter")) {
+            if (payloadType.contains("msf")) {
                 jscode = helper.injectMeterpreter();
             }
 

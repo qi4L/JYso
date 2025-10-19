@@ -52,8 +52,10 @@ public @interface Authors {
 
     String KILLER = "killer";
 
-    String Unam4   = "Unam4";
-    String Jiecub3 = "jiecub3";
+    String UNAM4   = "Unam4";
+    String JIECUB3 = "jiecub3";
+
+    String JSJCW = "jsjcw";
 
     String[] value() default {};
 

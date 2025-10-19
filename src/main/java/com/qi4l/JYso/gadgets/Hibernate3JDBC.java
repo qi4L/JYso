@@ -16,7 +16,7 @@ import javax.management.BadAttributeValueExpException;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 @Dependencies({" org.hibernate.hibernate-core:hibernate-core <= 4.1.12.Fina","com.alibaba.fastjson:com.alibaba.fastjson 1.X"})
-@Authors({Authors.Unam4})
+@Authors({Authors.UNAM4})
 public class Hibernate3JDBC implements ObjectPayload<Object>, DynamicDependencies {
     @Override
     public Object getObject(String command) throws Exception {

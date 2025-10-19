@@ -147,8 +147,7 @@ public class JDKUtil {
     }
 
 
-    public static Enumeration<?> makeBindingEnumeration ( String codebase, String clazz ) throws ClassNotFoundException, NoSuchMethodException,
-            InstantiationException, IllegalAccessException, InvocationTargetException, Exception, NamingException, RemoteException {
+    public static Enumeration<?> makeBindingEnumeration ( String codebase, String clazz ) throws Exception {
         Class<?> cl = Class.forName("com.sun.jndi.rmi.registry.BindingEnumeration");
         Object enu = Reflections.createWithoutConstructor(cl);
         Reflections.setFieldValue(enu, "ctx", makeRegistryContext(makeRegistryImpl(codebase, clazz)));
@@ -160,7 +159,7 @@ public class JDKUtil {
     }
 
 
-    private static Object makeRegistryImpl ( String codebase, String clazz ) throws IllegalArgumentException, Exception {
+    private static Object makeRegistryImpl ( String codebase, String clazz ) throws Exception {
         Class<?> regcl = Class.forName("sun.management.jmxremote.SingleEntryRegistry");
         Object reg = Reflections.createWithoutConstructor(regcl);
         Reflections.setFieldValue(reg, "name", "exp");
@@ -183,8 +182,7 @@ public class JDKUtil {
     }
 
 
-    private static Object makeRegistryContext ( Object regi ) throws ClassNotFoundException, NoSuchMethodException, InstantiationException,
-            IllegalAccessException, InvocationTargetException, Exception {
+    private static Object makeRegistryContext ( Object regi ) throws Exception {
         Class<?> regctxcl = Class.forName("com.sun.jndi.rmi.registry.RegistryContext");
         Object regctx = Reflections.createWithoutConstructor(regctxcl);
         Reflections.setFieldValue(regctx, "registry", regi);

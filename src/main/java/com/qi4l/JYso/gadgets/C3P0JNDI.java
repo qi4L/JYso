@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 @Dependencies({"com.mchange:c3p0:0.9.5.2", "com.alibaba.fastjson:com.alibaba.fastjson1.X"})
-@Authors({Authors.Unam4})
+@Authors({Authors.UNAM4})
 public class C3P0JNDI implements  ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {

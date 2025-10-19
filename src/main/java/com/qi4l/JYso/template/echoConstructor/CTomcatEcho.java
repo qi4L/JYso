@@ -1,5 +1,10 @@
 package com.qi4l.JYso.template.echoConstructor;
 
+import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
+
+// 回显类在jdk17下的改造，解决JDK17下只能加载一次的问题
 public class CTomcatEcho {
     public static String CMD_HEADER;
 

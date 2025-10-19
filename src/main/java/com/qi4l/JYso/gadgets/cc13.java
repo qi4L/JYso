@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.1"})
-@Authors({Authors.Unam4})
+@Authors({Authors.UNAM4})
 public class cc13 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {

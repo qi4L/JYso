@@ -1,9 +1,14 @@
 package com.qi4l.JYso.gadgets.utils;
 
 import com.nqzero.permit.Permit;
+import javassist.ClassClassPath;
+import javassist.CtClass;
 import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.*;
+
+import static com.qi4l.JYso.gadgets.Config.Config.POOL;
+import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 @SuppressWarnings("restriction")
 public class Reflections extends ClassLoader {
