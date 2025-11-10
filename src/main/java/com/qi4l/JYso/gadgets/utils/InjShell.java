@@ -244,8 +244,12 @@ public class InjShell {
     public static CtClass insertField(String fieldName, String fieldCode) throws Exception {
         POOL.insertClassPath(new ClassClassPath(Class.forName(fieldName)));
         final CtClass ctClass = POOL.get(fieldName);
-        insertField(ctClass, fieldName, fieldCode);
-        return ctClass;
+        try {
+            insertField(ctClass, fieldName, fieldCode);
+            return ctClass;
+        } catch (javassist.bytecode.DuplicateMemberException ignored) {
+            return ctClass;
+        }
     }
 
 

