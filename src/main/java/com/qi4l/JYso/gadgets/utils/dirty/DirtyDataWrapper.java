@@ -51,7 +51,7 @@ public class DirtyDataWrapper {
                 String randStr1 = new RandomString((int) (Math.random() * 10) % 10 + 1, ThreadLocalRandom.current()).getString();
                 String randStr2 = new RandomString((int) (Math.random() * 10) % 10 + 1, ThreadLocalRandom.current()).getString();
                 // 随机选择封装对象
-                int type = (int) (Math.random() * 10) % 10 + 1;
+                int type = ThreadLocalRandom.current().nextInt(5);
                 switch (type) {
                     case 0:
                         List<Object> arrayList = new ArrayList<Object>();
