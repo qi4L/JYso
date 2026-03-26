@@ -4,7 +4,10 @@ import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.template.echoStatic.Meterpreter;
 import javassist.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ClassByteChange {
 
@@ -23,8 +26,8 @@ public class ClassByteChange {
     //动态获取.class
     public static byte[] update(Class clazz) throws NotFoundException, CannotCompileException, IOException {
 
-        File   dir = new File("");
-        String ap  = dir.getAbsolutePath();
+        File dir = new File("");
+        String ap = dir.getAbsolutePath();
         ap = ap + File.separatorChar + "data";
         ClassPool cPool = new ClassPool(true);
 
@@ -46,18 +49,8 @@ public class ClassByteChange {
 
         //替换原有的文件
         cClass.writeFile(ap);
-        InputStream           in    = new FileInputStream(ap + File.separatorChar + "Meterpreter.class");
-        byte[]                bytes = new byte[1024];
-        ByteArrayOutputStream baous = new ByteArrayOutputStream();
-        int                   len   = 0;
-        while ((len = in.read(bytes)) != -1) {
-            baous.write(bytes, 0, len);
-        }
-
-        in.close();
-        baous.close();
-
-        return baous.toByteArray();
+        InputStream in = new FileInputStream(ap + File.separatorChar + "Meterpreter.class");
+        return Utils.getBytes(in);
 
 
     }

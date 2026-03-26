@@ -33,7 +33,7 @@ public class ROME implements ObjectPayload<Object> {
         final Object templates;
         templates = Gadgets.createTemplatesImpl(command);
         ObjectBean delegate = new ObjectBean(Templates.class, templates);
-        ObjectBean root     = new ObjectBean(ObjectBean.class, delegate);
+        ObjectBean root = new ObjectBean(ObjectBean.class, delegate);
         return Gadgets.makeMap(root, root);
     }
 }

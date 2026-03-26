@@ -25,7 +25,7 @@ public class ClassFieldHandler {
     public static String converString(String target) {
         if (Config.IS_OBSCURE) {
             StringBuilder result = new StringBuilder("new String(new byte[]{");
-            byte[]        bytes  = target.getBytes();
+            byte[] bytes = target.getBytes();
             for (int i = 0; i < bytes.length; i++) {
                 result.append(bytes[i]).append(",");
             }

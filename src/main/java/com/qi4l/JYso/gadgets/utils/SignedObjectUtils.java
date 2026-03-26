@@ -13,9 +13,9 @@ public class SignedObjectUtils {
         KeyPairGenerator keyPairGenerator;
         keyPairGenerator = KeyPairGenerator.getInstance("DSA");
         keyPairGenerator.initialize(1024);
-        KeyPair    keyPair       = keyPairGenerator.genKeyPair();
-        PrivateKey privateKey    = keyPair.getPrivate();
-        Signature  signingEngine = Signature.getInstance("DSA");
+        KeyPair keyPair = keyPairGenerator.genKeyPair();
+        PrivateKey privateKey = keyPair.getPrivate();
+        Signature signingEngine = Signature.getInstance("DSA");
         return new java.security.SignedObject(obj, privateKey, signingEngine);
     }
 }

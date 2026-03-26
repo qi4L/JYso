@@ -23,13 +23,13 @@ public class Cache {
     static {
         try {
             //过期时间100年，永不过期的简单方法
-            map.put("TomcatEcho", Util.getClassBytes(TomcatEcho.class), 365 * 100, TimeUnit.DAYS);
-            map.put("SpringEcho", Util.getClassBytes(SpringEcho.class), 365 * 100, TimeUnit.DAYS);
-            map.put("JBossMemshellTemplate", Util.getClassBytes(JBFMSFromContextF.class), 365 * 100, TimeUnit.DAYS);
-            map.put("WebsphereMemshellTemplate", Util.getClassBytes(WebsphereMemshellTemplate.class), 365 * 100, TimeUnit.DAYS);
-            map.put("isOK", Util.getClassBytes(isOK.class), 365 * 100, TimeUnit.DAYS);
+            map.put("TomcatEcho", Utils.getClassBytes(TomcatEcho.class), 365 * 100, TimeUnit.DAYS);
+            map.put("SpringEcho", Utils.getClassBytes(SpringEcho.class), 365 * 100, TimeUnit.DAYS);
+            map.put("JBossMemshellTemplate", Utils.getClassBytes(JBFMSFromContextF.class), 365 * 100, TimeUnit.DAYS);
+            map.put("WebsphereMemshellTemplate", Utils.getClassBytes(WebsphereMemshellTemplate.class), 365 * 100, TimeUnit.DAYS);
+            map.put("isOK", Utils.getClassBytes(isOK.class), 365 * 100, TimeUnit.DAYS);
             //测试添加到cache中
-            map.put("isSuccess", Util.getClassBytes(isSuccess.class), 365 * 100, TimeUnit.DAYS);
+            map.put("isSuccess", Utils.getClassBytes(isSuccess.class), 365 * 100, TimeUnit.DAYS);
             map.put("Meterpreter", ClassByteChange.update(Meterpreter.class), 365 * 100, TimeUnit.DAYS);
         } catch (Exception e) {
             e.printStackTrace();

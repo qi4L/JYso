@@ -25,13 +25,13 @@ import java.util.HashMap;
 import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
 
 public class springFs implements ObjectPayload<Object>, Serializable {
+    public static ClassPool pool = ClassPool.getDefault();
     // jdk7下使用badAttributeValueExpException,jdk8以上使用xString可打高版本JDK(jdk17)
     public String toString = "badAttributeValueExpException";
     // 低版本Spring-beans <5.3 -8835275493235412717
     // 高版本Spring-beans >=5.3 -1515767093960859525"
     public String serialVersionUID = "-1515767093960859525";
     private Object inv;
-    public static ClassPool pool = ClassPool.getDefault();
 
     @Override
     public Object getObject(String command) throws Exception {

@@ -61,11 +61,11 @@ public class Wicket1 implements ReleaseableObjectPayload<DiskFileItem> {
     private static DiskFileItem makePayload(int thresh, String repoPath, String filePath, byte[] data) throws IOException, Exception {
         // if thresh < written length, delete outputFile after copying to repository temp file
         // otherwise write the contents to repository temp file
-        File                     repository   = new File(repoPath);
-        DiskFileItem             diskFileItem = new DiskFileItem("test", "application/octet-stream", false, "test", 100000, repository, null);
-        File                     outputFile   = new File(filePath);
-        DeferredFileOutputStream dfos         = new DeferredFileOutputStream(thresh, outputFile);
-        OutputStream             os           = (OutputStream) Reflections.getFieldValue(dfos, "memoryOutputStream");
+        File repository = new File(repoPath);
+        DiskFileItem diskFileItem = new DiskFileItem("test", "application/octet-stream", false, "test", 100000, repository, null);
+        File outputFile = new File(filePath);
+        DeferredFileOutputStream dfos = new DeferredFileOutputStream(thresh, outputFile);
+        OutputStream os = (OutputStream) Reflections.getFieldValue(dfos, "memoryOutputStream");
         os.write(data);
         Reflections.getField(ThresholdingOutputStream.class, "written").set(dfos, data.length);
         Reflections.setFieldValue(diskFileItem, "dfos", dfos);
@@ -96,7 +96,7 @@ public class Wicket1 implements ReleaseableObjectPayload<DiskFileItem> {
     }
 
     @Override
-    public void release(DiskFileItem obj) throws Exception {
+    public void release(Object obj) throws Exception {
 
     }
 }

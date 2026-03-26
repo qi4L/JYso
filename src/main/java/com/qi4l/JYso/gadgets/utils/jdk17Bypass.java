@@ -32,10 +32,24 @@ public class jdk17Bypass {
         return unsafe;
     }
 
+    public static void patchModule(Class clazz, Class goalclass) {
+        try {
+            Class UnsafeClass = Class.forName("sun.misc.Unsafe");
+            Field unsafeField = UnsafeClass.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            Unsafe unsafe = (Unsafe) unsafeField.get(null);
+            Object ObjectModule = Class.class.getMethod("getModule").invoke(goalclass);
+            Class currentClass = clazz;
+            long addr = unsafe.objectFieldOffset(Class.class.getDeclaredField("module"));
+            unsafe.getAndSetObject(currentClass, addr, ObjectModule);
+        } catch (Exception e) {
+        }
+    }
+
     public void bypassModule(ArrayList<Class> classes) {
         try {
-            Unsafe unsafe       = getUnsafe();
-            Class  currentClass = this.getClass();
+            Unsafe unsafe = getUnsafe();
+            Class currentClass = this.getClass();
             try {
                 Method getModuleMethod = getMethod(Class.class, "getModule", new Class[0]);
                 if (getModuleMethod != null) {
@@ -48,20 +62,6 @@ public class jdk17Bypass {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public static void patchModule(Class clazz, Class goalclass) {
-        try {
-            Class UnsafeClass = Class.forName("sun.misc.Unsafe");
-            Field unsafeField = UnsafeClass.getDeclaredField("theUnsafe");
-            unsafeField.setAccessible(true);
-            Unsafe unsafe       = (Unsafe) unsafeField.get(null);
-            Object ObjectModule = Class.class.getMethod("getModule").invoke(goalclass);
-            Class  currentClass = clazz;
-            long   addr         = unsafe.objectFieldOffset(Class.class.getDeclaredField("module"));
-            unsafe.getAndSetObject(currentClass, addr, ObjectModule);
-        } catch (Exception e) {
         }
     }
 }

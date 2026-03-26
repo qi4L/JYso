@@ -1,12 +1,15 @@
 package com.qi4l.JYso.gadgets.utils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class StringUtil {
 
     public static String join(Iterable<String> strings, String sep, String prefix, String suffix) {
-        final StringBuilder sb    = new StringBuilder();
-        boolean             first = true;
+        final StringBuilder sb = new StringBuilder();
+        boolean first = true;
         for (String s : strings) {
             if (!first) sb.append(sep);
             if (prefix != null) sb.append(prefix);

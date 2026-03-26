@@ -29,7 +29,7 @@ public class TFMSFromJMX implements Filter {
     static {
         try {
             MBeanServer mbeanServer = Registry.getRegistry(null, null).getMBeanServer();
-            Field       field       = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");
+            Field field = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");
             field.setAccessible(true);
             Object obj = field.get(mbeanServer);
 

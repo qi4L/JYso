@@ -1,14 +1,9 @@
 package com.qi4l.JYso.gadgets.utils;
 
 import com.nqzero.permit.Permit;
-import javassist.ClassClassPath;
-import javassist.CtClass;
 import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.*;
-
-import static com.qi4l.JYso.gadgets.Config.Config.POOL;
-import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 @SuppressWarnings("restriction")
 public class Reflections extends ClassLoader {
@@ -49,9 +44,11 @@ public class Reflections extends ClassLoader {
     public static Object newInstance(String className, Object... args) throws Exception {
         return getFirstCtor(className).newInstance(args);
     }
+
     public static Object createWithoutConstructor(String classname) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         return createWithoutConstructor(Class.forName(classname));
     }
+
     public static <T> T createWithoutConstructor(Class<T> classToInstantiate)
             throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         return createWithConstructor(classToInstantiate, Object.class, new Class[0], new Object[0]);

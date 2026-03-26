@@ -1,57 +1,47 @@
 package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.LdapServer;
-import com.qi4l.JYso.gadgets.utils.JavaVersion;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
 import static com.qi4l.JYso.Starter.caseInsensitiveObjectPayloadMap;
 
 public interface ObjectPayload<T> {
-    public static boolean isApplicableJavaVersion() {
-        return JavaVersion.isAnnInvHUniversalMethodImpl();
-    }
 
     /*
      * return armed payload object to be serialized that will execute specified
      * command on deserialization
      */
-    public T getObject(String command) throws Exception;
+    T getObject(String command) throws Exception;
 
-    public static class Utils {
+    class Utils {
 
         // get payload classes by classpath scanning
-        public static Set<Class<? extends ObjectPayload>> getPayloadClasses() {
-            final Reflections                         reflections  = new Reflections(ObjectPayload.class.getPackage().getName());
-            final Set<Class<? extends ObjectPayload>> payloadTypes = reflections.getSubTypesOf(ObjectPayload.class);
-            for (Iterator<Class<? extends ObjectPayload>> iterator = payloadTypes.iterator(); iterator.hasNext(); ) {
-                Class<? extends ObjectPayload> pc = iterator.next();
-                if (pc.isInterface() || Modifier.isAbstract(pc.getModifiers())) {
-                    iterator.remove();
-                }
-            }
+        public static Set<Class<? extends ObjectPayload<?>>> getPayloadClasses() {
+            final Reflections reflections = new Reflections(ObjectPayload.class.getPackage().getName());
+            @SuppressWarnings("unchecked")
+            final Set<Class<? extends ObjectPayload<?>>> payloadTypes =
+                    (Set<Class<? extends ObjectPayload<?>>>) (Set<?>)
+                            reflections.getSubTypesOf(ObjectPayload.class);
+            payloadTypes.removeIf(pc -> pc.isInterface() || Modifier.isAbstract(pc.getModifiers()));
             return payloadTypes;
         }
 
 
         @SuppressWarnings("unchecked")
-        public static Class<? extends ObjectPayload> getPayloadClass(final String className) {
-            Class<? extends ObjectPayload> clazz = null;
+        public static Class<? extends ObjectPayload<?>> getPayloadClass(final String className) {
+            Class<? extends ObjectPayload<?>> clazz = null;
             try {
-                clazz = (Class<? extends ObjectPayload>) Class.forName(className);
+                clazz = (Class<? extends ObjectPayload<?>>) Class.forName(className);
             } catch (Exception ignored) {
             }
             if (clazz == null) {
                 try {
-                    return clazz = (Class<? extends ObjectPayload>) Class.forName(LdapServer.class.getPackage().getName() + ".gadgets." + className);
-                }catch (NoClassDefFoundError e) {
-                    clazz = caseInsensitiveObjectPayloadMap.get(LdapServer.class.getPackage().getName() + ".gadgets." + className);
-                }
-                catch (Exception ignored) {
+                    return (Class<? extends ObjectPayload<Object>>) Class.forName(LdapServer.class.getPackage().getName() + ".gadgets." + className);
+                } catch (NoClassDefFoundError | Exception e) {
                     clazz = caseInsensitiveObjectPayloadMap.get(LdapServer.class.getPackage().getName() + ".gadgets." + className);
                 }
             }
@@ -62,38 +52,21 @@ public interface ObjectPayload<T> {
         }
 
 
-        @SuppressWarnings("unchecked")
-        public static void releasePayload(ObjectPayload payload, Object object) throws Exception {
+        public static void releasePayload(ObjectPayload<?> payload, Object object) throws Exception {
             if (payload instanceof ReleaseableObjectPayload) {
-                ((ReleaseableObjectPayload) payload).release(object);
+                ((ReleaseableObjectPayload<?>) payload).release(object);
             }
         }
 
-
-        public static void releasePayload(String payloadType, Object payloadObject) {
-            final Class<? extends ObjectPayload> payloadClass = getPayloadClass(payloadType);
-            if (payloadClass == null || !ObjectPayload.class.isAssignableFrom(payloadClass)) {
-                throw new IllegalArgumentException("Invalid payload type '" + payloadType + "'");
-
-            }
-
-            try {
-                final ObjectPayload payload = payloadClass.newInstance();
-                releasePayload(payload, payloadObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
 
         //生成随机字符
         public static String generateRandomString(int length) {
-            String        characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            StringBuilder sb         = new StringBuilder();
+            String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder sb = new StringBuilder();
 
             Random random = new Random();
             for (int i = 0; i < length; i++) {
-                int  index      = random.nextInt(characters.length());
+                int index = random.nextInt(characters.length());
                 char randomChar = characters.charAt(index);
                 sb.append(randomChar);
             }

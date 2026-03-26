@@ -31,8 +31,8 @@ public class C3P0JDBC implements ObjectPayload<Object> {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(o);
 
-        BadAttributeValueExpException val      = new BadAttributeValueExpException(null);
-        Field                         valfield = val.getClass().getDeclaredField("val");
+        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
+        Field valfield = val.getClass().getDeclaredField("val");
         valfield.setAccessible(true);
         valfield.set(val, jsonArray);
 

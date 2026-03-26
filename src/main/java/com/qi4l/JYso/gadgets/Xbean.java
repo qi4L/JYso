@@ -8,7 +8,7 @@ import javax.naming.Context;
 import javax.naming.Reference;
 import java.net.URI;
 
-public class Xbean implements ObjectPayload<Object>{
+public class Xbean implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         //需要处理command

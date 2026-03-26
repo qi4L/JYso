@@ -11,14 +11,12 @@ import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 import org.fusesource.jansi.Ansi;
 
-import java.util.Random;
-
 @LdapMapping(uri = {"/ldap2rmi"})
 public class ldap2rmiController implements LdapController {
 
-    private final String ip      = Config.ip;
+    private final String ip = Config.ip;
     private final String rmiPort = String.valueOf(Config.rmiPort);
-    private       String path;
+    private String path;
 
     @Override
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
@@ -40,8 +38,7 @@ public class ldap2rmiController implements LdapController {
         base = base.replace('\\', '/');
         int index = base.indexOf('/');
         if (index != -1) {
-            String result = base.substring(index);
-            path = result;
+            path = base.substring(index);
         }
     }
 }

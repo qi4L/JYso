@@ -28,10 +28,11 @@ public final class SpringUtil {
     /**
      *
      */
-    private SpringUtil() {}
+    private SpringUtil() {
+    }
 
 
-    public static BeanFactory makeJNDITrigger ( String jndiUrl ) throws Exception {
+    public static BeanFactory makeJNDITrigger(String jndiUrl) throws Exception {
         SimpleJndiBeanFactory bf = new SimpleJndiBeanFactory();
         bf.setShareableResources(jndiUrl);
         Reflections.setFieldValue(bf, "logger", new NoOpLog());
@@ -40,7 +41,7 @@ public final class SpringUtil {
     }
 
 
-    public static BeanFactory makeMethodTrigger ( Object o, String method ) throws Exception {
+    public static BeanFactory makeMethodTrigger(Object o, String method) throws Exception {
         DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
         RootBeanDefinition caller = new RootBeanDefinition();
 
@@ -56,14 +57,14 @@ public final class SpringUtil {
         Reflections.getField(DefaultListableBeanFactory.class, "logger").set(bf, new NoOpLog());
         Reflections.getField(DefaultListableBeanFactory.class, "prototypesCurrentlyInCreation").set(bf, new ThreadLocal<>());
 
-        @SuppressWarnings ( "unchecked" )
+        @SuppressWarnings("unchecked")
         Map<String, Object> objs = (Map<String, Object>) Reflections.getFieldValue(bf, "singletonObjects");
         objs.put("obj", o);
         return bf;
     }
 
 
-    public static Object makeBeanFactoryTriggerBFPA ( UtilFactory uf, String name, BeanFactory bf ) throws Exception {
+    public static Object makeBeanFactoryTriggerBFPA(UtilFactory uf, String name, BeanFactory bf) throws Exception {
         DefaultBeanFactoryPointcutAdvisor pcadv = new DefaultBeanFactoryPointcutAdvisor();
         pcadv.setBeanFactory(bf);
         pcadv.setAdviceBeanName(name);
@@ -82,7 +83,7 @@ public final class SpringUtil {
      * @throws InvocationTargetException
      * @throws Exception
      */
-    public static Object makeBeanFactoryTriggerPCAH ( UtilFactory uf, String name, BeanFactory bf ) throws ClassNotFoundException,
+    public static Object makeBeanFactoryTriggerPCAH(UtilFactory uf, String name, BeanFactory bf) throws ClassNotFoundException,
             NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, Exception {
         AspectInstanceFactory aif = Reflections.createWithoutConstructor(BeanFactoryAspectInstanceFactory.class);
         Reflections.setFieldValue(aif, "beanFactory", bf);

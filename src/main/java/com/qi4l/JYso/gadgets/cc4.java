@@ -31,8 +31,8 @@ public class cc4 implements ObjectPayload<Queue<Object>> {
         ConstantTransformer constant = new ConstantTransformer(String.class);
 
         // mock method name until armed
-        Class[]  paramTypes = new Class[]{String.class};
-        Object[] args       = new Object[]{Utils.generateRandomString(4)};
+        Class[] paramTypes = new Class[]{String.class};
+        Object[] args = new Object[]{Utils.generateRandomString(4)};
         InstantiateTransformer instantiate = new InstantiateTransformer(paramTypes, args);
 
         // grab defensively copied arrays

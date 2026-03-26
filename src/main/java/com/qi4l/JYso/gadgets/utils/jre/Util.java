@@ -12,7 +12,7 @@ public class Util {
     }
 
     private static TCObject doMakeProxy(Class[] interfaces, Object handler, Serialization ser) throws Exception {
-        TCObject         proxy     = new TCObject(ser);
+        TCObject proxy = new TCObject(ser);
         TCProxyClassDesc proxyDesc = new TCProxyClassDesc();
         for (Class intf : interfaces)
             proxyDesc.addInterface(intf);

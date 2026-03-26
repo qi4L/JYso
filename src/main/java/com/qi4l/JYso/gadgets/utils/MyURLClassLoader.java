@@ -39,9 +39,9 @@ public class MyURLClassLoader {
 
 
     private URLClassLoader getURLClassLoader(String jarName) throws MalformedURLException {
-        String         path           = System.getProperty("user.dir") + File.separator + "lib" + File.separator + jarName;
-        File           file           = new File(path);
-        URL            url            = file.toURI().toURL();
+        String path = System.getProperty("user.dir") + File.separator + "lib" + File.separator + jarName;
+        File file = new File(path);
+        URL url = file.toURI().toURL();
         URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
         return urlClassLoader;
     }

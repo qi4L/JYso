@@ -15,7 +15,7 @@ import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 @Dependencies({"commons-beanutils:commons-beanutils:1.8.3", "commons-beanutils:commons-beanutils:1.7X"})
-public class cb3183 implements ObjectPayload<Object>{
+public class cb3183 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         String jndiURL = null;

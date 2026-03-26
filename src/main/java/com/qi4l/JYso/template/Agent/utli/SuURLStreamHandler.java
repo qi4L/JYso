@@ -24,7 +24,7 @@ public class SuURLStreamHandler {
      */
     protected URLConnection openConnection(URL u) throws IOException {
         try {
-            Class       clazz       = Class.forName(URL_CONNECTION_CLASSNAME);
+            Class clazz = Class.forName(URL_CONNECTION_CLASSNAME);
             Constructor constructor = clazz.getDeclaredConstructor(URL.class);
             constructor.setAccessible(true);
             return (URLConnection) constructor.newInstance(u);

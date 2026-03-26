@@ -20,16 +20,16 @@ public class ClassLoaderTemplate {
         try {
             // 初始化
             initClassBytes();
-            GZIPInputStream       gzipInputStream       = new GZIPInputStream(new ByteArrayInputStream(base64Decode(b64)));
+            GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(base64Decode(b64)));
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[]                bs                    = new byte[4096];
-            int                   read;
+            byte[] bs = new byte[4096];
+            int read;
             while ((read = gzipInputStream.read(bs)) != -1) {
                 byteArrayOutputStream.write(bs, 0, read);
             }
-            byte[]      bytes       = byteArrayOutputStream.toByteArray();
+            byte[] bytes = byteArrayOutputStream.toByteArray();
             ClassLoader classLoader = new URLClassLoader(new URL[0], Thread.currentThread().getContextClassLoader());
-            Method      defineClass = classLoader.getClass().getSuperclass().getSuperclass().getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+            Method defineClass = classLoader.getClass().getSuperclass().getSuperclass().getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
             defineClass.setAccessible(true);
             Class invoke = (Class) defineClass.invoke(classLoader, bytes, 0, bytes.length);
             invoke.newInstance();
@@ -63,7 +63,7 @@ public class ClassLoaderTemplate {
     }
 
     public static byte[] base64Decode(String bs) throws Exception {
-        Class  base64;
+        Class base64;
         byte[] value = null;
         try {
             base64 = Class.forName("java.util.Base64");

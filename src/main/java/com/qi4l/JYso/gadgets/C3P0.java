@@ -40,7 +40,7 @@ public class C3P0 implements ObjectPayload<Object> {
             throw new IllegalArgumentException("Command format is: <base_url>:<classname>");
         }
 
-        String url       = command.substring(0, sep);
+        String url = command.substring(0, sep);
         String className = command.substring(sep + 1);
 
         PoolBackedDataSource b = Reflections.createWithoutConstructor(PoolBackedDataSource.class);

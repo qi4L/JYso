@@ -69,7 +69,7 @@ public class Click1 implements ObjectPayload<Object> {
         // finally, we inject and new TemplatesImpl object into the queue,
         // so its getOutputProperties() method will be called
         final Object[] queueArray = (Object[]) Reflections.getFieldValue(queue, "queue");
-        final Object   template;
+        final Object template;
         template = Gadgets.createTemplatesImpl(command);
         queueArray[0] = template;
         return queue;

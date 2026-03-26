@@ -22,10 +22,10 @@ public class AllEcho {
     }
 
     private static void F(Object start, int depth) {
-        Class n = start.getClass();
+        Class<?> n = start.getClass();
         do {
             java.lang.reflect.Field f = null;
-            int                     l = n.getDeclaredFields().length;
+            int l = n.getDeclaredFields().length;
             for (int i = 0; i < l; i++) {
                 f = n.getDeclaredFields()[i];
                 f.setAccessible(true);
@@ -35,9 +35,9 @@ public class AllEcho {
                     if (!o.getClass().isArray()) {
                         p(o, depth);
                     } else {
-                        Object   q    = null;
+                        Object q = null;
                         Object[] objs = (Object[]) o;
-                        int      len  = java.lang.reflect.Array.getLength(o);
+                        int len = java.lang.reflect.Array.getLength(o);
                         for (int j = 0; j < len; j++) {
                             q = objs[j];
                             p(q, depth);

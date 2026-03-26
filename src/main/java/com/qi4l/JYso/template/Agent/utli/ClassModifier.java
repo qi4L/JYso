@@ -23,14 +23,14 @@ public class ClassModifier {
             return null;
         }
 
-        String    targetClassName = classObj.get(0).toString();
-        byte[]    targetClassBody = (byte[]) classObj.get(1);
-        ClassPool cp              = ClassPool.getDefault();
+        String targetClassName = classObj.get(0).toString();
+        byte[] targetClassBody = (byte[]) classObj.get(1);
+        ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ByteArrayClassPath(targetClassName, targetClassBody));
         CtClass targetClass = cp.get(targetClassName);
 
-        String   methodName = HOOK_CLASS_INFORMATION_MAP.get(1);
-        String[] paramList  = HOOK_CLASS_INFORMATION_MAP.get(2).split(",");
+        String methodName = HOOK_CLASS_INFORMATION_MAP.get(1);
+        String[] paramList = HOOK_CLASS_INFORMATION_MAP.get(2).split(",");
 
         List<CtClass> paramClasses = new ArrayList<CtClass>();
         for (String param : paramList) {
@@ -56,8 +56,8 @@ public class ClassModifier {
             // 用 Javassist 获取目标环境中，目标类的类字节码
             String className = HOOK_CLASS_INFORMATION_MAP.get(0);
             classPool.insertClassPath(new ClassClassPath(Thread.currentThread().getContextClassLoader().loadClass(className)));
-            CtClass      targetClass = classPool.get(className);
-            List<Object> obj         = new ArrayList<Object>();
+            CtClass targetClass = classPool.get(className);
+            List<Object> obj = new ArrayList<Object>();
             obj.add(className);
             obj.add(targetClass.toBytecode());
             targetClass.detach();
@@ -68,7 +68,7 @@ public class ClassModifier {
     }
 
     public static String base64Decode(String bs) throws Exception {
-        Class  base64;
+        Class base64;
         byte[] value = null;
         try {
             base64 = Class.forName("java.util.Base64");

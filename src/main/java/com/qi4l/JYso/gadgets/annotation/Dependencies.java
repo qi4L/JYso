@@ -24,8 +24,8 @@ public @interface Dependencies {
                 return deps.value();
             } else {
                 try {
-                    Class  name = Class.forName(Reflections.getFieldValue(annotated, "name").toString());
-                    Method m    = name.getDeclaredMethod("getDependencies");
+                    Class name = Class.forName(Reflections.getFieldValue(annotated, "name").toString());
+                    Method m = name.getDeclaredMethod("getDependencies");
                     m.setAccessible(true);
                     return (String[]) m.invoke(null);
                 } catch (Exception ignored) {
@@ -35,7 +35,7 @@ public @interface Dependencies {
         }
 
         public static String[] getDependenciesSimple(AnnotatedElement annotated) {
-            String[] deps   = getDependencies(annotated);
+            String[] deps = getDependencies(annotated);
             String[] simple = new String[deps.length];
             for (int i = 0; i < simple.length; i++) {
                 simple[i] = deps[i].split(":", 2)[1];

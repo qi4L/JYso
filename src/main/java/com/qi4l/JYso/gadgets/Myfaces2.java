@@ -9,7 +9,7 @@ public class Myfaces2 implements ObjectPayload<Object>, DynamicDependencies {
             throw new IllegalArgumentException("Command format is: <base_url>:<classname>");
         }
 
-        String url       = command.substring(0, sep);
+        String url = command.substring(0, sep);
         String className = command.substring(sep + 1);
 
         // based on http://danamodio.com/appsec/research/spring-remote-code-with-expression-language-injection/

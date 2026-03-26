@@ -13,7 +13,7 @@ public class UtilFactory {
         return JDKUtil.makeMap(tgt, sameHash);
     }
 
-    public Object makeToStringTriggerUnstable ( Object obj ) throws Exception {
+    public Object makeToStringTriggerUnstable(Object obj) throws Exception {
         return ToStringUtil.makeSpringAOPToStringTrigger(obj);
     }
 

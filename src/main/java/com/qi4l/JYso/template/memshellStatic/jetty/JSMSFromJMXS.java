@@ -68,8 +68,8 @@ public class JSMSFromJMXS implements Servlet {
 
                     if (!flag) {
                         ClassLoader classLoader = handler.getClass().getClassLoader();
-                        Class       sourceClazz = null;
-                        Object      holder      = null;
+                        Class sourceClazz = null;
+                        Object holder = null;
                         try {
                             sourceClazz = classLoader.loadClass("org.eclipse.jetty.servlet.Source");
                             field = sourceClazz.getDeclaredField("JAVAX_API");
@@ -96,7 +96,7 @@ public class JSMSFromJMXS implements Servlet {
 //                    mappingx.setPathSpecs(urlPatterns);
 //                    ServletHolder.this.getServletHandler().addServletMapping(mappingx);
 
-                        Class  clazz          = classLoader.loadClass("org.eclipse.jetty.servlet.ServletMapping");
+                        Class clazz = classLoader.loadClass("org.eclipse.jetty.servlet.ServletMapping");
                         Object servletMapping = null;
                         try {
                             servletMapping = clazz.getDeclaredConstructor(sourceClazz).newInstance(field.get(null));

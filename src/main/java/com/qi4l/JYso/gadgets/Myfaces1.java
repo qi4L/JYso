@@ -62,15 +62,15 @@ public class Myfaces1 implements ObjectPayload<Object>, DynamicDependencies {
     }
 
     public static Object makeExpressionPayload(String expr) throws Exception {
-        FacesContextImpl fc        = new FacesContextImpl((ServletContext) null, (ServletRequest) null, (ServletResponse) null);
-        ELContext        elContext = new FacesELContext(new CompositeELResolver(), fc);
+        FacesContextImpl fc = new FacesContextImpl((ServletContext) null, (ServletRequest) null, (ServletResponse) null);
+        ELContext elContext = new FacesELContext(new CompositeELResolver(), fc);
         Reflections.getField(FacesContextImplBase.class, "_elContext").set(fc, elContext);
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();
 
-        ValueExpression                 ve1 = expressionFactory.createValueExpression(elContext, expr, Object.class);
-        ValueExpressionMethodExpression e   = new ValueExpressionMethodExpression(ve1);
-        ValueExpression                 ve2 = expressionFactory.createValueExpression(elContext, "${true}", Object.class);
-        ValueExpressionMethodExpression e2  = new ValueExpressionMethodExpression(ve2);
+        ValueExpression ve1 = expressionFactory.createValueExpression(elContext, expr, Object.class);
+        ValueExpressionMethodExpression e = new ValueExpressionMethodExpression(ve1);
+        ValueExpression ve2 = expressionFactory.createValueExpression(elContext, "${true}", Object.class);
+        ValueExpressionMethodExpression e2 = new ValueExpressionMethodExpression(ve2);
 
         return Gadgets.makeMap(e2, e);
     }

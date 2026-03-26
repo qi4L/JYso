@@ -40,10 +40,10 @@ public @interface Authors {
 
     String JANG = "Jang";
 
-    String ARTSPLOIT  = "artsploit";
+    String ARTSPLOIT = "artsploit";
     String CCKUAILONG = "CCKUAILONG";
 
-    String QI4L       = "QI4L";
+    String QI4L = "QI4L";
     String PEIQIF4CK = "peiqiF4ck";
 
     String Jayl1n = "Jayl1n";
@@ -52,7 +52,7 @@ public @interface Authors {
 
     String KILLER = "killer";
 
-    String UNAM4   = "Unam4";
+    String UNAM4 = "Unam4";
     String JIECUB3 = "jiecub3";
 
     String JSJCW = "jsjcw";

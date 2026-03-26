@@ -21,8 +21,8 @@ public class ByteUtil {
     }
 
     public static byte[] deleteAt(byte[] bs, int index) {
-        int    length = bs.length - 1;
-        byte[] ret    = new byte[length];
+        int length = bs.length - 1;
+        byte[] ret = new byte[length];
 
         if (index == bs.length - 1) {
             System.arraycopy(bs, 0, ret, 0, length);
@@ -38,8 +38,8 @@ public class ByteUtil {
     }
 
     public static byte[] addAtIndex(byte[] bs, int index, byte b) {
-        int    length = bs.length + 1;
-        byte[] ret    = new byte[length];
+        int length = bs.length + 1;
+        byte[] ret = new byte[length];
 
         System.arraycopy(bs, 0, ret, 0, index);
         ret[index] = b;
@@ -49,8 +49,8 @@ public class ByteUtil {
     }
 
     public static byte[] addAtLast(byte[] bs, byte b) {
-        int    length = bs.length + 1;
-        byte[] ret    = new byte[length];
+        int length = bs.length + 1;
+        byte[] ret = new byte[length];
 
         System.arraycopy(bs, 0, ret, 0, length - 1);
         ret[length - 1] = b;
@@ -60,7 +60,7 @@ public class ByteUtil {
 
     public static byte[] objectsToBytes(Object[] objs) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream      dos  = new DataOutputStream(baos);
+        DataOutputStream dos = new DataOutputStream(baos);
         for (Object obj : objs) {
             treatObject(dos, obj);
         }
@@ -81,8 +81,8 @@ public class ByteUtil {
         } else if (obj instanceof String) {
             dos.writeUTF((String) obj);
         } else {
-            ByteArrayOutputStream ba  = new ByteArrayOutputStream();
-            ObjectOutputStream    oos = new ObjectOutputStream(ba);
+            ByteArrayOutputStream ba = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(ba);
             oos.writeObject(obj);
             oos.close();
             dos.write(ba.toByteArray(), 4, ba.size() - 4); // 4 = skip the header

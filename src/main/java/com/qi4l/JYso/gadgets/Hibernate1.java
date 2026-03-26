@@ -69,9 +69,9 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
 
     public static Object makeHibernate4Getter(Class<?> tplClass, String method) throws ClassNotFoundException, NoSuchMethodException,
             SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Class<?>       getterIf    = Class.forName("org.hibernate.property.Getter");
-        Class<?>       basicGetter = Class.forName("org.hibernate.property.BasicPropertyAccessor$BasicGetter");
-        Constructor<?> bgCon       = basicGetter.getDeclaredConstructor(Class.class, Method.class, String.class);
+        Class<?> getterIf = Class.forName("org.hibernate.property.Getter");
+        Class<?> basicGetter = Class.forName("org.hibernate.property.BasicPropertyAccessor$BasicGetter");
+        Constructor<?> bgCon = basicGetter.getDeclaredConstructor(Class.class, Method.class, String.class);
         Reflections.setAccessible(bgCon);
 
         if (!method.startsWith("get")) {
@@ -80,7 +80,7 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
 
         String propName = Character.toLowerCase(method.charAt(3)) + method.substring(4);
 
-        Object g   = bgCon.newInstance(tplClass, tplClass.getDeclaredMethod(method), propName);
+        Object g = bgCon.newInstance(tplClass, tplClass.getDeclaredMethod(method), propName);
         Object arr = Array.newInstance(getterIf, 1);
         Array.set(arr, 0, g);
         return arr;
@@ -89,11 +89,11 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
 
     public static Object makeHibernate5Getter(Class<?> tplClass, String method) throws NoSuchMethodException, SecurityException,
             ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Class<?>       getterIf    = Class.forName("org.hibernate.property.access.spi.Getter");
-        Class<?>       basicGetter = Class.forName("org.hibernate.property.access.spi.GetterMethodImpl");
-        Constructor<?> bgCon       = basicGetter.getConstructor(Class.class, String.class, Method.class);
-        Object         g           = bgCon.newInstance(tplClass, "test", tplClass.getDeclaredMethod(method));
-        Object         arr         = Array.newInstance(getterIf, 1);
+        Class<?> getterIf = Class.forName("org.hibernate.property.access.spi.Getter");
+        Class<?> basicGetter = Class.forName("org.hibernate.property.access.spi.GetterMethodImpl");
+        Constructor<?> bgCon = basicGetter.getConstructor(Class.class, String.class, Method.class);
+        Object g = bgCon.newInstance(tplClass, "test", tplClass.getDeclaredMethod(method));
+        Object arr = Array.newInstance(getterIf, 1);
         Array.set(arr, 0, g);
         return arr;
     }
@@ -133,15 +133,15 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
             InvocationTargetException, NoSuchFieldException, Exception, ClassNotFoundException {
         // Load at runtime to avoid dependency conflicts
         Class entityEntityModeToTuplizerMappingClass = Class.forName("org.hibernate.tuple.entity.EntityEntityModeToTuplizerMapping");
-        Class entityModeToTuplizerMappingClass       = Class.forName("org.hibernate.tuple.EntityModeToTuplizerMapping");
-        Class typedValueClass                        = Class.forName("org.hibernate.engine.TypedValue");
+        Class entityModeToTuplizerMappingClass = Class.forName("org.hibernate.tuple.EntityModeToTuplizerMapping");
+        Class typedValueClass = Class.forName("org.hibernate.engine.TypedValue");
 
         PojoComponentTuplizer tup = Reflections.createWithoutConstructor(PojoComponentTuplizer.class);
         Reflections.getField(AbstractComponentTuplizer.class, "getters").set(tup, getters);
         Reflections.getField(AbstractComponentTuplizer.class, "propertySpan").set(tup, 1);
 
-        ComponentType t  = Reflections.createWithConstructor(ComponentType.class, AbstractType.class, new Class[0], new Object[0]);
-        HashMap       hm = new HashMap();
+        ComponentType t = Reflections.createWithConstructor(ComponentType.class, AbstractType.class, new Class[0], new Object[0]);
+        HashMap hm = new HashMap();
         hm.put(EntityMode.POJO, tup);
         Object emtm = Reflections.createWithConstructor(entityEntityModeToTuplizerMappingClass, entityModeToTuplizerMappingClass, new Class[]{Map.class}, new Object[]{hm});
         Reflections.setFieldValue(t, "tuplizerMapping", emtm);
@@ -151,7 +151,7 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
         });
 
         Constructor<?> typedValueConstructor = typedValueClass.getDeclaredConstructor(Type.class, Object.class, EntityMode.class);
-        Object         v1                    = typedValueConstructor.newInstance(t, null, EntityMode.POJO);
+        Object v1 = typedValueConstructor.newInstance(t, null, EntityMode.POJO);
         Reflections.setFieldValue(v1, "value", tpl);
         Reflections.setFieldValue(v1, "type", t);
 

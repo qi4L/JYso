@@ -21,7 +21,7 @@ public class TransformerUtil {
 
     public static Transformer[] makeTransformer(String command) throws Exception {
         Transformer[] transformers;
-        String[]      execArgs = {command};
+        String[] execArgs = {command};
 
         if (command.startsWith("TS-")) {
             transformers = new Transformer[]{new ConstantTransformer(Thread.class), new InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"currentThread", null}), new InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, null}), new InvokerTransformer("sleep", new Class[]{long.class}, new Object[]{Long.parseLong(command.split("[-]")[1] + "000")}),};

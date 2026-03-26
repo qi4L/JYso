@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
-import static com.qi4l.JYso.gadgets.Config.Config.BASE64;
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
 import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
 import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;
@@ -115,27 +114,27 @@ public class ysoserial {
             Config.IS_Hessian2 = true;
         }
 
-        if(cmdLine.hasOption("XStream")){
+        if (cmdLine.hasOption("XStream")) {
             Config.IS_Xstream = true;
         }
 
-        if(cmdLine.hasOption("Kryo")){
+        if (cmdLine.hasOption("Kryo")) {
             Config.IS_Kryo = true;
         }
 
-        if(cmdLine.hasOption(("JYaml"))){
+        if (cmdLine.hasOption(("JYaml"))) {
             Config.IS_JYAML = true;
         }
-        if(cmdLine.hasOption("JsonIO")){
+        if (cmdLine.hasOption("JsonIO")) {
             Config.IS_JsonIO = true;
         }
-        if(cmdLine.hasOption("YamlBeans")){
+        if (cmdLine.hasOption("YamlBeans")) {
             Config.IS_YamlBeans = true;
         }
-        if(cmdLine.hasOption("Castor")){
+        if (cmdLine.hasOption("Castor")) {
             Config.IS_Castor = true;
         }
-        if(cmdLine.hasOption("Jackson")){
+        if (cmdLine.hasOption("Jackson")) {
             Config.IS_Jackson = true;
         }
 
@@ -156,7 +155,7 @@ public class ysoserial {
         }
 
         final String payloadType = cmdLine.getOptionValue("gadget");
-        final String command     = cmdLine.getOptionValue("parameters");
+        final String command = cmdLine.getOptionValue("parameters");
         //载入gadget
         final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
         if (payloadClass == null) {
@@ -170,11 +169,11 @@ public class ysoserial {
         try {
             //载入payload
             ObjectPayload payload = payloadClass.newInstance();
-            Object        object  = payload.getObject(command);
+            Object object = payload.getObject(command);
 
             // 是否指定混淆
             if (cmdLine.hasOption("dirty-type") && cmdLine.hasOption("dirty-length")) {
-                int type   = Integer.parseInt(cmdLine.getOptionValue("dirty-type"));
+                int type = Integer.parseInt(cmdLine.getOptionValue("dirty-type"));
                 int length = Integer.parseInt(cmdLine.getOptionValue("dirty-length"));
                 object = new DirtyDataWrapper(object, type, length).doWrap();
             }
@@ -192,7 +191,7 @@ public class ysoserial {
             } else {
                 out = System.out;
             }
-            Serializer.qiserialize(object, out,payloadType,command);
+            Serializer.qiserialize(object, out, payloadType, command);
             ObjectPayload.Utils.releasePayload(payload, object);
             out.flush();
             out.close();
@@ -203,6 +202,7 @@ public class ysoserial {
         }
         System.exit(0);
     }
+
     private static Options getOptions() {
         Options options = new Options();
         options.addOption("y", "ysoserial", false, "Java deserialization");
@@ -234,8 +234,8 @@ public class ysoserial {
         options.addOption("xs", "XStream", false, "Xstream Output");
         options.addOption("kryo", "Kryo", false, "Kryo Output");
         options.addOption("jy", "JYaml", false, "JYaml Output");
-        options.addOption("js","JsonIO", false, "JsonIO Output");
-        options.addOption("yb","YamlBeans", false, "YamlBeans Output");
+        options.addOption("js", "JsonIO", false, "JsonIO Output");
+        options.addOption("yb", "YamlBeans", false, "YamlBeans Output");
         options.addOption("ca", "Castor", false, "Castor Output");
         options.addOption("jk", "Jackson", false, "Jackson Output");
         return options;

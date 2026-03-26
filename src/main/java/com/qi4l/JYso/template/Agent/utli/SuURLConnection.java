@@ -59,7 +59,7 @@ public class SuURLConnection extends URLConnection {
     protected SuURLConnection(URL url) {
         super(url);
         String file = url.getFile();
-        int    pos  = file.indexOf(47);
+        int pos = file.indexOf(47);
         synchronized (FILES) {
             this.DATA = (byte[]) ((byte[]) FILES.get(Integer.parseInt(file.substring(0, pos))));
         }

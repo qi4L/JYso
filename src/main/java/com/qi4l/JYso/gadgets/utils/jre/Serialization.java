@@ -19,7 +19,7 @@ public class Serialization {
     public Serialization() {
         try {
             ObjectOutputStream output = new ObjectOutputStream(new ByteOutputStream());
-            Field              f      = output.getClass().getDeclaredField("handles");
+            Field f = output.getClass().getDeclaredField("handles");
             f.setAccessible(true);
             this.handle = f.get(output);
         } catch (Exception e) {
@@ -117,8 +117,8 @@ public class Serialization {
             o.write(out, handles);
         } else {
             ByteArrayOutputStream byteout = new ByteArrayOutputStream();
-            ObjectOutputStream    objout  = getPatchedOutputStream(byteout);
-            TCJavaObject          o       = new TCJavaObject(obj, byteout, objout);
+            ObjectOutputStream objout = getPatchedOutputStream(byteout);
+            TCJavaObject o = new TCJavaObject(obj, byteout, objout);
             o.write(out, handles);
         }
     }

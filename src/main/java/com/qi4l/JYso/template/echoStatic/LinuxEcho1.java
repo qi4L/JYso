@@ -7,8 +7,8 @@ public class LinuxEcho1 {
             String command = "ls -l /proc/$PPID/fd|grep socket:|awk '{print $9}'";
 
             java.util.List<String> list = new java.util.ArrayList<>();
-            String[]               cmd  = new String[]{"/bin/sh", "-c", command};
-            java.io.BufferedReader br   = new java.io.BufferedReader(new java.io.InputStreamReader(Runtime.getRuntime().exec(cmd).getInputStream()));
+            String[] cmd = new String[]{"/bin/sh", "-c", command};
+            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(Runtime.getRuntime().exec(cmd).getInputStream()));
 
             String line;
             while ((line = br.readLine()) != null) {

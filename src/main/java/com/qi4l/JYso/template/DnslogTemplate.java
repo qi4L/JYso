@@ -1,7 +1,7 @@
 package com.qi4l.JYso.template;
 
 import com.qi4l.JYso.gadgets.utils.Cache;
-import com.qi4l.JYso.gadgets.utils.Util;
+import com.qi4l.JYso.gadgets.utils.Utils;
 import org.objectweb.asm.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -14,7 +14,7 @@ public class DnslogTemplate implements Template {
 
     public DnslogTemplate(String dnslog) {
         this.dnslog = dnslog;
-        this.className = "Exploit" + Util.getRandomString();
+        this.className = "Exploit" + Utils.getRandomString();
 
         generate();
     }
@@ -39,9 +39,9 @@ public class DnslogTemplate implements Template {
     }
 
     public void generate() {
-        ClassWriter       cw = new ClassWriter(0);
-        FieldVisitor      fv;
-        MethodVisitor     mv;
+        ClassWriter cw = new ClassWriter(0);
+        FieldVisitor fv;
+        MethodVisitor mv;
         AnnotationVisitor av0;
 
         cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "com/sun/org/apache/xalan/internal/xsltc/runtime/AbstractTranslet", null);

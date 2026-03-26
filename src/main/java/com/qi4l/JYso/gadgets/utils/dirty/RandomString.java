@@ -15,16 +15,14 @@ public class RandomString {
      * 26个小写字母
      */
     public static final String lower = upper.toLowerCase(Locale.ROOT);
-
-    /**
-     * 数字
-     */
-    public static final String digits = "0123456789";
-
     /**
      * alphanum为26个大写字母+26个小写字母+10个数字。产生的随机字符串从此挑选字符生成
      */
+    public static final String digits = "0123456789";
     public static final String alphanum = upper + lower + digits;
+    /**
+     * 数字
+     */
 
     private final Random random;
 

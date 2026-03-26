@@ -10,14 +10,14 @@ import static com.qi4l.JYso.gadgets.Config.Config.logo;
 public class Starter {
 
     // 用于存储所有的ObjectPayload类
-    public static CaseInsensitiveMap<String,Class<? extends ObjectPayload>> caseInsensitiveObjectPayloadMap = new CaseInsensitiveMap();
+    public static CaseInsensitiveMap<String, Class<? extends ObjectPayload<?>>> caseInsensitiveObjectPayloadMap = new CaseInsensitiveMap<>();
+    public static boolean JYsoMode = false;
+
     static {
-        for (Class<? extends ObjectPayload> clazz : ObjectPayload.Utils.getPayloadClasses()) {
+        for (Class<? extends ObjectPayload<?>> clazz : ObjectPayload.Utils.getPayloadClasses()) {
             caseInsensitiveObjectPayloadMap.put(clazz.getName(), clazz);
         }
     }
-
-    public static boolean JYsoMode = false;
 
     public static void main(String[] args) throws Exception {
         // 如果参数中包含-j，则启动LDAP、HTTP、RMI服务
@@ -28,12 +28,10 @@ public class Starter {
             HTTPServer.start();
             if (Config.TLSProxy) {
                 TLSProxy.start();
-            } else {
-                //RMIServer.start();
             }
         }
 
-        // 如果参数中包含-y，则启动 ysuserial
+        // 如果参数中包含-y，则启动 ysu serial
         if (args.length > 0 && args[0].equals("-y")) {
             JYsoMode = true;
             ysoserial(args);

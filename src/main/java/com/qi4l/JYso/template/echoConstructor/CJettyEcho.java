@@ -8,7 +8,7 @@ public class CJettyEcho {
 
     public CJettyEcho() {
         try {
-            Class                   clazz = Thread.currentThread().getClass();
+            Class clazz = Thread.currentThread().getClass();
             java.lang.reflect.Field field = clazz.getDeclaredField("threadLocals");
             field.setAccessible(true);
             Object obj = field.get(Thread.currentThread());
@@ -27,8 +27,8 @@ public class CJettyEcho {
                 obj = field.get(o);
 
                 if (obj != null && obj.getClass().getName().endsWith("AsyncHttpConnection")) {
-                    Object                   connection = obj;
-                    java.lang.reflect.Method method     = connection.getClass().getMethod("getRequest", (Class<?>) null);
+                    Object connection = obj;
+                    java.lang.reflect.Method method = connection.getClass().getMethod("getRequest", (Class<?>) null);
                     obj = method.invoke(connection, (Object) null);
 
                     method = obj.getClass().getMethod("getHeader", new Class[]{String.class});
@@ -44,8 +44,8 @@ public class CJettyEcho {
 
                     break;
                 } else if (obj != null && obj.getClass().getName().endsWith("HttpConnection")) {
-                    java.lang.reflect.Method method      = obj.getClass().getDeclaredMethod("getHttpChannel", (Class<?>) null);
-                    Object                   httpChannel = method.invoke(obj, (Object) null);
+                    java.lang.reflect.Method method = obj.getClass().getDeclaredMethod("getHttpChannel", (Class<?>) null);
+                    Object httpChannel = method.invoke(obj, (Object) null);
 
                     method = httpChannel.getClass().getMethod("getRequest", (Class<?>) null);
                     obj = method.invoke(httpChannel, (Object) null);

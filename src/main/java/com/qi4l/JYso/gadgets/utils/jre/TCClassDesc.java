@@ -43,8 +43,8 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
     }
 
     private long getSerialVersionUID() throws Exception {
-        Class<?>                cls = Class.forName(this.className);
-        java.lang.reflect.Field f   = cls.getDeclaredField("serialVersionUID");
+        Class<?> cls = Class.forName(this.className);
+        java.lang.reflect.Field f = cls.getDeclaredField("serialVersionUID");
         if (f == null)
             return -1L;
         f.setAccessible(true);
@@ -53,7 +53,7 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
 
     private byte getClassDescFlags() throws Exception {
         Class<?> cls = Class.forName(this.className);
-        byte     b   = 0;
+        byte b = 0;
         if (Serializable.class.isAssignableFrom(cls))
             b = (byte) (b | 0x2);
         try {

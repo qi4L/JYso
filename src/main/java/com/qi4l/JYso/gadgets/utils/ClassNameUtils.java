@@ -67,8 +67,8 @@ public class ClassNameUtils {
                             if (jarFile != null) {
                                 Enumeration<JarEntry> jarEntries = jarFile.entries();
                                 while (jarEntries.hasMoreElements()) {
-                                    JarEntry jarEntry     = jarEntries.nextElement();
-                                    String   jarEntryName = jarEntry.getName();
+                                    JarEntry jarEntry = jarEntries.nextElement();
+                                    String jarEntryName = jarEntry.getName();
                                     if (jarEntryName.endsWith(".class")) {
                                         String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replaceAll("/", ".");
                                         if (!className.contains("$") && className.startsWith(packageName)) {

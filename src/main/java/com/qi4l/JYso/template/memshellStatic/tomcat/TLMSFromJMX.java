@@ -28,7 +28,7 @@ public class TLMSFromJMX implements ServletRequestListener {
     static {
         try {
             MBeanServer mbeanServer = Registry.getRegistry(null, null).getMBeanServer();
-            Field       field       = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");
+            Field field = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");
             field.setAccessible(true);
             Object obj = field.get(mbeanServer);
 
@@ -67,9 +67,9 @@ public class TLMSFromJMX implements ServletRequestListener {
     public void requestInitialized(ServletRequestEvent servletRequestEvent) {
         try {
             RequestFacade requestFacade = (RequestFacade) servletRequestEvent.getServletRequest();
-            Field         field         = requestFacade.getClass().getDeclaredField("request");
+            Field field = requestFacade.getClass().getDeclaredField("request");
             field.setAccessible(true);
-            Request  request  = (Request) field.get(requestFacade);
+            Request request = (Request) field.get(requestFacade);
             Response response = request.getResponse();
             requestInitializedHandle(request, response);
         } catch (Exception ignore) {

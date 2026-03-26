@@ -109,7 +109,7 @@ public class ClassMethodHandler {
         name = name.substring(name.lastIndexOf(".") + 1);
 
         // 大多数 SpringBoot 项目使用内置 Tomcat
-        boolean isTomcat  = name.startsWith("T") || name.startsWith("Spring");
+        boolean isTomcat = name.startsWith("T") || name.startsWith("Spring");
         boolean isWebflux = name.contains("Webflux");
 
         // 命令执行、各种内存马
@@ -279,8 +279,8 @@ public class ClassMethodHandler {
      */
     public static String getMethodName(CtClass ctClass) throws Exception {
         List<CtClass> classes = new java.util.ArrayList<CtClass>(Arrays.asList(ctClass.getInterfaces()));
-        String        name    = ctClass.getName();
-        String        method  = "";
+        String name = ctClass.getName();
+        String method = "";
         classes.add(ctClass.getSuperclass());
 
         for (CtClass value : classes) {

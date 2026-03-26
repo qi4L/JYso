@@ -31,7 +31,7 @@ public class TLSProxy {
 
     public static void start() {
         System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >> " + Config.TLSPort + "..."));
-        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapPort, Config.certFile,Config.keyPass).run();
+        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapPort, Config.certFile, Config.keyPass).run();
     }
 
     public void run() {
@@ -61,9 +61,9 @@ public class TLSProxy {
 
     private SSLServerSocketFactory createSSLServerSocketFactory() {
         try {
-            SSLContext        sslContext        = SSLContext.getInstance("TLS");
+            SSLContext sslContext = SSLContext.getInstance("TLS");
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            KeyStore          keyStore          = KeyStore.getInstance("JKS");
+            KeyStore keyStore = KeyStore.getInstance("JKS");
 
             try (InputStream keyInput = Files.newInputStream(Paths.get(certFile))) {
                 keyStore.load(keyInput, keyPass.toCharArray());
@@ -80,7 +80,7 @@ public class TLSProxy {
 
     private void handleConnection(SSLSocket clientSocket) {
         String[] remoteAddressParts = remoteAddr.split(":");
-        Socket   remoteSocket       = null;
+        Socket remoteSocket = null;
 
         try {
             // 修复：使用 remoteAddr 而不是 localAddr
@@ -138,7 +138,7 @@ public class TLSProxy {
 
     private void forwardData(InputStream input, OutputStream output) throws IOException {
         byte[] buffer = new byte[8192];
-        int    bytesRead;
+        int bytesRead;
 
         try {
             while ((bytesRead = input.read(buffer)) != -1) {

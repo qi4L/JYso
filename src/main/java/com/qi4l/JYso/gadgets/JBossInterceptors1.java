@@ -33,9 +33,9 @@ public class JBossInterceptors1 implements ObjectPayload<Object> {
         final Object tpl;
         tpl = Gadgets.createTemplatesImpl(command);
 
-        InterceptionModelBuilder builder              = InterceptionModelBuilder.newBuilderFor(HashMap.class);
-        ReflectiveClassMetadata  metadata             = (ReflectiveClassMetadata) ReflectiveClassMetadata.of(HashMap.class);
-        InterceptorReference     interceptorReference = ClassMetadataInterceptorReference.of(metadata);
+        InterceptionModelBuilder builder = InterceptionModelBuilder.newBuilderFor(HashMap.class);
+        ReflectiveClassMetadata metadata = (ReflectiveClassMetadata) ReflectiveClassMetadata.of(HashMap.class);
+        InterceptorReference interceptorReference = ClassMetadataInterceptorReference.of(metadata);
 
         Set<InterceptionType> s = new HashSet<InterceptionType>();
         s.add(org.jboss.interceptor.spi.model.InterceptionType.POST_ACTIVATE);

