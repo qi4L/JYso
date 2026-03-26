@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.*;
 
+import static com.qi4l.JYso.gadgets.Config.Config.BASE64;
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
 import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
 import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;

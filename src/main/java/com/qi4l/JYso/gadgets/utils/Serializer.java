@@ -52,7 +52,12 @@ public class Serializer implements Callable<byte[]> {
     }
 
 
-    public static void qiserialize(Object obj, final OutputStream out,String payloadType,String Command) throws Exception {
+    public static void qiserialize(
+            Object obj,
+            final OutputStream out,
+            String payloadType,
+            String Command
+    ) throws Exception {
         ObjectOutputStream    objOut  = null;
         AbstractHessianOutput AobjOut = null;
         ByteArrayOutputStream outB64 = new ByteArrayOutputStream();

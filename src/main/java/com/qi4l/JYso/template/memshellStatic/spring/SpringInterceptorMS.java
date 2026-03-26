@@ -49,11 +49,13 @@ public class SpringInterceptorMS extends HandlerInterceptorAdapter {
             //添加SpringInterceptorTemplate类到adaptedInterceptors
             adaptedInterceptors.add(new SpringInterceptorMS());
         } catch (Exception ignored) {
+            System.out.println(ignored);
         }
     }
 
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println("注入成功");
+
         return true;
     }
 }

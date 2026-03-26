@@ -1,6 +1,8 @@
 package com.qi4l.JYso.gadgets;
 
 import com.fasterxml.jackson.databind.node.POJONode;
+import com.qi4l.JYso.gadgets.annotation.Authors;
+import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.sun.org.apache.xpath.internal.objects.XObject;
 import com.sun.org.apache.xpath.internal.objects.XString;
 import javassist.ClassPool;
@@ -14,6 +16,8 @@ import static com.qi4l.JYso.gadgets.Jackson3.makeTemplatesImplAopProxy;
 
 
 //Jackson1链的JDK17改造
+@Dependencies({"spring-apo:6.2.10"})
+@Authors({Authors.QI4L})
 public class Jackson4 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {

