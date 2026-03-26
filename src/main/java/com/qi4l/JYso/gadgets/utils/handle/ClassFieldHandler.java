@@ -1,18 +1,12 @@
 package com.qi4l.JYso.gadgets.utils.handle;
 
-import com.qi4l.JYso.gadgets.Config.Config;
+import com.qi4l.JYso.gadgets.utils.InjShell;
 import javassist.CtClass;
 import javassist.CtField;
 
 public class ClassFieldHandler {
     public static void insertField(CtClass ctClass, String fieldName, String fieldCode) throws Exception {
-        ctClass.defrost();
-        try {
-            CtField field = ctClass.getDeclaredField(fieldName);
-            ctClass.removeField(field);
-        } catch (javassist.NotFoundException ignored) {
-        }
-        ctClass.addField(CtField.make(fieldCode, ctClass));
+        InjShell.insertField(ctClass, fieldName, fieldCode);
     }
 
 
@@ -23,16 +17,7 @@ public class ClassFieldHandler {
      * @return 替换后的 String
      */
     public static String converString(String target) {
-        if (Config.IS_OBSCURE) {
-            StringBuilder result = new StringBuilder("new String(new byte[]{");
-            byte[] bytes = target.getBytes();
-            for (int i = 0; i < bytes.length; i++) {
-                result.append(bytes[i]).append(",");
-            }
-            return result.substring(0, result.length() - 1) + "})";
-        }
-
-        return "\"" + target + "\"";
+        return InjShell.converString(target);
     }
 
     /**

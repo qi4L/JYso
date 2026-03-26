@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 来自 c0ny1
  * <p>
  * Java反序列化数据绕WAF之加大量脏数据
- * 链接：https://gv7.me/articles/2021/java-deserialize-data-bypass-waf-by-adding-a-lot-of-dirty-data/
+ * 链接：<a href="https://gv7.me/articles/2021/java-deserialize-data-bypass-waf-by-adding-a-lot-of-dirty-data/">...</a>
  */
 public class DirtyDataWrapper {
 
@@ -54,42 +54,42 @@ public class DirtyDataWrapper {
                 int type = ThreadLocalRandom.current().nextInt(5);
                 switch (type) {
                     case 0:
-                        List<Object> arrayList = new ArrayList<Object>();
+                        List<Object> arrayList = new ArrayList<>();
                         arrayList.add(dirtyData);
                         arrayList.add(gadget);
                         wrapper = arrayList;
                         break;
                     case 1:
-                        List<Object> linkedList = new LinkedList<Object>();
+                        List<Object> linkedList = new LinkedList<>();
                         linkedList.add(dirtyData);
                         linkedList.add(gadget);
                         wrapper = linkedList;
                         break;
                     case 2:
-                        HashMap<String, Object> map = new HashMap<String, Object>();
+                        HashMap<String, Object> map = new HashMap<>();
                         map.put(randStr1, dirtyData);
                         map.put(randStr2, gadget);
                         wrapper = map;
                         break;
                     case 3:
-                        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<String, Object>();
+                        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
                         linkedHashMap.put(randStr1, dirtyData);
                         linkedHashMap.put(randStr2, gadget);
                         wrapper = linkedHashMap;
                         break;
-                    default:
                     case 4:
-                        TreeMap<String, Object> treeMap = new TreeMap<String, Object>();
+                        TreeMap<String, Object> treeMap = new TreeMap<>();
                         treeMap.put(randStr1, dirtyData);
                         treeMap.put(randStr2, gadget);
                         wrapper = treeMap;
                         break;
+                    default:
                 }
                 break;
             // type 为 2 时，使用循环嵌套 LinkedList 来封装 object
             // by Y4tacker
             case 2:
-                List<Object> linkedList = new LinkedList<Object>();
+                List<Object> linkedList = new LinkedList<>();
                 for (int i = 0; i < dirtyDataSize; i++) {
                     linkedList.add(Utils.makeClass("A" + System.nanoTime()));
                 }

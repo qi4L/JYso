@@ -17,6 +17,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+
 /**
  * ValueExpressionImpl.getValue(ELContext)
  * ValueExpressionMethodExpression.getMethodExpression(ELContext)
@@ -72,7 +74,7 @@ public class Myfaces1 implements ObjectPayload<Object>, DynamicDependencies {
         ValueExpression ve2 = expressionFactory.createValueExpression(elContext, "${true}", Object.class);
         ValueExpressionMethodExpression e2 = new ValueExpressionMethodExpression(ve2);
 
-        return Gadgets.makeMap(e2, e);
+        return makeMap(e2, e);
     }
 
     @Override

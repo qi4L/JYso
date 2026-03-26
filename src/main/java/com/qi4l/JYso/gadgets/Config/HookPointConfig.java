@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class HookPointConfig {
 
-    public static ArrayList<String> BasicServletHook = new ArrayList<String>();
+    public static ArrayList<String> BasicServletHook = new ArrayList<>();
 
-    public static ArrayList<String> TomcatFilterChainHook = new ArrayList<String>();
+    public static ArrayList<String> TomcatFilterChainHook = new ArrayList<>();
 
 
     static {

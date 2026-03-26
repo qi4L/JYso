@@ -31,7 +31,7 @@ public class TLSProxy {
 
     public static void start() {
         System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >> " + Config.TLSPort + "..."));
-        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapPort, Config.certFile, Config.keyPass).run();
+        new TLSProxy(Config.ip + ":" + Config.TLSPort, Config.ip + ":" + Config.ldapsPort, Config.certFile, Config.keyPass).run();
     }
 
     public void run() {

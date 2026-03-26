@@ -5,11 +5,11 @@ import java.io.DataOutputStream;
 import java.io.ObjectOutputStream;
 
 public class TCJavaObject extends ReferencableObject implements SerializedElement {
-    private ObjectOutputStream objOut;
+    private final ObjectOutputStream objOut;
 
-    private ByteArrayOutputStream byteOut;
+    private final ByteArrayOutputStream byteOut;
 
-    private Object obj;
+    private final Object obj;
 
     public TCJavaObject(Object obj, ByteArrayOutputStream byteOut, ObjectOutputStream objOut) {
         this.obj = obj;
@@ -22,8 +22,7 @@ public class TCJavaObject extends ReferencableObject implements SerializedElemen
     }
 
     public void doWrite(DataOutputStream out, HandleContainer handles) throws Exception {
-        ObjectOutputStream oos = this.objOut;
-        oos.writeObject(this.obj);
+        this.objOut.writeObject(this.obj);
         out.write(this.byteOut.toByteArray(), 4, this.byteOut.size() - 4);
     }
 }

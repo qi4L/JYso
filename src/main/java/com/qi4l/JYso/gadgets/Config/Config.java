@@ -3,7 +3,6 @@ package com.qi4l.JYso.gadgets.Config;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.UnixStyleUsageFormatter;
-import com.qi4l.JYso.Starter;
 import com.qi4l.JYso.gadgets.ObjectPayload;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
@@ -85,12 +84,6 @@ public class Config {
     public static String PASSWORD_ORI = "p@ssw0rd";
     // 命令执行回显时，传递执行命令的 Header 头
     public static String CMD_HEADER_STRING = "X-Token-Data";
-    //内存马的类型
-    public static String Shell_Type = "bx";
-    //是否使用windows下Agent写入
-    public static Boolean winAgent = false;
-    //是否使用Linux下Agent写入
-    public static Boolean linAgent = false;
     // 是否在序列化数据流中的 TC_RESET 中填充脏数据
     public static Boolean IS_DIRTY_IN_TC_RESET = false;
     public static Boolean IS_UTF_Bypass = false;
@@ -106,9 +99,6 @@ public class Config {
     // 填充的脏数据长度
     public static int DIRTY_LENGTH_IN_TC_RESET = 0;
 
-    // 是否使用UTF-8 Overlong Encoding Bypass waf
-    // jboss
-    public static Boolean IS_JBOSS_OBJECT_INPUT_STREAM = false;
     // DefineClassFromParameter 的路径
     public static String PARAMETER = "dc";
     // 将输入直接写在文件里
@@ -159,14 +149,14 @@ public class Config {
         }
 
         if (showGadgets) {
-            final List<Class<? extends ObjectPayload>> payloadClasses =
-                    new ArrayList<Class<? extends ObjectPayload>>(ObjectPayload.Utils.getPayloadClasses());
-            Collections.sort(payloadClasses, new StringUtil.ToStringComparator()); // alphabetize
+            final List<Class<? extends ObjectPayload<?>>> payloadClasses =
+                    new ArrayList<>(ObjectPayload.Utils.getPayloadClasses());
+            payloadClasses.sort(new StringUtil.ToStringComparator()); // alphabetize
 
-            final List<String[]> rows = new LinkedList<String[]>();
+            final List<String[]> rows = new LinkedList<>();
             rows.add(new String[]{"Payload", "Authors", "Dependencies"});
             rows.add(new String[]{"-------", "-------", "------------"});
-            for (Class<? extends ObjectPayload> payloadClass : payloadClasses) {
+            for (Class<? extends ObjectPayload<?>> payloadClass : payloadClasses) {
                 rows.add(new String[]{
                         payloadClass.getSimpleName(),
                         StringUtil.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
@@ -188,7 +178,6 @@ public class Config {
         }
 
         //获取当前 Jar 的名称
-        String jarPath = Starter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         jc.setProgramName("java -jar JYso.jar");
         jc.setUsageFormatter(new UnixStyleUsageFormatter(jc));
 
@@ -219,8 +208,7 @@ public class Config {
     }
 
     public static void logo() {
-        String logo = "" +
-                " ┏┳┓┏    \n" +
+        String logo = " ┏┳┓┏    \n" +
                 "  ┃┗┫┏┏┓ \n" +
                 " ┗┛┗┛┛┗┛ ";
 

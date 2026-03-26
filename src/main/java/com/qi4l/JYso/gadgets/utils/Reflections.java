@@ -64,7 +64,7 @@ public class Reflections extends ClassLoader {
         return (T) sc.newInstance(consArgs);
     }
 
-    public static Method getMethodByClass(Class cs, String methodName, Class[] parameters) {
+    public static Method getMethodByClass(Class<?> cs, String methodName, Class<?>[] parameters) {
         Method method = null;
         while (cs != null) {
             try {
@@ -78,7 +78,7 @@ public class Reflections extends ClassLoader {
         return method;
     }
 
-    public static Object getMethodAndInvoke(Object obj, String methodName, Class[] parameterClass, Object[] parameters) {
+    public static Object getMethodAndInvoke(Object obj, String methodName, Class<?>[] parameterClass, Object[] parameters) {
         try {
             java.lang.reflect.Method method = getMethodByClass(obj.getClass(), methodName, parameterClass);
             if (method != null)

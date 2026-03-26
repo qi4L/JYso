@@ -8,6 +8,8 @@ import com.sun.syndication.feed.impl.EqualsBean;
 import javax.xml.transform.Templates;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+
 
 @Dependencies("rome:rome:1.0")
 public class ROME2 implements ObjectPayload<Object> {
@@ -28,7 +30,7 @@ public class ROME2 implements ObjectPayload<Object> {
         Reflections.setFieldValue(bean, "_beanClass", Templates.class);
         Reflections.setFieldValue(bean, "_obj", o);
 
-        return Gadgets.makeMap(map1, map2);
+        return makeMap(map1, map2);
     }
 
 }

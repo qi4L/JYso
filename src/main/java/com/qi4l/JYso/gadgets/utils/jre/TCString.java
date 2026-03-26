@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TCString extends ReferencableObject implements SerializedElement {
-    private static Map<String, TCString> instances = new HashMap<String, TCString>();
-    private String content;
+    private static final Map<String, TCString> instances = new HashMap<>();
+    private final String content;
 
     private TCString(String content) {
         this.content = content;

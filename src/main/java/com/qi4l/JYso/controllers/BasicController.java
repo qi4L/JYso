@@ -8,7 +8,6 @@ import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.InjShell;
 import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler;
-import com.qi4l.JYso.template.CommandTemplate;
 import com.qi4l.JYso.template.echoStatic.Meterpreter;
 import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
@@ -111,9 +110,7 @@ public class BasicController implements LdapController {
             if (params.length == 0) {
                 throw new IncorrectParamsException("Missing command parameters.");
             }
-            CommandTemplate commandTemplate = new CommandTemplate(params[0]);
-            commandTemplate.cache();
-            return commandTemplate.getClassName();
+            // 待写
         }
 
         if (payloadType.contains("msf")) {

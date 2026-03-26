@@ -1,6 +1,8 @@
 package com.qi4l.JYso.gadgets.utils.utf8OverlongEncoding;
 
 import com.qi4l.JYso.gadgets.utils.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -8,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class UTF8OverlongObjectOutputStream extends ObjectOutputStream {
+    private static final Logger log = LoggerFactory.getLogger(UTF8OverlongObjectOutputStream.class);
     public static HashMap<Character, int[]> map = new HashMap<Character, int[]>() {{
         put('.', new int[]{0xc0, 0xae});
         put(';', new int[]{0xc0, 0xbb});
@@ -83,7 +86,7 @@ public class UTF8OverlongObjectOutputStream extends ObjectOutputStream {
                     write(map.get(s)[0]);
                     write(map.get(s)[1]);
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
 
             }
             writeLong(desc.getSerialVersionUID());
@@ -108,8 +111,7 @@ public class UTF8OverlongObjectOutputStream extends ObjectOutputStream {
             writeByte(flags);
             ObjectStreamField[] fields = (ObjectStreamField[]) Reflections.getFieldValue(desc, "fields");
             writeShort(fields.length);
-            for (int i = 0; i < fields.length; i++) {
-                ObjectStreamField f = fields[i];
+            for (ObjectStreamField f : fields) {
                 writeByte(f.getTypeCode());
                 writeUTF(f.getName());
                 if (!f.isPrimitive()) {
@@ -120,7 +122,7 @@ public class UTF8OverlongObjectOutputStream extends ObjectOutputStream {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
     }
 }

@@ -1,10 +1,5 @@
 package com.qi4l.JYso.gadgets.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
 public class ByteUtil {
     public static int getSubarrayIndex(byte[] haystack, byte[] needle) {
         outer:
@@ -37,55 +32,4 @@ public class ByteUtil {
         return ret;
     }
 
-    public static byte[] addAtIndex(byte[] bs, int index, byte b) {
-        int length = bs.length + 1;
-        byte[] ret = new byte[length];
-
-        System.arraycopy(bs, 0, ret, 0, index);
-        ret[index] = b;
-        System.arraycopy(bs, index, ret, index + 1, length - index - 1);
-
-        return ret;
-    }
-
-    public static byte[] addAtLast(byte[] bs, byte b) {
-        int length = bs.length + 1;
-        byte[] ret = new byte[length];
-
-        System.arraycopy(bs, 0, ret, 0, length - 1);
-        ret[length - 1] = b;
-
-        return ret;
-    }
-
-    public static byte[] objectsToBytes(Object[] objs) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        for (Object obj : objs) {
-            treatObject(dos, obj);
-        }
-        dos.close();
-        return baos.toByteArray();
-    }
-
-    private static void treatObject(DataOutputStream dos, Object obj)
-            throws IOException {
-        if (obj instanceof Byte) {
-            dos.writeByte((Byte) obj);
-        } else if (obj instanceof Short) {
-            dos.writeShort((Short) obj);
-        } else if (obj instanceof Integer) {
-            dos.writeInt((Integer) obj);
-        } else if (obj instanceof Long) {
-            dos.writeLong((Long) obj);
-        } else if (obj instanceof String) {
-            dos.writeUTF((String) obj);
-        } else {
-            ByteArrayOutputStream ba = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(ba);
-            oos.writeObject(obj);
-            oos.close();
-            dos.write(ba.toByteArray(), 4, ba.size() - 4); // 4 = skip the header
-        }
-    }
 }

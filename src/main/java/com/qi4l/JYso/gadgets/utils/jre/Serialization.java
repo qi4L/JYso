@@ -2,15 +2,19 @@ package com.qi4l.JYso.gadgets.utils.jre;
 
 
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Serialization {
-    private List<Data> objects = new ArrayList<Data>();
+    private static final Logger log = LoggerFactory.getLogger(Serialization.class);
+    private final List<Data> objects = new ArrayList<>();
 
     private Object handle;
 
@@ -23,12 +27,12 @@ public class Serialization {
             f.setAccessible(true);
             this.handle = f.get(output);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
     }
 
-    private static void setFieldValue(Object obj, String fieldName, Object value) throws Exception {
-        Field f = obj.getClass().getDeclaredField(fieldName);
+    private static void setFieldValue(Object obj, Object value) throws Exception {
+        Field f = obj.getClass().getDeclaredField("handles");
         f.setAccessible(true);
         if (Modifier.isFinal(f.getModifiers())) {
             Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -56,11 +60,11 @@ public class Serialization {
     }
 
     public void write(File path) throws Exception {
-        write(new FileOutputStream(path));
+        write(Files.newOutputStream(path.toPath()));
     }
 
     public void write(OutputStream o) throws Exception {
-        if (this.objects.size() == 0)
+        if (this.objects.isEmpty())
             throw new Exception("no objects in serialization");
         DataOutputStream out = new DataOutputStream(o);
         out.writeShort(-21267);
@@ -96,19 +100,19 @@ public class Serialization {
         }
         writeBlockData(out, handles);
         if (obj instanceof Byte) {
-            out.writeByte(((Byte) obj).byteValue());
+            out.writeByte((Byte) obj);
         } else if (obj instanceof Short) {
-            out.writeShort(((Short) obj).shortValue());
+            out.writeShort((Short) obj);
         } else if (obj instanceof Integer) {
-            out.writeInt(((Integer) obj).intValue());
+            out.writeInt((Integer) obj);
         } else if (obj instanceof Long) {
-            out.writeLong(((Long) obj).longValue());
+            out.writeLong((Long) obj);
         } else if (obj instanceof Float) {
-            out.writeFloat(((Float) obj).floatValue());
+            out.writeFloat((Float) obj);
         } else if (obj instanceof Double) {
-            out.writeDouble(((Double) obj).doubleValue());
+            out.writeDouble((Double) obj);
         } else if (obj instanceof Character) {
-            out.writeChar(((Character) obj).charValue());
+            out.writeChar((Character) obj);
         } else if (obj instanceof String || obj instanceof TCString) {
             TCString s = (obj instanceof TCString) ? (TCString) obj : TCString.getInstance(obj.toString());
             s.write(out, handles);
@@ -125,15 +129,15 @@ public class Serialization {
 
     private ObjectOutputStream getPatchedOutputStream(ByteArrayOutputStream out) throws Exception {
         ObjectOutputStream oos = new ObjectOutputStream(out);
-        setFieldValue(oos, "handles", this.handle);
+        setFieldValue(oos, this.handle);
         return oos;
     }
 
-    private class Data {
+    private static class Data {
 
-        private boolean block;
+        private final boolean block;
 
-        private Object data;
+        private final Object data;
 
         public Data(boolean block, Object data) {
             this.block = block;

@@ -1,6 +1,5 @@
 package com.qi4l.JYso.template;
 
-import com.qi4l.JYso.gadgets.utils.Cache;
 import com.qi4l.JYso.gadgets.utils.Utils;
 import org.objectweb.asm.*;
 
@@ -44,7 +43,7 @@ public class ReverseShellTemplate implements Template {
 
     @Override
     public void cache() {
-        Cache.set(className, bytes);
+
     }
 
     @Override

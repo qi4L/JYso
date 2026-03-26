@@ -3,7 +3,7 @@ package com.qi4l.JYso.gadgets.utils.jre;
 import java.io.DataOutputStream;
 
 public class TCReference implements SerializedElement {
-    private int handle;
+    private final int handle;
 
     public TCReference(int handle) {
         this.handle = handle;

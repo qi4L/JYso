@@ -1,6 +1,5 @@
 package com.qi4l.JYso.gadgets.utils;
 
-import com.qi4l.JYso.template.echoStatic.Meterpreter;
 import com.sun.org.apache.bcel.internal.classfile.Utility;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -200,7 +199,7 @@ public class Utils {
     public static String getClassCode(Class<?> clazz) throws Exception {
         byte[] bytes;
         if (clazz.getName().equals("com.feihong.ldap.template.Meterpreter")) {
-            bytes = ClassByteChange.update(Meterpreter.class);
+            bytes = ClassByteChange.update();
 
         } else {
             bytes = getClassBytes(clazz);

@@ -14,6 +14,7 @@ import java.util.List;
 import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 import static com.qi4l.JYso.gadgets.Config.MemShellPayloads.*;
 import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
+import static com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler.generateClassName;
 
 public class InjShell {
 
@@ -178,7 +179,7 @@ public class InjShell {
             }
         }
 
-        ctClass.setName(ClassNameUtils.generateClassName());
+        ctClass.setName(generateClassName());
         insertField(ctClass, "pattern", "public static String pattern = " + converString(Config.URL_PATTERN) + ";");
 
     }

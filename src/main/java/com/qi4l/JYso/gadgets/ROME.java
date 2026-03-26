@@ -7,6 +7,8 @@ import com.sun.syndication.feed.impl.ObjectBean;
 
 import javax.xml.transform.Templates;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+
 
 /**
  * TemplatesImpl.getOutputProperties()
@@ -34,6 +36,6 @@ public class ROME implements ObjectPayload<Object> {
         templates = Gadgets.createTemplatesImpl(command);
         ObjectBean delegate = new ObjectBean(Templates.class, templates);
         ObjectBean root = new ObjectBean(ObjectBean.class, delegate);
-        return Gadgets.makeMap(root, root);
+        return makeMap(root, root);
     }
 }

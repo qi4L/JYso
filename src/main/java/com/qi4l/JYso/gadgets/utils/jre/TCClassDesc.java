@@ -1,7 +1,6 @@
 package com.qi4l.JYso.gadgets.utils.jre;
 
 import java.io.DataOutputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,17 +14,13 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
 
     private byte classDescFlags;
 
-    private List<Field> fields = new ArrayList<Field>();
+    private final List<Field> fields = new ArrayList<>();
 
     protected TCClassDesc() {
     }
 
     public TCClassDesc(String className) throws Exception {
         this(className, -1L, (byte) 0);
-    }
-
-    public TCClassDesc(String className, long serialVersionUID) throws Exception {
-        this(className, serialVersionUID, (byte) 0);
     }
 
     public TCClassDesc(String className, byte classDescFlags) throws Exception {
@@ -45,10 +40,8 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
     private long getSerialVersionUID() throws Exception {
         Class<?> cls = Class.forName(this.className);
         java.lang.reflect.Field f = cls.getDeclaredField("serialVersionUID");
-        if (f == null)
-            return -1L;
         f.setAccessible(true);
-        return Long.valueOf(f.get((Object) null).toString()).longValue();
+        return Long.parseLong(f.get((Object) null).toString());
     }
 
     private byte getClassDescFlags() throws Exception {
@@ -57,9 +50,8 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
         if (Serializable.class.isAssignableFrom(cls))
             b = (byte) (b | 0x2);
         try {
-            if (cls.getDeclaredMethod("writeObject", new Class[]{ObjectOutputStream.class}) != null)
-                b = (byte) (b | 0x1);
-        } catch (Exception exception) {
+            b = (byte) (b | 0x1);
+        } catch (Exception ignored) {
         }
         return b;
     }
@@ -68,9 +60,8 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
         return ((this.classDescFlags & 0x1) != 0);
     }
 
-    public TCClassDesc addField(Field field) {
+    public void addField(Field field) {
         this.fields.add(field);
-        return this;
     }
 
     public void write(DataOutputStream out, HandleContainer handles) throws Exception {
@@ -96,29 +87,29 @@ public class TCClassDesc extends ReferencableObject implements SerializedElement
 
     public static class Field implements SerializedElement {
 
-        private String name;
+        private final String name;
 
-        private Class type;
+        private final Class<?> type;
 
-        public Field(String name, Class type) {
+        public Field(String name, Class<?> type) {
             this.name = name;
             this.type = type;
         }
 
-        private byte getTypeByte() throws Exception {
-            Map<Class<?>, Byte> bytes = new HashMap<Class<?>, Byte>();
-            bytes.put(byte.class, Byte.valueOf((byte) 66));
-            bytes.put(char.class, Byte.valueOf((byte) 67));
-            bytes.put(double.class, Byte.valueOf((byte) 68));
-            bytes.put(float.class, Byte.valueOf((byte) 70));
-            bytes.put(int.class, Byte.valueOf((byte) 73));
-            bytes.put(long.class, Byte.valueOf((byte) 74));
-            bytes.put(short.class, Byte.valueOf((byte) 83));
-            bytes.put(boolean.class, Byte.valueOf((byte) 90));
+        private byte getTypeByte() {
+            Map<Class<?>, Byte> bytes = new HashMap<>();
+            bytes.put(byte.class, (byte) 66);
+            bytes.put(char.class, (byte) 67);
+            bytes.put(double.class, (byte) 68);
+            bytes.put(float.class, (byte) 70);
+            bytes.put(int.class, (byte) 73);
+            bytes.put(long.class, (byte) 74);
+            bytes.put(short.class, (byte) 83);
+            bytes.put(boolean.class, (byte) 90);
             Byte b = bytes.get(this.type);
             if (b == null)
-                b = Byte.valueOf((byte) 76);
-            return b.byteValue();
+                b = (byte) 76;
+            return b;
         }
 
         public void write(DataOutputStream out, HandleContainer handles) throws Exception {

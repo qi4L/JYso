@@ -1,30 +1,30 @@
 package com.qi4l.JYso.gadgets.utils;
 
 import com.qi4l.JYso.gadgets.Config.Config;
-import com.qi4l.JYso.template.echoStatic.Meterpreter;
 import javassist.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ClassByteChange {
 
+    private static final Logger log = LoggerFactory.getLogger(ClassByteChange.class);
+
     public static void main(String[] args) {
         try {
-            update(Meterpreter.class);
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        } catch (CannotCompileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            update();
+        } catch (NotFoundException | CannotCompileException | IOException e) {
+            log.error("e: ", e);
         }
     }
 
     //动态获取.class
-    public static byte[] update(Class clazz) throws NotFoundException, CannotCompileException, IOException {
+    public static byte[] update() throws NotFoundException, CannotCompileException, IOException {
 
         File dir = new File("");
         String ap = dir.getAbsolutePath();
@@ -49,7 +49,7 @@ public class ClassByteChange {
 
         //替换原有的文件
         cClass.writeFile(ap);
-        InputStream in = new FileInputStream(ap + File.separatorChar + "Meterpreter.class");
+        InputStream in = Files.newInputStream(Paths.get(ap + File.separatorChar + "Meterpreter.class"));
         return Utils.getBytes(in);
 
 

@@ -1,16 +1,20 @@
 package com.qi4l.JYso.gadgets.utils.jre;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCObject extends ReferencableObject implements SerializedElement {
-    private Serialization ser;
+    private static final Logger log = LoggerFactory.getLogger(TCObject.class);
+    private final Serialization ser;
 
-    private List<ClassDescData> descData;
+    private final List<ClassDescData> descData;
 
     public TCObject(Serialization ser) {
-        this.descData = new ArrayList<ClassDescData>();
+        this.descData = new ArrayList<>();
         this.ser = ser;
     }
 
@@ -18,33 +22,31 @@ public class TCObject extends ReferencableObject implements SerializedElement {
         return this.descData.size();
     }
 
-    public TCObject addClassDescData(TCClassDesc desc, ObjectData data) throws Exception {
-        return addClassDescData(desc, data, false);
+    public void addClassDescData(TCClassDesc desc, ObjectData data) throws Exception {
+        addClassDescData(desc, data, false);
     }
 
-    public TCObject addClassDescData(TCClassDesc desc, ObjectData data, boolean ignoreEquality) throws Exception {
+    public void addClassDescData(TCClassDesc desc, ObjectData data, boolean ignoreEquality) throws Exception {
         if (!ignoreEquality &&
                 desc.getFieldsCount() != data.size())
             throw new Exception("not enough fields/data, fields count: " + desc.getFieldsCount() + ", data count: " + data.size());
         data.setSer(this.ser);
         this.descData.add(new ClassDescData(desc, data));
-        return this;
     }
 
-    protected void writeHeader(DataOutputStream out, HandleContainer handles) throws Exception {
+    protected void writeHeader(DataOutputStream out) throws Exception {
         out.writeByte(115);
     }
 
-    protected void writeClassDescs(DataOutputStream out, HandleContainer handles) throws Exception {
+    protected void writeClassDescs(DataOutputStream out, HandleContainer handles) {
         try {
-            for (int i = 0; i < this.descData.size(); i++) {
-                ClassDescData d = this.descData.get(i);
+            for (ClassDescData d : this.descData) {
                 d.getDesc().write(out, handles);
             }
             out.writeByte(112);
         } catch (Exception e) {
             if (!e.getMessage().equals("stop"))
-                e.printStackTrace();
+                log.error("e: ", e);
         }
     }
 
@@ -60,7 +62,7 @@ public class TCObject extends ReferencableObject implements SerializedElement {
     }
 
     public void doWrite(DataOutputStream out, HandleContainer handles) throws Exception {
-        writeHeader(out, handles);
+        writeHeader(out);
         writeClassDescs(out, handles);
         handles.putHandle(getHandleObject());
         writeClassData(out, handles);
@@ -68,9 +70,9 @@ public class TCObject extends ReferencableObject implements SerializedElement {
 
     private static class ClassDescData {
 
-        private TCClassDesc desc;
+        private final TCClassDesc desc;
 
-        private TCObject.ObjectData data;
+        private final TCObject.ObjectData data;
 
         public ClassDescData(TCClassDesc desc, TCObject.ObjectData data) {
             this.desc = desc;
@@ -88,7 +90,7 @@ public class TCObject extends ReferencableObject implements SerializedElement {
 
     public static class ObjectData implements SerializedElement {
 
-        private List<Data> data = new ArrayList<Data>();
+        private final List<Data> data = new ArrayList<>();
         private Serialization ser;
 
         public void setSer(Serialization ser) {
@@ -109,16 +111,15 @@ public class TCObject extends ReferencableObject implements SerializedElement {
             return this;
         }
 
-        public ObjectData addData(Object obj, boolean block) {
+        public void addData(Object obj, boolean block) {
             this.data.add(new Data(block, obj));
-            return this;
         }
 
-        private class Data {
+        private static class Data {
 
-            private boolean block;
+            private final boolean block;
 
-            private Object data;
+            private final Object data;
 
             public Data(boolean block, Object data) {
                 this.block = block;

