@@ -59,7 +59,7 @@ public class JRMPClient implements ObjectPayload<Object> {
         TCPEndpoint te = new TCPEndpoint(host, port);
         UnicastRef ref = new UnicastRef(new LiveRef(id, te, false));
         RemoteObjectInvocationHandler obj = new RemoteObjectInvocationHandler(ref);
-        return (Registry) Proxy.newProxyInstance(JRMPClient.class.getClassLoader(), new Class[]{
+        return Proxy.newProxyInstance(JRMPClient.class.getClassLoader(), new Class[]{
                 Registry.class
         }, obj);
     }

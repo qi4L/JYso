@@ -43,7 +43,9 @@ public class cb_AttrCompare183 implements ObjectPayload<Object> {
         } catch (NotFoundException ignored) {
         }
         ctBeanComparator.addField(CtField.make("private static final long serialVersionUID = -3490850999041592962L;", ctBeanComparator));
-        final Comparator beanComparator = (Comparator) ctBeanComparator.toClass(new SuClassLoader()).newInstance();
+        final Comparator beanComparator = (Comparator) ctBeanComparator.toClass(
+                new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
+        ).newInstance();
         ctBeanComparator.defrost();
         return beanComparator;
     }

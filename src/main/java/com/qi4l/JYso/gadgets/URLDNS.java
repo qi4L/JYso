@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * A blog post with more details about this gadget chain is at the url below:
- * https://blog.paranoidsoftware.com/triggering-a-dns-lookup-using-java-deserialization/
+ * <a href="https://blog.paranoidsoftware.com/triggering-a-dns-lookup-using-java-deserialization/">...</a>
  * <p>
  * This was inspired by  Philippe Arteau @h3xstream, who wrote a blog
  * posting describing how he modified the Java Commons Collections gadget
