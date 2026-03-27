@@ -1,6 +1,7 @@
 package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.gadgets.annotation.Authors;
+import com.qi4l.JYso.gadgets.utils.DynamicDependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.JavaVersion;
 import com.qi4l.JYso.gadgets.utils.Reflections;
@@ -19,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
 
 /**

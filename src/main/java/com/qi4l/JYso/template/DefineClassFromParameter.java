@@ -7,7 +7,7 @@ package com.qi4l.JYso.template;
  */
 public class DefineClassFromParameter {
 
-    public static String parameter;
+    public static String parameter = "dc";
 
     static {
         try {

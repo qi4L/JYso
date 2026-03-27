@@ -10,7 +10,7 @@ import java.rmi.MarshalledObject;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+import static com.qi4l.JYso.gadgets.utils.Utils.createProxy;
 
 
 @Authors({"potats0"})

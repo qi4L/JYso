@@ -5,7 +5,5 @@ public interface Template {
 
     byte[] getBytes();
 
-    void cache();
-
     String getClassName();
 }

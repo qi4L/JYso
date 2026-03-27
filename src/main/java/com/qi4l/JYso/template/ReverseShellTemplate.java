@@ -42,11 +42,6 @@ public class ReverseShellTemplate implements Template {
     }
 
     @Override
-    public void cache() {
-
-    }
-
-    @Override
     public void generate() {
         ClassWriter cw = new ClassWriter(0);
         FieldVisitor fv;

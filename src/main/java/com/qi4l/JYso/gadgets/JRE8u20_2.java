@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+import static com.qi4l.JYso.gadgets.utils.Utils.createProxy;
 
 
 public class JRE8u20_2 implements ObjectPayload<Object> {

@@ -22,7 +22,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
 public class springFs implements ObjectPayload<Object>, Serializable {
     public static ClassPool pool = ClassPool.getDefault();

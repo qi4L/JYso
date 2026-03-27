@@ -7,7 +7,7 @@ import com.sun.syndication.feed.impl.ObjectBean;
 
 import javax.xml.transform.Templates;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
 
 /**

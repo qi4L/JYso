@@ -3,6 +3,7 @@ package com.qi4l.JYso.gadgets;
 import com.alibaba.fastjson.JSONArray;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
+import com.qi4l.JYso.gadgets.utils.DynamicDependencies;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;

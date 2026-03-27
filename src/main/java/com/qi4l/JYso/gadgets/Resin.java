@@ -11,11 +11,13 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.Hashtable;
 
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
+
 public class Resin implements ObjectPayload<Object> {
     public static Object makeToStringTrigger(Object o) throws Exception {
         String unhash = unhash(o.hashCode());
         XString xString = new XString(unhash);
-        return JDKUtil.makeMap(o, xString);
+        return makeMap(o, xString);
     }
 
     public static String unhash(int hash) {

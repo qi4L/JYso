@@ -9,8 +9,9 @@ import com.qi4l.JYso.gadgets.utils.StringUtil;
 import com.qi4l.JYso.gadgets.utils.dirty.DirtyDataWrapper;
 import org.apache.commons.cli.*;
 
-import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
@@ -22,7 +23,7 @@ public class ysoserial {
     public static CommandLine cmdLine;
     public static Object PAYLOAD = null;
 
-    public static void ysoserial(String[] args) {
+    public static void run(String[] args) {
         final Options options = getOptions();
 
         CommandLineParser parser = new DefaultParser();
@@ -106,38 +107,6 @@ public class ysoserial {
             Config.IS_UTF_Bypass = true;
         }
 
-        if (cmdLine.hasOption("Hessian1")) {
-            Config.IS_Hessian1 = true;
-        }
-
-        if (cmdLine.hasOption("Hessian2")) {
-            Config.IS_Hessian2 = true;
-        }
-
-        if (cmdLine.hasOption("XStream")) {
-            Config.IS_Xstream = true;
-        }
-
-        if (cmdLine.hasOption("Kryo")) {
-            Config.IS_Kryo = true;
-        }
-
-        if (cmdLine.hasOption(("JYaml"))) {
-            Config.IS_JYAML = true;
-        }
-        if (cmdLine.hasOption("JsonIO")) {
-            Config.IS_JsonIO = true;
-        }
-        if (cmdLine.hasOption("YamlBeans")) {
-            Config.IS_YamlBeans = true;
-        }
-        if (cmdLine.hasOption("Castor")) {
-            Config.IS_Castor = true;
-        }
-        if (cmdLine.hasOption("Jackson")) {
-            Config.IS_Jackson = true;
-        }
-
         if (cmdLine.hasOption("gen-mem-shell")) {
             Config.GEN_MEM_SHELL = true;
 
@@ -187,11 +156,11 @@ public class ysoserial {
             OutputStream out;
 
             if (Config.WRITE_FILE) {
-                out = new FileOutputStream(Config.FILE);
+                out = Files.newOutputStream(Paths.get(Config.FILE));
             } else {
                 out = System.out;
             }
-            Serializer.qiserialize(object, out, payloadType, command);
+            Serializer.qiserialize(object, out);
             ObjectPayload.Utils.releasePayload(payload, object);
             out.flush();
             out.close();
@@ -203,7 +172,7 @@ public class ysoserial {
         System.exit(0);
     }
 
-    private static Options getOptions() {
+    public static Options getOptions() {
         Options options = new Options();
         options.addOption("y", "ysoserial", false, "Java deserialization");
         options.addOption("g", "gadget", true, "Java deserialization gadget");
@@ -247,10 +216,10 @@ public class ysoserial {
         System.err.println("[root]#~  Available payload types:");
 
         final List<Class<? extends ObjectPayload>> payloadClasses =
-                new ArrayList<Class<? extends ObjectPayload>>(ObjectPayload.Utils.getPayloadClasses());
-        Collections.sort(payloadClasses, new StringUtil.ToStringComparator()); // alphabetize
+                new ArrayList<>(ObjectPayload.Utils.getPayloadClasses());
+        payloadClasses.sort(new StringUtil.ToStringComparator()); // alphabetize
 
-        final List<String[]> rows = new LinkedList<String[]>();
+        final List<String[]> rows = new LinkedList<>();
         rows.add(new String[]{"Payload", "Authors", "Dependencies"});
         rows.add(new String[]{"-------", "-------", "------------"});
         for (Class<? extends ObjectPayload> payloadClass : payloadClasses) {

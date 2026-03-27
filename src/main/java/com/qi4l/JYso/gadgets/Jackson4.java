@@ -11,8 +11,8 @@ import javassist.CtMethod;
 
 import java.util.HashMap;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
 import static com.qi4l.JYso.gadgets.Jackson3.makeTemplatesImplAopProxy;
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
 
 //Jackson1链的JDK17改造

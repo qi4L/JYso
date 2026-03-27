@@ -1,10 +1,10 @@
 package com.qi4l.JYso;
 
+import com.qi4l.JYso.controllers.ysoserial;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.ObjectPayload;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
-import static com.qi4l.JYso.controllers.ysoserial.ysoserial;
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
 
 public class Starter {
@@ -31,10 +31,10 @@ public class Starter {
             }
         }
 
-        // 如果参数中包含-y，则启动 ysu serial
+        // 如果参数中包含-y，则启动 ysoserial
         if (args.length > 0 && args[0].equals("-y")) {
             JYsoMode = true;
-            ysoserial(args);
+            ysoserial.run(args);
         }
     }
 }

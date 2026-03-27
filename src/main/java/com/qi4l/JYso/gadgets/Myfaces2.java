@@ -1,5 +1,7 @@
 package com.qi4l.JYso.gadgets;
 
+import com.qi4l.JYso.gadgets.utils.DynamicDependencies;
+
 public class Myfaces2 implements ObjectPayload<Object>, DynamicDependencies {
     @Override
     public Object getObject(String command) throws Exception {

