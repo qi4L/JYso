@@ -1,5 +1,7 @@
 package com.qi4l.JYso.gadgets;
 
+import com.qi4l.JYso.gadgets.annotation.Authors;
+import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import org.apache.commons.collections.functors.ConstantTransformer;
@@ -16,6 +18,10 @@ import java.util.Map;
  * 需要调用其 connect 方法，因此需要调用任意方法的 Gadget，这里选择了 InvokerTransformer
  * 直接传入 Base64 编码的序列化数据即可
  */
+
+@SuppressWarnings({"unchecked","unused"})
+@Dependencies({"commons-collections:commons-collections:3.2.1"})
+@Authors({Authors.QI4L})
 public class cc11 implements ObjectPayload<Object> {
 
     @Override

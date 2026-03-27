@@ -12,7 +12,7 @@ import java.util.LinkedHashSet;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.createProxy;
 
-
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Authors({"potats0"})
 public class Jdk7u21variant implements ObjectPayload<Object> {
 

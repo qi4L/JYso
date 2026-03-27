@@ -8,7 +8,7 @@ import org.apache.commons.beanutils.BeanComparator;
 
 import java.util.PriorityQueue;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2"})
 @Authors({Authors.QI4L})
 public class cb_JDBC implements ObjectPayload<Object> {

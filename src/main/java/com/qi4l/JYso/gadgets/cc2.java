@@ -11,7 +11,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.apache.commons:commons-collections4:4.0"})
 @Authors({Authors.FROHOFF})
 public class cc2 implements ObjectPayload<Queue<Object>> {

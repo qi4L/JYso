@@ -64,7 +64,7 @@ public class Vaadin1 implements ObjectPayload<Object> {
         templates = Gadgets.createTemplatesImpl(command);
         PropertysetItem pItem = new PropertysetItem();
 
-        NestedMethodProperty<Object> nmprop = new NestedMethodProperty<Object>(templates, "outputProperties");
+        NestedMethodProperty<Object> nmprop = new NestedMethodProperty<>(templates, "outputProperties");
         pItem.addItemProperty("outputProperties", nmprop);
 
         BadAttributeValueExpException b = new BadAttributeValueExpException("");

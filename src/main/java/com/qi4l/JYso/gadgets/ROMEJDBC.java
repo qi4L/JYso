@@ -7,7 +7,7 @@ import com.sun.rowset.JdbcRowSetImpl;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
-
+@SuppressWarnings({"unused"})
 public class ROMEJDBC implements ObjectPayload<Object> {
     // Assuming JDKUtil class with makeJNDIRowSet method
     public static JdbcRowSetImpl makeJNDIRowSet(String jndiUrl) throws Exception {

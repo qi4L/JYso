@@ -34,6 +34,8 @@ import com.sun.rowset.JdbcRowSetImpl;
  *
  * @author mbechler
  */
+
+@SuppressWarnings({"unused"})
 @Authors({Authors.MBECHLER})
 public class Hibernate2 implements ObjectPayload<Object>, DynamicDependencies {
 

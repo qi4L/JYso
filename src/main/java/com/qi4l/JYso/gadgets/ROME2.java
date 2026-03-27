@@ -11,6 +11,7 @@ import java.util.Map;
 import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 import static com.qi4l.JYso.gadgets.utils.Utils.createMap;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies("rome:rome:1.0")
 public class ROME2 implements ObjectPayload<Object> {
     @Override

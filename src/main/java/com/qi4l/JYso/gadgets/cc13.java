@@ -14,6 +14,7 @@ import org.apache.commons.collections.map.LazyMap;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unused"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.UNAM4})
 public class cc13 implements ObjectPayload<Object> {
@@ -29,7 +30,6 @@ public class cc13 implements ObjectPayload<Object> {
         Reflections.setFieldValue(tiedMapEntry, "key", 233);
 
         return hashMap;
-        //return hashtable;
     }
 
 }

@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
-import static com.qi4l.JYso.gadgets.utils.HexUtils.generatePassword;
 import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;
 
 public class ysoserial {
@@ -52,18 +51,6 @@ public class ysoserial {
             Config.IS_OBSCURE = true;
         }
 
-        if (cmdLine.hasOption("cmd-header")) {
-            Config.CMD_HEADER_STRING = cmdLine.getOptionValue("cmd-header");
-        }
-
-        if (cmdLine.hasOption("url")) {
-            String url = cmdLine.getOptionValue("url");
-            if (!url.startsWith("/")) {
-                url = "/" + url;
-            }
-            Config.URL_PATTERN = url;
-        }
-
         if (cmdLine.hasOption("define-class-from-parameter")) {
             Config.PARAMETER = cmdLine.getOptionValue("define-class-from-parameter");
         }
@@ -75,23 +62,6 @@ public class ysoserial {
 
         if (cmdLine.hasOption("base64")) {
             Config.BASE64 = true;
-        }
-
-        if (cmdLine.hasOption("password")) {
-            Config.PASSWORD_ORI = cmdLine.getOptionValue("password");
-            Config.PASSWORD = generatePassword(Config.PASSWORD_ORI);
-        }
-
-        if (cmdLine.hasOption("godzilla-key")) {
-            Config.GODZILLA_KEY = generatePassword(cmdLine.getOptionValue("godzilla-key"));
-        }
-
-        if (cmdLine.hasOption("header-key")) {
-            Config.HEADER_KEY = cmdLine.getOptionValue("header-key");
-        }
-
-        if (cmdLine.hasOption("header-value")) {
-            Config.HEADER_VALUE = cmdLine.getOptionValue("header-value");
         }
 
         if (cmdLine.hasOption("no-com-sun")) {

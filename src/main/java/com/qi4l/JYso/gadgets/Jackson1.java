@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 // 在触发 getter 的时候是以随机顺序触发的,所以概率打空
 public class Jackson1 implements ObjectPayload<Object> {
 
@@ -24,7 +25,7 @@ public class Jackson1 implements ObjectPayload<Object> {
             CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
             ctClass.removeMethod(writeReplace);
             ctClass.toClass();
-        } catch (Exception EE) {
+        } catch (Exception ignored) {
 
         }
 

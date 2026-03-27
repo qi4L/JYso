@@ -5,7 +5,6 @@ import com.qi4l.JYso.exceptions.IncorrectParamsException;
 import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
-import com.qi4l.JYso.gadgets.utils.InjShell;
 import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler;
 import com.qi4l.JYso.template.Meterpreter;

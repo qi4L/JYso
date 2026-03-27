@@ -7,26 +7,27 @@ import org.apache.commons.io.output.DeferredFileOutputStream;
 import org.apache.commons.io.output.ThresholdingOutputStream;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+@SuppressWarnings({"unused"})
 public class FileUpload1 implements ReleaseableObjectPayload<DiskFileItem> {
-    private static DiskFileItem copyAndDelete(String copyAndDelete, String copyTo) throws IOException, Exception {
+    private static DiskFileItem copyAndDelete(String copyAndDelete, String copyTo) throws Exception {
         return makePayload(0, copyTo, copyAndDelete, new byte[1]);
     }
 
     // writes data to a random filename (update_<per JVM random UUID>_<COUNTER>.tmp)
-    private static DiskFileItem write(String dir, byte[] data) throws IOException, Exception {
+    private static DiskFileItem write(String dir, byte[] data) throws Exception {
         return makePayload(data.length + 1, dir, dir + "/whatever", data);
     }
 
     // writes data to an arbitrary file
-    private static DiskFileItem writePre131(String file, byte[] data) throws IOException, Exception {
+    private static DiskFileItem writePre131(String file, byte[] data) throws Exception {
         return makePayload(data.length + 1, file + "\0", file, data);
     }
 
-    private static DiskFileItem makePayload(int thresh, String repoPath, String filePath, byte[] data) throws IOException, Exception {
+    public static DiskFileItem makePayload(int thresh, String repoPath, String filePath, byte[] data) throws Exception {
         // if thresh < written length, delete outputFile after copying to repository temp file
         // otherwise write the contents to repository temp file
         File repository = new File(repoPath);
@@ -49,11 +50,11 @@ public class FileUpload1 implements ReleaseableObjectPayload<DiskFileItem> {
         if (parts.length == 3 && "copyAndDelete".equals(parts[0])) {
             return copyAndDelete(parts[1], parts[2]);
         } else if (parts.length == 3 && "write".equals(parts[0])) {
-            return write(parts[1], parts[2].getBytes("US-ASCII"));
+            return write(parts[1], parts[2].getBytes(StandardCharsets.US_ASCII));
         } else if (parts.length == 3 && "writeB64".equals(parts[0])) {
             return write(parts[1], Base64.decodeBase64(parts[2]));
         } else if (parts.length == 3 && "writeOld".equals(parts[0])) {
-            return writePre131(parts[1], parts[2].getBytes("US-ASCII"));
+            return writePre131(parts[1], parts[2].getBytes(StandardCharsets.US_ASCII));
         } else if (parts.length == 3 && "writeOldB64".equals(parts[0])) {
             return writePre131(parts[1], Base64.decodeBase64(parts[2]));
         } else {

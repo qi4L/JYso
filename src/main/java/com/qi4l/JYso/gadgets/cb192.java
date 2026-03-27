@@ -8,6 +8,7 @@ import org.apache.commons.beanutils.BeanComparator;
 
 import java.util.PriorityQueue;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "commons-collections:commons-collections:3.1", "commons-logging:commons-logging:1.2"})
 @Authors({Authors.FROHOFF})
 public class cb192 implements ObjectPayload<Object> {

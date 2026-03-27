@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.net.InetAddress;
 
+@SuppressWarnings({"unused"})
 @Dependencies({"javax.media:jai-codec-1.1.3"})
 public class RenderedImage implements ObjectPayload<Object> {
     public static byte hexToByte(String inHex) {

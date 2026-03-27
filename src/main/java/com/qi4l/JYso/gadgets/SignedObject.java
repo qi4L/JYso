@@ -1,7 +1,6 @@
 package com.qi4l.JYso.gadgets;
 
 import cn.hutool.core.comparator.PropertyComparator;
-import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.qi4l.JYso.gadgets.utils.SignedObjectUtils;
 import com.qi4l.JYso.gadgets.utils.dirty.DirtyDataWrapper;
@@ -48,6 +47,8 @@ import static java.lang.Class.forName;
  * 最后2个类型是脏数据类型和长度，为0则不混淆
  * @author QI4L
  */
+
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class SignedObject implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {

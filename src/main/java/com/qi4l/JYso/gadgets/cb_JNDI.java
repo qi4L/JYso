@@ -9,6 +9,7 @@ import org.apache.commons.beanutils.BeanComparator;
 import java.math.BigInteger;
 import java.util.PriorityQueue;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2", "commons-collections:commons-collections:3.1"})
 @Authors({Authors.QI4L})
 public class cb_JNDI implements ObjectPayload<Object> {

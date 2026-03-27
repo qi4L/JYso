@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * CC6的简化写法
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.SCRISTALLI, Authors.HANYRAX, Authors.EDOARDOVIGNATI})
 public class cc7 implements ObjectPayload<Hashtable> {

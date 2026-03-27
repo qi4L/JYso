@@ -2,7 +2,6 @@ package com.qi4l.JYso.gadgets.utils;
 
 
 import com.caucho.hessian.io.*;
-import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.utf8OverlongEncoding.UTF8OverlongObjectOutputStream;
 import org.springframework.jndi.support.SimpleJndiBeanFactory;
 
@@ -15,6 +14,7 @@ import java.util.concurrent.Callable;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
 
+@SuppressWarnings({"unused"})
 public class Serializer implements Callable<byte[]> {
     public static Boolean globalinline = false;
     private final Object object;

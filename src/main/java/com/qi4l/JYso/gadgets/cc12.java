@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unused"})
 @Dependencies({"commons-collections:commons-collections:3.2.1"})
 @Authors({Authors.Jayl1n})
 public class cc12 implements ObjectPayload<Object> {

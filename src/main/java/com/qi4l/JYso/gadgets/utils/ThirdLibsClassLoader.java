@@ -11,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class ThirdLibsClassLoader extends URLClassLoader {
     public static final String thirdLibDir = "chains-config/third-libs";
     private static final String commonDir = "common";
@@ -85,7 +86,7 @@ public class ThirdLibsClassLoader extends URLClassLoader {
             log.debug("Add common lib: {}", url);
             loader.addURL(url);
         }
-        log.info("Loaded {} libraries from common directory", Integer.valueOf(jarUrls.size()));
+        log.info("Loaded {} libraries from common directory", jarUrls.size());
         return loader;
     }
 
@@ -97,9 +98,9 @@ public class ThirdLibsClassLoader extends URLClassLoader {
                 List<URL> jarUrls = new ArrayList<>();
                 findJarFiles(dir, jarUrls);
                 if (!jarUrls.isEmpty()) {
-                    ThirdLibsClassLoader dirClassLoader = new ThirdLibsClassLoader((URL[]) jarUrls.toArray(new URL[0]), INSTANCE);
+                    ThirdLibsClassLoader dirClassLoader = new ThirdLibsClassLoader(jarUrls.toArray(new URL[0]), INSTANCE);
                     pluginClassLoaderMap.put(dir.getName(), dirClassLoader);
-                    log.info("Loaded {} libraries from directory: {}", Integer.valueOf(jarUrls.size()), dir.getName());
+                    log.info("Loaded {} libraries from directory: {}", jarUrls.size(), dir.getName());
                 }
             }
         }

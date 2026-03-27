@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 import static com.qi4l.JYso.gadgets.utils.jdk17Bypass.patchModule;
 
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Authors({Authors.JIECUB3})
 public class cc4_17 implements ObjectPayload<Object> {
     @Override

@@ -45,7 +45,7 @@ import java.util.PriorityQueue;
  * by @artsploit
  */
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.apache.click:click-nodeps:2.3.0", "javax.servlet:javax.servlet-api:3.1.0"})
 @Authors({Authors.ARTSPLOIT})
 public class Click1 implements ObjectPayload<Object> {

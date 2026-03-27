@@ -29,6 +29,7 @@ import static java.lang.Class.forName;
  * @author mbechler
  */
 
+@SuppressWarnings({"unused"})
 @Dependencies({
         "org.springframework:spring-core:4.1.4.RELEASE", "org.springframework:spring-aop:4.1.4.RELEASE",
         // test deps

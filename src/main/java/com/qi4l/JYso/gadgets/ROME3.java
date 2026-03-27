@@ -9,6 +9,7 @@ import com.sun.syndication.feed.impl.ObjectBean;
 import javax.management.BadAttributeValueExpException;
 import javax.xml.transform.Templates;
 
+@SuppressWarnings({"unused"})
 @Authors({"Firebasky"})
 @Dependencies("rome:rome:1.0")
 public class ROME3 implements ObjectPayload<Object> {

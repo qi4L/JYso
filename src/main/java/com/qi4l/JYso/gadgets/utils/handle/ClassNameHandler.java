@@ -107,12 +107,6 @@ public class ClassNameHandler {
         }
     }
 
-    public static String getHumanName(String className, String suffix) {
-        className = className.substring(className.lastIndexOf('.') + 1);
-        className = Character.toLowerCase(className.charAt(0)) + className.substring(1);
-        return className + suffix;
-    }
-
 
     public static String searchClassByName(String name) {
         Set<String> set = getClassSet("com.qi4l.JYso.template.");

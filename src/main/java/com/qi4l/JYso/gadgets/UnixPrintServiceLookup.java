@@ -5,6 +5,7 @@ import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 
+@SuppressWarnings({"unused"})
 public class UnixPrintServiceLookup implements ObjectPayload<Object>{
     @Override
     public Object getObject(String command) throws Exception {

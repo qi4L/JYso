@@ -27,6 +27,7 @@ import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
  * @author mbechler
  */
 
+@SuppressWarnings({"unused"})
 @Dependencies("rome:rome:1.0")
 @Authors({Authors.MBECHLER})
 public class ROME implements ObjectPayload<Object> {

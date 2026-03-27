@@ -1,16 +1,16 @@
-<p align="center">
-  <img src="docs/img/logo.png" width="120">
+<p style="text-align: center;">
+  <img src="docs/img/logo.png" width="465" alt="">
 </p>
-<h1 align="center"> JYso </h1>
+<h1 style="text-align: center;"> JYso </h1>
 
-<p align="center">
-<img src="https://img.shields.io/badge/JDK-1.8+-orange" />
-<img src="https://img.shields.io/badge/gradle-8.7-blue" />
-<img src="https://img.shields.io/badge/SDL-Groovy-green" />
+<p style="text-align: center;">
+<img src="https://img.shields.io/badge/JDK-1.8+-orange"  alt=""/>
+<img src="https://img.shields.io/badge/gradle-8.7-blue"  alt=""/>
+<img src="https://img.shields.io/badge/SDL-Groovy-green"  alt=""/>
 
-<p align="center"> 可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同时具备多种JNDI高版本、WAF、RASP的Bypass功能 </p>
+<p style="text-align: center;"> 可以同时当做 ysoserial 与 JNDIExploit 使用的工具，同时具备多种JNDI高版本、WAF、RASP的Bypass功能 </p>
 
-<p align="center"> 中文文档 | <a href="README.en.md">English</a> </p>
+<p style="text-align: center;"> 中文文档 | <a href="README.en.md">English</a> </p>
 
 ## 🚀 上手指南
 
@@ -53,7 +53,7 @@
 
 ## ✨ CTStack
 
-<img src="https://ctstack-oss.oss-cn-beijing.aliyuncs.com/CT%20Stack-2.png" width="30%" />
+<img src="https://ctstack-oss.oss-cn-beijing.aliyuncs.com/CT%20Stack-2.png" width="30%"  alt=""/>
 
 JYso 现已加入 [CTStack](https://stack.chaitin.com/tool/detail/1303) 社区
 

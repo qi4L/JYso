@@ -28,6 +28,7 @@ import static com.qi4l.JYso.gadgets.annotation.Authors.JACKOFMOSTTRADES;
  * Versions since 1.2.0 are vulnerable, although some class names may need to be changed for other versions
  */
 
+@SuppressWarnings({"unused"})
 @Dependencies({"org.clojure:clojure:1.8.0"})
 @Authors({JACKOFMOSTTRADES})
 public class Clojure implements ObjectPayload<Map<?, ?>> {

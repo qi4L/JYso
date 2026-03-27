@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.createProxy;
 
-
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class JRE8u20_2 implements ObjectPayload<Object> {
     public static Class newInvocationHandlerClass() throws Exception {
         ClassPool pool = ClassPool.getDefault();
@@ -27,8 +27,7 @@ public class JRE8u20_2 implements ObjectPayload<Object> {
                 "        os.defaultWriteObject();\n" +
                 "    }", clazz);
         clazz.addMethod(writeObject);
-        Class c = clazz.toClass();
-        return c;
+        return clazz.toClass();
     }
 
 

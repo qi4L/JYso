@@ -45,9 +45,7 @@ import static com.qi4l.JYso.gadgets.utils.Utils.*;
  *
  * @author mbechler
  */
-@SuppressWarnings({
-        "rawtypes", "unchecked", "restriction"
-})
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 @Dependencies({"net.sf.json-lib:json-lib:jar:jdk15:2.4", "org.springframework:spring-aop:4.1.4.RELEASE",
         // deep deps
         "aopalliance:aopalliance:1.0", "commons-logging:commons-logging:1.2", "commons-lang:commons-lang:2.6",

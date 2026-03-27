@@ -3,7 +3,6 @@ package com.qi4l.JYso.gadgets;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.DynamicDependencies;
-import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import org.apache.myfaces.context.servlet.FacesContextImpl;
 import org.apache.myfaces.context.servlet.FacesContextImplBase;
@@ -14,8 +13,6 @@ import org.apache.myfaces.view.facelets.el.ValueExpressionMethodExpression;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
@@ -37,6 +34,8 @@ import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
  *
  * @author mbechler
  */
+
+@SuppressWarnings({"unused"})
 @Dependencies
 @Authors({Authors.MBECHLER})
 public class Myfaces1 implements ObjectPayload<Object>, DynamicDependencies {
@@ -65,7 +64,7 @@ public class Myfaces1 implements ObjectPayload<Object>, DynamicDependencies {
     }
 
     public static Object makeExpressionPayload(String expr) throws Exception {
-        FacesContextImpl fc = new FacesContextImpl((ServletContext) null, (ServletRequest) null, (ServletResponse) null);
+        FacesContextImpl fc = new FacesContextImpl(null, null, (ServletResponse) null);
         ELContext elContext = new FacesELContext(new CompositeELResolver(), fc);
         Reflections.getField(FacesContextImplBase.class, "_elContext").set(fc, elContext);
         ExpressionFactory expressionFactory = ExpressionFactory.newInstance();

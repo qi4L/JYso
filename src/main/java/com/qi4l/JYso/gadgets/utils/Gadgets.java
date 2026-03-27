@@ -21,6 +21,7 @@ import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.generateClass;
 import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.shrinkBytes;
 import static com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl.DESERIALIZE_TRANSLET;
 
+@SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class Gadgets extends ClassLoader {
     public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
     public static Class<?> TPL_CLASS = TemplatesImpl.class;
