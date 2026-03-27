@@ -2,28 +2,14 @@ package com.qi4l.JYso.gadgets.utils;
 
 
 import com.caucho.hessian.io.*;
-import com.cedarsoftware.util.io.JsonWriter;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Output;
-import com.mchange.v2.c3p0.WrapperConnectionPoolDataSource;
-import com.qi4l.JYso.gadgets.C3P0WrapperConnPool;
+import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.utf8OverlongEncoding.UTF8OverlongObjectOutputStream;
-import com.rometools.rome.feed.impl.EqualsBean;
-import com.rometools.rome.feed.impl.ToStringBean;
-import com.sun.rowset.JdbcRowSetImpl;
-import com.thoughtworks.xstream.XStream;
-import org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor;
-import org.springframework.beans.factory.config.PropertyPathFactoryBean;
 import org.springframework.jndi.support.SimpleJndiBeanFactory;
 
-import javax.xml.transform.Templates;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -53,32 +39,31 @@ public class Serializer implements Callable<byte[]> {
     }
 
 
-    public static void qiserialize(
+    public static void qi_serialize(
             Object obj,
             final OutputStream out
     ) throws Exception {
-        ByteArrayOutputStream outB64 = new ByteArrayOutputStream();
+        final ObjectOutputStream objOut;
+
 
         if (IS_DIRTY_IN_TC_RESET) {
-            new SuObjectOutputStream(out);
+            objOut = new SuObjectOutputStream(out);
         } else if (IS_UTF_Bypass) {
-            if (BASE64) {
-                new UTF8OverlongObjectOutputStream(outB64);
-            } else {
-                new UTF8OverlongObjectOutputStream(out);
-            }
+            objOut = new UTF8OverlongObjectOutputStream(out);
         } else {
-            if (BASE64) {
-                new SuObjectOutputStream(outB64);
-            } else {
-                new SuObjectOutputStream(out);
-            }
+            objOut = new ObjectOutputStream(out);
         }
 
         if (BASE64) {
-            String encodedString = Base64.getEncoder().encodeToString(outB64.toByteArray());
-            System.out.println(encodedString);
+            ByteArrayOutputStream out_b64 = new ByteArrayOutputStream();
+            ObjectOutputStream objOut_b64 = new ObjectOutputStream(out_b64);
+            objOut_b64.writeObject(obj);
+            objOut_b64.flush();
+            String base64 = Base64.getEncoder().encodeToString(out_b64.toByteArray());
+            System.out.println(base64);
         }
+        objOut.writeObject(obj);
+
     }
 
     protected static String writeObject(Class<?> clazz, Map<String, String> properties) {

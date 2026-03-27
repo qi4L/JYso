@@ -127,8 +127,10 @@ public class Config {
         KEY_METHOD_MAP.put("org.springframework.web.server.WebFilter", "executePayload");
     }
 
+    @SuppressWarnings({"InstantiationOfUtilityClass","HttpUrlsUsage"})
     public static void applyCmdArgs(String[] args) {
         //process cmd args
+
         JCommander jc = JCommander.newBuilder()
                 .addObject(new Config())
                 .build();

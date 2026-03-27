@@ -36,8 +36,8 @@ public class SerializedDataController implements LdapController {
         byte[] bytes;
 
         try {
-            final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass(gadgetType);
-            ObjectPayload payload = payloadClass.newInstance();
+            final Class<? extends ObjectPayload<?>> payloadClass = ObjectPayload.Utils.getPayloadClass(gadgetType);
+            ObjectPayload<?> payload = payloadClass.newInstance();
             Object object = payload.getObject(params);
 
             if (SerializedDataController.gadgetType.equals("JRE8u20")) {

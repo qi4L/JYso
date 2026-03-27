@@ -1,6 +1,5 @@
 package com.qi4l.JYso.controllers;
 
-import com.qi4l.JYso.enumtypes.PayloadType;
 import com.qi4l.JYso.exceptions.IncorrectParamsException;
 import com.qi4l.JYso.exceptions.UnSupportedActionTypeException;
 import com.qi4l.JYso.exceptions.UnSupportedGadgetTypeException;
@@ -17,7 +16,6 @@ import javax.naming.StringRefAddr;
 
 @LdapMapping(uri = {"/xstream"})
 public class XStreamController implements LdapController {
-    private PayloadType type;
     private String[] params;
 
     @Override
@@ -81,12 +79,6 @@ public class XStreamController implements LdapController {
 
             String payloadType = base.substring(firstIndex + 1, secondIndex);
             System.out.println(Ansi.ansi().fgBrightMagenta().a("  Paylaod: " + payloadType).reset());
-            if (payloadType.equalsIgnoreCase("command")) {
-                type = PayloadType.valueOf("command");
-                //System.out.println(ansi().render("@|green [+]|@ @|MAGENTA Paylaod >> |@" + type));
-            } else {
-                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType >> " + payloadType);
-            }
 
             String cmd = Utils.getCmdFromBase(base);
             System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + cmd).reset());

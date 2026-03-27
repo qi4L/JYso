@@ -102,7 +102,6 @@ public class BasicController implements LdapController {
         }
 
         if (payloadType.contains("M-")) {
-            InjShell.init(params);
             return Gadgets.createClassB(suffixAfterDash(payloadType));
         }
 

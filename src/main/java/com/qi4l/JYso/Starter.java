@@ -1,6 +1,6 @@
 package com.qi4l.JYso;
 
-import com.qi4l.JYso.controllers.ysoserial;
+import com.qi4l.JYso.gadgets.Config.ysoserial;
 import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.ObjectPayload;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
