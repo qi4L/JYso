@@ -132,7 +132,6 @@ public class RMIServer implements Runnable {
                                         doMessage(s, in, out);
                                         break;
                                     default:
-                                    case TransportConstants.MultiplexProtocol:
                                         System.err.println("Unsupported protocol");
                                         s.close();
                                         continue;
@@ -148,9 +147,7 @@ public class RMIServer implements Runnable {
                         e.printStackTrace(System.err);
                     } finally {
                         System.out.println(Ansi.ansi().fgRgb(255, 165, 0).a("  Closing connection").reset());
-                        if (s != null) {
-                            s.close();
-                        }
+                        s.close();
                     }
                 }
             } finally {

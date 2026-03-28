@@ -50,7 +50,7 @@ public class Basic {
         return new Reference("Foo", className, Config.codeBase);
     }
 
-    private static void parse(String base) throws Exception {
+    private static void parse(String base) {
         System.out.println("- JNDI RMI Remote Reference Links ");
         try {
             String normalized = base.replace('\\', '/');
