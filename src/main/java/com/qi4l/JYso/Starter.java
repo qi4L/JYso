@@ -29,6 +29,7 @@ public class Starter {
             if (Config.TLSProxy) {
                 TLSProxy.start();
             }
+            RMIServer.start();
         }
 
         // 如果参数中包含-y，则启动 ysoserial
