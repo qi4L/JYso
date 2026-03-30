@@ -41,10 +41,8 @@ public class Config {
     public static String USER = "";
     @Parameter(names = {"-p", " --PASSWD"}, help = true, description = "ldap binding password", order = 5)
     public static String PASSWD = "";
-    @Parameter(names = {"-t", " --TLSProxy"}, help = true, description = "TLS port forwarding", order = 5)
+    @Parameter(names = {"-t", " --LdapsServer"}, help = true, description = "TLS port forwarding", order = 5)
     public static boolean TLSProxy = false;
-    @Parameter(names = {"-tP", " --TLSPort"}, help = true, description = "TLS port", order = 5)
-    public static String TLSPort = "1636";
     @Parameter(names = {"-kP", " --keyPass"}, help = true, description = "JKS key password", order = 5)
     public static String keyPass = "";
     @Parameter(names = {"-cF", " --certFile"}, help = true, description = "JKS certificate file Path", order = 5)
