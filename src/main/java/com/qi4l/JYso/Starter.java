@@ -27,7 +27,7 @@ public class Starter {
             LdapServer.start();
             HTTPServer.start();
             if (Config.TLSProxy) {
-                TLSProxy.start();
+                LdapsServer.start();
             }
             RMIServer.start();
         }
