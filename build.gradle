@@ -1,8 +1,8 @@
 plugins {
+    id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.gradleup.shadow' version '8.3.5'
-    id 'java'
+    id 'com.gradleup.shadow' version '9.4.1'
 }
 
 repositories {
@@ -17,13 +17,14 @@ repositories {
 }
 
 shadowJar {
-    archiveClassifier.set('')
+    archiveClassifier = ''
+    zip64 = true
+    minimize()
     manifest {
         attributes 'Main-Class': 'com.qi4l.JYso.Starter'
     }
-    zip64=true
-    minimize()
 }
+
 
 dependencies {
     implementation 'cn.hutool:hutool-all:5.7.7'
@@ -93,7 +94,7 @@ dependencies {
     implementation files('libs/jai-core-1.1.3.jar')
     implementation files('libs/weblogic-server.jar')
 
-    constraints {
+    dependencies {
         implementation('commons-collections:commons-collections') {
             version {
                 strictly '3.2.1'
@@ -130,23 +131,6 @@ group = 'org.example'
 version = '1.3.7'
 description = 'JYso'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Javadoc) {
-    options.encoding = 'UTF-8'
-}
-
 
 compileJava {
     options.compilerArgs << '-XDignore.symbol.file'
