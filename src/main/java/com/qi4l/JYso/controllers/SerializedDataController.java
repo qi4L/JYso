@@ -13,8 +13,8 @@ import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 import org.fusesource.jansi.Ansi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
@@ -23,7 +23,7 @@ import static com.qi4l.JYso.gadgets.Config.Config.BCEL1;
 
 @LdapMapping(uri = {"/deserialization"})
 public class SerializedDataController implements LdapController {
-    private static final Logger log = LoggerFactory.getLogger(SerializedDataController.class);
+    private static final Logger log = LogManager.getLogger(SerializedDataController.class);
     public static String gadgetType;
     public static String cmd11;
     public static GadgetType gadgetType1;

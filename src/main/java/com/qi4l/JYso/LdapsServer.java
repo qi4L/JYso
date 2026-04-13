@@ -7,13 +7,13 @@ import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.util.ssl.KeyStoreKeyManager;
 import com.unboundid.util.ssl.SSLUtil;
 import com.unboundid.util.ssl.TrustAllTrustManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class LdapsServer {
-    private static final Logger log = LoggerFactory.getLogger(LdapsServer.class);
+    private static final Logger log = LogManager.getLogger(LdapsServer.class);
     private final String certFile;
     private final String keyPass;
 

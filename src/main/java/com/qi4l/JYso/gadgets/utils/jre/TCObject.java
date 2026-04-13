@@ -1,14 +1,14 @@
 package com.qi4l.JYso.gadgets.utils.jre;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCObject extends ReferencableObject implements SerializedElement {
-    private static final Logger log = LoggerFactory.getLogger(TCObject.class);
+    private static final Logger log = LogManager.getLogger(TCObject.class);
     private final Serialization ser;
 
     private final List<ClassDescData> descData;

@@ -9,14 +9,14 @@ import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 import org.fusesource.jansi.Ansi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @LdapMapping(uri = {"/jdbc1"})
 public class jdbcController1 implements LdapController {
 
-    private static final Logger log = LoggerFactory.getLogger(jdbcController1.class);
-    private static String payloadType;
+    private static final Logger log = LogManager.getLogger(jdbcController1.class);
+    private static String driverq;
 
     private static String factoryType;
     private static String[] params;
@@ -29,8 +29,8 @@ public class jdbcController1 implements LdapController {
         if (secondIndex < 0) secondIndex = base.length();
 
         try {
-            payloadType = base.substring(fistIndex + 1, secondIndex);
-            System.out.println(Ansi.ansi().fgBrightMagenta().a("  driver: " + payloadType).reset());
+            driverq = base.substring(fistIndex + 1, secondIndex);
+            System.out.println(Ansi.ansi().fgBrightMagenta().a("  driver: " + driverq).reset());
         } catch (IllegalArgumentException e) {
             throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(fistIndex + 1, secondIndex));
         }
@@ -66,7 +66,7 @@ public class jdbcController1 implements LdapController {
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
         try {
             Entry e = new Entry(base);
-            String driver = payloadType;
+            String driver = driverq;
             String JDBC_URL = params[0];
 
             e.addAttribute("objectClass", "javaNamingReference");

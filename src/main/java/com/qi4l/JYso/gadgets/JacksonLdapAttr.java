@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.node.POJONode;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.management.BadAttributeValueExpException;
 import javax.naming.CompositeName;
@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 
 @SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class JacksonLdapAttr implements ObjectPayload<Object> {
-    private static final Logger log = LoggerFactory.getLogger(JacksonLdapAttr.class);
+    private static final Logger log = LogManager.getLogger(JacksonLdapAttr.class);
 
     @Override
     public Object getObject(String command) throws Exception {

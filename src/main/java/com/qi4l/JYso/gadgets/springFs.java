@@ -28,7 +28,7 @@ import static com.qi4l.JYso.gadgets.utils.Utils.makeMap;
 @SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class springFs implements ObjectPayload<Object>, Serializable {
     public static ClassPool pool = ClassPool.getDefault();
-    // jdk7下使用badAttributeValueExpException,jdk8以上使用xString可打高版本JDK(jdk17)
+    // jdk17下使用badAttributeValueExpException,jdk8以上使用xString可打高版本JDK(jdk17)
     public String toString = "badAttributeValueExpException";
     // 低版本Spring-beans <5.3 -8835275493235412717
     // 高版本Spring-beans >=5.3 -1515767093960859525"

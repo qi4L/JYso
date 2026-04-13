@@ -7,8 +7,8 @@ import com.qi4l.JYso.gadgets.utils.Serializer;
 import com.qi4l.JYso.gadgets.utils.StringUtil;
 import com.qi4l.JYso.gadgets.utils.dirty.DirtyDataWrapper;
 import org.apache.commons.cli.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -21,7 +21,7 @@ import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;
 
 public class ysoserial {
 
-    private static final Logger log = LoggerFactory.getLogger(ysoserial.class);
+    private static final Logger log = LogManager.getLogger(ysoserial.class);
     public static CommandLine cmdLine;
     public static Object PAYLOAD = null;
 

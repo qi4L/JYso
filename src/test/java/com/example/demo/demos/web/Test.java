@@ -8,7 +8,7 @@ import java.util.Base64;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass("jackson3");
+        final Class<? extends ObjectPayload> payloadClass = ObjectPayload.Utils.getPayloadClass("cck3");
         ObjectPayload payload = payloadClass.newInstance();
         Object object = payload.getObject("calc"); //EX-MS-SpringInterceptorMS-gz
 

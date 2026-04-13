@@ -2,14 +2,14 @@ package com.qi4l.JYso.gadgets.utils;
 
 import com.qi4l.JYso.gadgets.Config.Config;
 import javassist.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static com.qi4l.JYso.gadgets.Config.Config.POOL;
 
 public class InjShell {
 
-    private static final Logger log = LoggerFactory.getLogger(InjShell.class);
+    private static final Logger log = LogManager.getLogger(InjShell.class);
 
     // 恶心一下人，实际没用
     public static String converString(String target) {

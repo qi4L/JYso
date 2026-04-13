@@ -4,6 +4,7 @@ import com.qi4l.JYso.enumtypes.GadgetType;
 import com.qi4l.JYso.exceptions.IncorrectParamsException;
 import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
 import com.qi4l.JYso.gadgets.Config.Config;
+import com.qi4l.JYso.gadgets.URLDNS;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler;
@@ -12,8 +13,8 @@ import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 @LdapMapping(uri = {"/basic"})
 public class BasicController implements LdapController {
 
-    private static final Logger log = LoggerFactory.getLogger(BasicController.class);
+    private static final Logger log = LogManager.getLogger(BasicController.class);
     private static String payloadType;
     // 用于对外提供动态字节码的 HTTP 服务器基础路径。
     private final String codebase = Config.codeBase;

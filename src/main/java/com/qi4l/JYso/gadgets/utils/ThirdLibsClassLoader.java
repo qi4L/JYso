@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 @SuppressWarnings({"rawtypes", "unchecked","unused"})
 public class ThirdLibsClassLoader extends URLClassLoader {
     public static final String thirdLibDir = "chains-config/third-libs";
     private static final String commonDir = "common";
-    private static final Logger log = LoggerFactory.getLogger(ThirdLibsClassLoader.class);
+    private static final Logger log = LogManager.getLogger(ThirdLibsClassLoader.class);
     private static ThirdLibsClassLoader INSTANCE = null;
     private static boolean initialized = false;
     private static Map<String, URLClassLoader> pluginClassLoaderMap = new HashMap();

@@ -1,13 +1,13 @@
 package com.qi4l.JYso.gadgets.utils.jre;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class HandleContainer {
-    private static final Logger log = LoggerFactory.getLogger(HandleContainer.class);
+    private static final Logger log = LogManager.getLogger(HandleContainer.class);
     private static Method lookup;
     private static Method assign;
 

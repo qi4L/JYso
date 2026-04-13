@@ -1,8 +1,8 @@
 package com.qi4l.JYso.gadgets.utils.utf8OverlongEncoding;
 
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class UTF8OverlongObjectOutputStream extends ObjectOutputStream {
-    private static final Logger log = LoggerFactory.getLogger(UTF8OverlongObjectOutputStream.class);
+    private static final Logger log = LogManager.getLogger(UTF8OverlongObjectOutputStream.class);
     public static HashMap<Character, int[]> map = new HashMap<Character, int[]>() {{
         put('.', new int[]{0xc0, 0xae});
         put(';', new int[]{0xc0, 0xbb});

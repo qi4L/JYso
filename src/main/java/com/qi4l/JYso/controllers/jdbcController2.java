@@ -9,8 +9,8 @@ import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 import org.fusesource.jansi.Ansi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.naming.RefAddr;
 import javax.naming.Reference;
@@ -20,7 +20,7 @@ import java.util.Enumeration;
 @LdapMapping(uri = {"/jdbc2"})
 public class jdbcController2 implements LdapController {
 
-    private static final Logger log = LoggerFactory.getLogger(jdbcController2.class);
+    private static final Logger log = LogManager.getLogger(jdbcController2.class);
     private static String payloadType;
     private static String factoryType;
     private static String[] params;
