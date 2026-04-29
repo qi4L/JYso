@@ -9,6 +9,8 @@ import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.listener.interceptor.InMemoryInterceptedSearchResult;
 import com.unboundid.ldap.listener.interceptor.InMemoryOperationInterceptor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 import javax.net.ServerSocketFactory;
@@ -26,6 +28,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 public class LdapServer extends InMemoryOperationInterceptor {
 
+    private static final Logger log = LogManager.getLogger(LdapServer.class);
     public static TreeMap<String, LdapController> routes = new TreeMap<>();
 
     public LdapServer() throws Exception {
@@ -60,7 +63,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
                     SocketFactory.getDefault(),
                     (SSLSocketFactory) SSLSocketFactory.getDefault()));
 
-            if (!USER.equals("") || !PASSWD.equals("")) {
+            if (!USER.isEmpty() || !PASSWD.isEmpty()) {
                 serverConfig.addAdditionalBindCredentials(USER, PASSWD);
             }
 
@@ -71,14 +74,14 @@ public class LdapServer extends InMemoryOperationInterceptor {
             ds.startListening();
             System.out.println(ansi().render("@|green [+]|@ LDAP Server Start Listening on >> " + Config.ldapPort + "..."));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("e: ", e);
         }
     }
 
     @Override
     public void processSearchResult(InMemoryInterceptedSearchResult result) {
         String base;
-        if (!ROUTE.equals("")) {
+        if (!ROUTE.isEmpty()) {
             base = ROUTE;
         } else {
             base = result.getRequest().getBaseDN();
@@ -88,7 +91,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
                 base = base64Decode(base);
                 base = JNDIUtils.decrypt(base, AESkey);
             }
-        } catch (Exception AESerr) {
+        } catch (Exception ignored) {
 
         }
 

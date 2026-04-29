@@ -31,7 +31,7 @@ public class ClassLoaderTemplate {
             ClassLoader classLoader = new URLClassLoader(new URL[0], Thread.currentThread().getContextClassLoader());
             Method defineClass = classLoader.getClass().getSuperclass().getSuperclass().getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
             defineClass.setAccessible(true);
-            Class invoke = (Class) defineClass.invoke(classLoader, bytes, 0, bytes.length);
+            Class<?> invoke = (Class<?>) defineClass.invoke(classLoader, bytes, 0, bytes.length);
             invoke.newInstance();
 
             //ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -63,17 +63,17 @@ public class ClassLoaderTemplate {
     }
 
     public static byte[] base64Decode(String bs) throws Exception {
-        Class base64;
+        Class<?> base64;
         byte[] value = null;
         try {
             base64 = Class.forName("java.util.Base64");
-            Object decoder = base64.getMethod("getDecoder", new Class[]{}).invoke(null, (Object[]) null);
-            value = (byte[]) decoder.getClass().getMethod("decode", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
+            Object decoder = base64.getMethod("getDecoder").invoke(base64);
+            value = (byte[]) decoder.getClass().getMethod("decode", String.class).invoke(decoder, bs);
         } catch (Exception e) {
             try {
                 base64 = Class.forName("sun.misc.BASE64Decoder");
                 Object decoder = base64.newInstance();
-                value = (byte[]) decoder.getClass().getMethod("decodeBuffer", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
+                value = (byte[]) decoder.getClass().getMethod("decodeBuffer", String.class).invoke(decoder, bs);
             } catch (Exception ignored) {
             }
         }

