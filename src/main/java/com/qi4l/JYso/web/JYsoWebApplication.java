@@ -33,6 +33,8 @@ public class JYsoWebApplication {
     public static void start(String[] args) {
         logo();
 
+        RequestLogCollector.install();
+
         webPassword = WebPasswordGenerator.generatePassword();
         JYsoWebPasswordProvider.setPassword(webPassword);
 
@@ -47,7 +49,7 @@ public class JYsoWebApplication {
             }
         }
 
-        System.out.println(ansi().render("@|green [+]|@ Web GUI starting >>  http://127.0.0.1:" + webPort));
+        System.out.println(ansi().render("@|green [+]|@ Web GUI started on  http://127.0.0.1:" + webPort));
         System.out.println(ansi().render("@|yellow [+]|@ ============================================"));
         System.out.println(ansi().render("@|yellow [+]|@   Username: qi"));
         System.out.println(ansi().render("@|yellow [+]|@   Password: " + webPassword));
@@ -74,8 +76,6 @@ public class JYsoWebApplication {
             context.addServlet(new ServletHolder(new StaticResourceServlet()), "/");
 
             server.start();
-            System.out.println(ansi().render("@|green [+]|@ Web GUI started on http://127.0.0.1:" + webPort));
-
             CountDownLatch latch = new CountDownLatch(1);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 log.info("Shutting down...");

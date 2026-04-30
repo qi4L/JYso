@@ -68,4 +68,8 @@ export function getConfig() {
   return api.get('/config')
 }
 
+export function getLogs(count) {
+  return api.get('/logs', { params: { count } })
+}
+
 export default api

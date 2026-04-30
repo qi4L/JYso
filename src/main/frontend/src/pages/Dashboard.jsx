@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import {
   getStatus, toggleServer, getGadgets,
-  generatePayload as apiGenerate, updateConfig, setAuthToken
+  generatePayload as apiGenerate, updateConfig, setAuthToken, getLogs
 } from '../api'
 
 export default function Dashboard() {
@@ -21,6 +21,18 @@ export default function Dashboard() {
   const [selectedGadget, setSelectedGadget] = useState('')
   const [payloadCmd, setPayloadCmd] = useState('')
   const [payloadResult, setPayloadResult] = useState('')
+  const [encodeBase64, setEncodeBase64] = useState(true)
+  const [copied, setCopied] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [inherit, setInherit] = useState(false)
+  const [obscure, setObscure] = useState(false)
+  const [dcfp, setDcfp] = useState('')
+  const [dirtyType, setDirtyType] = useState('')
+  const [dirtyLength, setDirtyLength] = useState('')
+  const [noComSun, setNoComSun] = useState(false)
+  const [mozillaClassLoader, setMozillaClassLoader] = useState(false)
+  const [rhino, setRhino] = useState(false)
+  const [utf8Overlong, setUtf8Overlong] = useState(false)
   const [payloadSubTab, setPayloadSubTab] = useState('gadget')
   const [gadgetOpen, setGadgetOpen] = useState(false)
   const [jndiPayloadResult, setJndiPayloadResult] = useState('')
@@ -35,6 +47,9 @@ export default function Dashboard() {
   const [ldapsClassLoaderResult, setLdapsClassLoaderResult] = useState('')
   const [routing, setRouting] = useState('ELProcessor')
   const [routingOpen, setRoutingOpen] = useState(false)
+  const [logLines, setLogLines] = useState([])
+  const [logLoading, setLogLoading] = useState(false)
+  const logEndRef = useRef(null)
 
   const ROUTING_OPTIONS = ['Basic', 'ELProcessor', 'Groovy', 'jdbcBypass1', 'jdbcBypass2', 'ldap2rmi', 'SnakeYaml', 'XStream', 'MemoryXXE']
 
@@ -120,7 +135,8 @@ export default function Dashboard() {
     setLoading(true)
     setMsg({ success: '', error: '' })
     try {
-      const res = await apiGenerate({ gadget: gadgetName, command: payloadCmd, filename: saveFilename })
+      const res = await apiGenerate({ gadget: gadgetName, command: payloadCmd, filename: saveFilename, encodeBase64,
+        inherit, obscure, dcfp, dirtyType, dirtyLength, noComSun, mozillaClassLoader, rhino, utf8Overlong })
       if (res.data.success) {
         setPayloadResult(res.data.message || 'Payload generated successfully')
         setMsg({ success: 'Payload generated', error: '' })
@@ -131,6 +147,24 @@ export default function Dashboard() {
     } catch (e) {
       setMsg({ success: '', error: 'Failed to generate payload' })
     } finally { setLoading(false) }
+  }
+
+  async function handleCopyPayload() {
+    if (!payloadResult) return
+    try {
+      await navigator.clipboard.writeText(payloadResult)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch { /* ignore */ }
+  }
+
+  async function copyText(text) {
+    if (!text) return
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch { /* ignore */ }
   }
 
   function handleGenerateJndiPayload() {
@@ -200,7 +234,25 @@ export default function Dashboard() {
     navigate('/login', { replace: true })
   }
 
+  async function fetchLogs() {
+    try {
+      const res = await getLogs(100)
+      setLogLines(res.data.logs || [])
+    } catch { /* ignore */ }
+  }
+
   useEffect(() => { loadStatus(); loadGadgets() }, [])
+
+  useEffect(() => {
+    if (activeJndiTab !== 'logs') return
+    fetchLogs()
+    const id = setInterval(fetchLogs, 2000)
+    return () => clearInterval(id)
+  }, [activeJndiTab])
+
+  useEffect(() => {
+    if (logEndRef.current) logEndRef.current.scrollIntoView({ behavior: 'smooth' })
+  }, [logLines])
 
   return (
     <div>
@@ -293,7 +345,7 @@ export default function Dashboard() {
 
               <div className="glass-card section-enter">
                 <div className="control-bar">
-                  <div className={'tab-segment-control' + (activeJndiTab === 'payload' ? ' config-tab' : '')}>
+                  <div className={'tab-segment-control tabs-3' + (activeJndiTab === 'payload' ? ' config-tab' : '') + (activeJndiTab === 'logs' ? ' tab-3' : '')}>
                     <button
                       className={'tab-segment-btn' + (activeJndiTab === 'config' ? ' active' : '')}
                       onClick={() => setActiveJndiTab('config')}
@@ -304,7 +356,13 @@ export default function Dashboard() {
                       className={'tab-segment-btn' + (activeJndiTab === 'payload' ? ' active' : '')}
                       onClick={() => setActiveJndiTab('payload')}
                     >
-                      Payload Generator
+                      Payload
+                    </button>
+                    <button
+                      className={'tab-segment-btn' + (activeJndiTab === 'logs' ? ' active' : '')}
+                      onClick={() => setActiveJndiTab('logs')}
+                    >
+                      Logs
                     </button>
                   </div>
                 </div>
@@ -432,13 +490,40 @@ export default function Dashboard() {
                           {loading ? 'Generating...' : 'Generate'}
                         </button>
                         {jndiPayloadResult && (
-                          <div className="payload-output" style={{ marginTop: 14 }}>{jndiPayloadResult}</div>
+                          <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
+                            {jndiPayloadResult}
+                            <button className="copy-btn" onClick={() => copyText(jndiPayloadResult)} title="Copy to clipboard">
+                              {copied ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              )}
+                            </button>
+                          </div>
                         )}
                         {rmiPayloadResult && (
-                          <div className="payload-output" style={{ marginTop: 8 }}>{rmiPayloadResult}</div>
+                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
+                            {rmiPayloadResult}
+                            <button className="copy-btn" onClick={() => copyText(rmiPayloadResult)} title="Copy to clipboard">
+                              {copied ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              )}
+                            </button>
+                          </div>
                         )}
                         {ldapsPayloadResult && (
-                          <div className="payload-output" style={{ marginTop: 8 }}>{ldapsPayloadResult}</div>
+                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
+                            {ldapsPayloadResult}
+                            <button className="copy-btn" onClick={() => copyText(ldapsPayloadResult)} title="Copy to clipboard">
+                              {copied ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              )}
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
@@ -482,16 +567,65 @@ export default function Dashboard() {
                           {loading ? 'Generating...' : 'Generate'}
                         </button>
                         {classLoaderResult && (
-                          <div className="payload-output" style={{ marginTop: 14 }}>{classLoaderResult}</div>
+                          <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
+                            {classLoaderResult}
+                            <button className="copy-btn" onClick={() => copyText(classLoaderResult)} title="Copy to clipboard">
+                              {copied ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              )}
+                            </button>
+                          </div>
                         )}
                         {rmiClassLoaderResult && (
-                          <div className="payload-output" style={{ marginTop: 8 }}>{rmiClassLoaderResult}</div>
+                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
+                            {rmiClassLoaderResult}
+                            <button className="copy-btn" onClick={() => copyText(rmiClassLoaderResult)} title="Copy to clipboard">
+                              {copied ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              )}
+                            </button>
+                          </div>
                         )}
                         {ldapsClassLoaderResult && (
-                          <div className="payload-output" style={{ marginTop: 8 }}>{ldapsClassLoaderResult}</div>
+                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
+                            {ldapsClassLoaderResult}
+                            <button className="copy-btn" onClick={() => copyText(ldapsClassLoaderResult)} title="Copy to clipboard">
+                              {copied ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                              )}
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
+                  </div>
+                )}
+
+                {activeJndiTab === 'logs' && (
+                  <div key="jndi-logs" className="tab-content-enter">
+                    <div className="log-header">
+                      <span>Server Events</span>
+                      <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 11, width: 'auto' }}
+                        onClick={fetchLogs} disabled={logLoading}>
+                        {logLoading ? 'Loading...' : 'Refresh'}
+                      </button>
+                    </div>
+                    <div className="log-container">
+                      {logLines.length === 0 ? (
+                        <div className="log-empty">No events yet. Start a server or wait for incoming requests.</div>
+                      ) : (
+                        logLines.map((line, i) => (
+                          <div key={i} className="log-line">{line}</div>
+                        ))
+                      )}
+                      <div ref={logEndRef} />
+                    </div>
                   </div>
                 )}
               </div>
@@ -500,8 +634,85 @@ export default function Dashboard() {
 
           {mode === 'gadget' && (
             <div className="glass-card section-enter">
-              <h2>Payload Generator</h2>
-              <div style={{ position: 'relative' }}>
+              <div className="header" style={{ padding: 0, marginBottom: 16 }}>
+                <h2>Payload Generator</h2>
+                <button
+                  className={`btn btn-secondary${showAdvanced ? ' active-tab' : ''}`}
+                  style={{ padding: '6px 14px', fontSize: 12, width: 'auto' }}
+                  onClick={() => setShowAdvanced(v => !v)}
+                >
+                  {showAdvanced ? 'Hide Options' : 'Advanced Options'}
+                </button>
+              </div>
+              <div className="control-bar" style={{ marginBottom: 12 }}>
+                <label className="form-group" style={{ marginBottom: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <div className={`base64-toggle${encodeBase64 ? ' active' : ''}`}
+                    onClick={() => setEncodeBase64(v => !v)}
+                    role="switch"
+                    aria-checked={encodeBase64}
+                    tabIndex={0}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEncodeBase64(v => !v); } }}>
+                    <div className="base64-toggle-thumb" />
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>Base64 Encode Output</span>
+                </label>
+              </div>
+
+              {showAdvanced && (
+                <div className="advanced-section section-enter">
+                  <div className="adv-grid">
+                    <label className="adv-check">
+                      <input type="checkbox" checked={inherit} onChange={e => setInherit(e.target.checked)} />
+                      <span>Inherit AbstractTranslet <em>(-i)</em></span>
+                    </label>
+                    <label className="adv-check">
+                      <input type="checkbox" checked={obscure} onChange={e => setObscure(e.target.checked)} />
+                      <span>Obscure (reflection bypass RASP) <em>(-o)</em></span>
+                    </label>
+                    <label className="adv-check">
+                      <input type="checkbox" checked={noComSun} onChange={e => setNoComSun(e.target.checked)} />
+                      <span>Force org.apache.XXX.TemplatesImpl <em>(-ncs)</em></span>
+                    </label>
+                    <label className="adv-check">
+                      <input type="checkbox" checked={mozillaClassLoader} onChange={e => setMozillaClassLoader(e.target.checked)} />
+                      <span>Mozilla DefiningClassLoader <em>(-mcl)</em></span>
+                    </label>
+                    <label className="adv-check">
+                      <input type="checkbox" checked={rhino} onChange={e => setRhino(e.target.checked)} />
+                      <span>Rhino Engine <em>(-rh)</em></span>
+                    </label>
+                    <label className="adv-check">
+                      <input type="checkbox" checked={utf8Overlong} onChange={e => setUtf8Overlong(e.target.checked)} />
+                      <span>UTF-8 Overlong Encoding <em>(-utf)</em></span>
+                    </label>
+                  </div>
+                  <div className="adv-grid" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 10 }}>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label style={{ fontSize: 12 }}>DefineClassFromParameter <em>(-dcfp)</em></label>
+                      <input type="text" value={dcfp} placeholder="parameter name"
+                        onChange={e => setDcfp(e.target.value)} />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label style={{ fontSize: 12 }}>Dirty Type <em>(-dt)</em></label>
+                      <select value={dirtyType} onChange={e => setDirtyType(e.target.value)}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: 'var(--input-radius)', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }}>
+                        <option value="">None</option>
+                        <option value="1">1: Random Hashable Collections</option>
+                        <option value="2">2: LinkedList Nesting</option>
+                        <option value="3">3: TC_RESET in Serialized Data</option>
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label style={{ fontSize: 12 }}>Dirty Length <em>(-dl)</em></label>
+                      <input type="number" value={dirtyLength} placeholder="length/counts"
+                        onChange={e => setDirtyLength(e.target.value)} />
+                    </div>
+                    <div></div>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ position: 'relative', marginTop: showAdvanced ? 14 : 0 }}>
                 <div className="form-group">
                   <label>Gadget</label>
                   <input type="text"
@@ -543,7 +754,16 @@ export default function Dashboard() {
                 {loading ? 'Generating...' : 'Generate'}
               </button>
               {payloadResult && (
-                <div className="payload-output" style={{ marginTop: 14 }}>{payloadResult}</div>
+                <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
+                  {payloadResult}
+                  <button className="copy-btn" onClick={handleCopyPayload} title="Copy to clipboard">
+                    {copied ? (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M3 11V3h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
           )}
