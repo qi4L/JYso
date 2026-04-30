@@ -48,16 +48,6 @@ public class StringUtil {
         return lines;
     }
 
-    public static boolean isFromExploit() {
-        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (StackTraceElement stackTraceElement : stackTraceElements) {
-            if (stackTraceElement.getClassName().startsWith("com.qi4l.JYso.exploit")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static class ToStringComparator implements Comparator<Object> {
 
         public int compare(Object o1, Object o2) {

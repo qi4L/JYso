@@ -96,7 +96,6 @@ public class JRE8u20 implements ObjectPayload<Object> {
 
         if (JYsoMode) {
             ser.write(System.out);
-            System.exit(0);
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ser.write(out);

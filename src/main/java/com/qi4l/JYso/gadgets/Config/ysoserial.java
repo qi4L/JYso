@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
-import static com.qi4l.JYso.gadgets.utils.StringUtil.isFromExploit;
 
 public class ysoserial {
 
@@ -88,7 +87,6 @@ public class ysoserial {
             System.err.println("Invalid payload type '" + payloadType + "'");
             printUsage(options);
             System.exit(1);
-            return;
         }
 
 
@@ -102,12 +100,6 @@ public class ysoserial {
                 int type = Integer.parseInt(cmdLine.getOptionValue("dirty-type"));
                 int length = Integer.parseInt(cmdLine.getOptionValue("dirty-length"));
                 object = new DirtyDataWrapper(object, type, length).doWrap();
-            }
-
-            // 储存生成的 payload
-            PAYLOAD = object;
-            if (isFromExploit()) {
-                return;
             }
 
             OutputStream out;
@@ -183,7 +175,6 @@ public class ysoserial {
         System.err.println("Recommended Usage: -y -g [payload] -p '[command]' -dt 1 -dl 50000 -o -i -f evil.ser");
         System.err.println("If you want your payload being extremely short，you could just use:");
         System.err.println("java -jar JYso-[version].jar -y -g [payload] -p '[command]' -i -f evil.ser");
-        System.exit(0);
     }
 
 }

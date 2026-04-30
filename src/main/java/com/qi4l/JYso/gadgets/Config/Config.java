@@ -115,12 +115,6 @@ public class Config {
             for (String line : lines) {
                 System.out.println("     " + line);
             }
-
-            System.exit(0);
-        }
-
-        if (showVersion) {
-            System.exit(0);
         }
 
         //获取当前 Jar 的名称
@@ -129,7 +123,6 @@ public class Config {
 
         if (help) {
             jc.usage(); //if -h specified, show help and exit
-            System.exit(0);
         }
 
         // 特别注意：最后一个反斜杠不能少啊

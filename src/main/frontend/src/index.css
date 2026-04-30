@@ -512,6 +512,7 @@ code, pre, .mono {
   padding: 3px;
   gap: 2px;
   transition: background var(--transition-fluid), border-color var(--transition-fluid);
+  min-width: 260px;
 }
 
 .tab-segment-control::before {
@@ -535,7 +536,8 @@ code, pre, .mono {
 .tab-segment-btn {
   position: relative;
   z-index: 1;
-  padding: 6px 20px;
+  flex: 1;
+  padding: 6px 12px;
   border: none;
   border-radius: 9px;
   background: transparent;
@@ -548,6 +550,7 @@ code, pre, .mono {
   white-space: nowrap;
   letter-spacing: -0.2px;
   -webkit-tap-highlight-color: transparent;
+  text-align: center;
 }
 
 .tab-segment-btn:active {
@@ -583,6 +586,27 @@ code, pre, .mono {
 .config-form .form-group { margin-bottom: 0; }
 
 .config-form .btn { grid-column: span 2; margin-top: 14px; }
+
+.gadget-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--card-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow-lg);
+  overflow: hidden;
+  animation: dropdownSlideIn 180ms cubic-bezier(0.22, 0.1, 0, 1) both;
+}
+
+@keyframes dropdownSlideIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
 .gadget-list {
   max-height: 280px;
@@ -641,11 +665,6 @@ label.form-group {
   color: var(--text-primary);
   font-weight: 500;
   cursor: pointer;
-}
-
-.pill-sun, .pill-moon {
-  font-size: 15px;
-  line-height: 1;
 }
 
 @media (max-width: 768px) {

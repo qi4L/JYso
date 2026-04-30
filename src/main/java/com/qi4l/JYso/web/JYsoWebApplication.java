@@ -9,21 +9,20 @@ import com.qi4l.JYso.web.config.JYsoWebPasswordProvider;
 import com.qi4l.JYso.web.config.WebPasswordGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
+import javax.servlet.DispatcherType;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
-import java.util.Properties;
+import java.util.EnumSet;
 import java.util.concurrent.CountDownLatch;
 
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
 import static org.fusesource.jansi.Ansi.ansi;
 
-@SpringBootApplication(scanBasePackages = "com.qi4l.JYso.web")
 public class JYsoWebApplication {
 
     private static final Logger log = LogManager.getLogger(JYsoWebApplication.class);
@@ -58,26 +57,38 @@ public class JYsoWebApplication {
 
         startJndiServers(args);
 
-        Properties props = new Properties();
-        props.put("server.port", String.valueOf(webPort));
-        props.put("spring.main.banner-mode", "off");
-        props.put("spring.main.web-application-type", "servlet");
-
-        ConfigurableApplicationContext ctx = new SpringApplicationBuilder(JYsoWebApplication.class)
-                .web(WebApplicationType.SERVLET)
-                .properties(props)
-                .run(filterWebArgs(args));
-
-        CountDownLatch latch = new CountDownLatch(1);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.info("Shutting down...");
-            ctx.close();
-            latch.countDown();
-        }));
         try {
+            Server server = new Server(webPort);
+            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            context.setContextPath("/");
+            server.setHandler(context);
+
+            context.addFilter(new FilterHolder(new ApiAuthFilter()), "/api/*", EnumSet.of(DispatcherType.REQUEST));
+
+            context.addServlet(new ServletHolder(new AuthServlet()), "/api/auth/login");
+
+            context.addServlet(new ServletHolder(new JettyApiServlet()), "/api/*");
+
+            context.addFilter(new FilterHolder(new SpaFallbackFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
+
+            context.addServlet(new ServletHolder(new StaticResourceServlet()), "/");
+
+            server.start();
+            System.out.println(ansi().render("@|green [+]|@ Web GUI started on http://127.0.0.1:" + webPort));
+
+            CountDownLatch latch = new CountDownLatch(1);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                log.info("Shutting down...");
+                try {
+                    server.stop();
+                } catch (Exception e) {
+                    log.error("Stop error", e);
+                }
+                latch.countDown();
+            }));
             latch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            log.error("Failed to start web server", e);
         }
     }
 
@@ -88,7 +99,6 @@ public class JYsoWebApplication {
             );
             System.out.println(ansi().render("@|cyan [+]|@ Password copied to clipboard"));
         } catch (HeadlessException e) {
-            // headless environment, clipboard unavailable
         } catch (Exception e) {
             System.out.println(ansi().render("@|yellow [!]|@ Could not copy to clipboard: " + e.getMessage()));
         }
