@@ -126,9 +126,7 @@ public class ysoserial {
         } catch (Throwable e) {
             System.err.println("Error while generating or serializing payload");
             log.error(String.valueOf(e));
-            System.exit(1);
         }
-        System.exit(0);
     }
 
     public static Options getOptions() {

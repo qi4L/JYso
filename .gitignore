@@ -4,3 +4,8 @@ out/
 .DS_Store
 /build
 1.ser
+node_modules/
+bun.lockb
+src/main/frontend/dist/
+src/main/resources/static/
+.trae/

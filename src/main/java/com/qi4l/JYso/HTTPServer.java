@@ -28,7 +28,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 @SuppressWarnings("HttpUrlsUsage")
 public class HTTPServer {
     private static final Logger log = LogManager.getLogger(HTTPServer.class);
-    // 获取根目录路径
+    public static boolean isRunning = false;
     public static String cwd = System.getProperty("user.dir");
 
     public static void start() throws IOException {
@@ -78,6 +78,7 @@ public class HTTPServer {
 
         httpServer.setExecutor(null);
         httpServer.start();
+        isRunning = true;
         System.out.println(ansi().render("@|green [+]|@ HTTP Server Start Listening on >> " + Config.httpPort + "..."));
     }
 

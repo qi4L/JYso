@@ -14,6 +14,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 public class LdapsServer {
     private static final Logger log = LogManager.getLogger(LdapsServer.class);
+    public static boolean isRunning = false;
     private final String certFile;
     private final String keyPass;
 
@@ -51,6 +52,7 @@ public class LdapsServer {
 
             InMemoryDirectoryServer ds = new InMemoryDirectoryServer(config);
             ds.startListening();
+            isRunning = true;
             System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >> " + Config.ldapsPort + "..."));
         } catch (Exception e) {
             log.error("e: ", e);

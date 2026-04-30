@@ -30,6 +30,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
 
     private static final Logger log = LogManager.getLogger(LdapServer.class);
     public static TreeMap<String, LdapController> routes = new TreeMap<>();
+    public static boolean isRunning = false;
 
     public LdapServer() throws Exception {
 
@@ -72,6 +73,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
             serverConfig.addInMemoryOperationInterceptor(new LdapServer());
             InMemoryDirectoryServer ds = new InMemoryDirectoryServer(serverConfig);
             ds.startListening();
+            isRunning = true;
             System.out.println(ansi().render("@|green [+]|@ LDAP Server Start Listening on >> " + Config.ldapPort + "..."));
         } catch (Exception e) {
             log.error("e: ", e);

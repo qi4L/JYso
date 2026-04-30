@@ -49,6 +49,8 @@ import static org.fusesource.jansi.Ansi.ansi;
 @SuppressWarnings("restriction")
 public class RMIServer implements Runnable {
 
+    public static boolean isRunning = false;
+
     private final ServerSocket ss;
     private final Object waitLock = new Object();
     private final URL classpathUrl;
@@ -66,6 +68,7 @@ public class RMIServer implements Runnable {
         try {
             System.out.println(ansi().render("@|green [+]|@ RMI Server Start Listening on >> " + rmiPort + "..."));
             RMIServer c = new RMIServer(rmiPort, new URL(url));
+            isRunning = true;
             c.run();
         } catch (Exception e) {
             System.err.println("Listener error");

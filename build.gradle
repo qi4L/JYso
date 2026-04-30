@@ -1,8 +1,12 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer
+
 plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.gradleup.shadow' version '9.4.1'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'org.springframework.boot' version '2.7.18'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 repositories {
@@ -16,10 +20,30 @@ repositories {
     }
 }
 
+bootJar {
+    enabled = false
+    mainClass = 'com.qi4l.JYso.Starter'
+}
+
+springBoot {
+    mainClass = 'com.qi4l.JYso.Starter'
+}
+
+jar {
+    enabled = true
+}
+
 shadowJar {
     archiveClassifier = ''
     zip64 = true
-    minimize()
+    // minimize() // disabled: too many reflection-based libs get broken
+    mergeServiceFiles()
+    transform(AppendingTransformer) {
+        resource = 'META-INF/spring.factories'
+    }
+    transform(AppendingTransformer) {
+        resource = 'META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports'
+    }
     manifest {
         attributes 'Main-Class': 'com.qi4l.JYso.Starter'
     }
@@ -33,6 +57,7 @@ configurations.configureEach {
 dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.20.0'
     implementation 'cn.hutool:hutool-all:5.7.7'
     implementation 'com.alibaba:fastjson:1.2.83'
     implementation 'com.alibaba.fastjson2:fastjson2:2.0.26'
@@ -59,13 +84,13 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.8'
     implementation 'org.apache.maven.plugins:maven-assembly-plugin:3.0.0'
     implementation 'org.apache.myfaces.core:myfaces-impl:2.2.9'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:8.5.58'
-    implementation 'org.apache.tomcat:tomcat-websocket:9.0.62'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core'
+    implementation 'org.apache.tomcat:tomcat-websocket:9.0.83'
     implementation 'org.apache.wicket:wicket-util:6.23.0'
     implementation 'org.aspectj:aspectjweaver:1.9.7'
     implementation 'org.beanshell:bsh:2.0b5'
     implementation 'org.clojure:clojure:1.8.0'
-    implementation 'org.codehaus.groovy:groovy:2.4.5'
+    implementation 'org.codehaus.groovy:groovy:2.5.23'
     implementation 'org.eclipse.jetty:jetty-ant:11.0.7'
     implementation 'org.fusesource.jansi:jansi:2.4.0'
     implementation 'org.glassfish.tyrus:tyrus-server:2.0.0'
@@ -81,17 +106,13 @@ dependencies {
     implementation 'org.ow2.asm:asm:8.0.1'
     implementation 'org.python:jython-standalone:2.5.2'
     implementation 'org.reflections:reflections:0.9.10'
-    implementation 'org.springframework:spring-aop:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-aop:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-beans:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-context-support:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-core:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-jdbc:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-oxm:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-test:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-tx:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-web:5.2.3.RELEASE'
-    implementation 'org.springframework:spring-webmvc:5.2.3.RELEASE'
+    implementation 'org.springframework:spring-aop'
+    implementation 'org.springframework:spring-beans'
+    implementation 'org.springframework:spring-context-support'
+    implementation 'org.springframework:spring-core'
+    implementation 'org.springframework:spring-jdbc'
+    implementation 'org.springframework:spring-oxm'
+    implementation 'org.springframework:spring-tx'
     implementation 'rhino:js:1.7R2'
     implementation 'rome:rome:1.0'
     implementation 'xerces:xercesImpl:2.12.0'
@@ -125,7 +146,14 @@ dependencies {
 
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
 
-
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        exclude group: 'ch.qos.logback'
+    }
+    implementation('org.springframework.boot:spring-boot-starter-security') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        exclude group: 'ch.qos.logback'
+    }
 
     runtimeOnly libs.org.aspectj.aspectjweaver
     compileOnly libs.org.apache.tomcat.tomcat.websocket
@@ -133,7 +161,7 @@ dependencies {
 
 
 group = 'org.example'
-version = '1.3.7'
+version = '1.3.8'
 description = 'JYso'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
