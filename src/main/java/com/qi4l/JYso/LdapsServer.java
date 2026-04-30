@@ -15,6 +15,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class LdapsServer {
     private static final Logger log = LogManager.getLogger(LdapsServer.class);
     public static boolean isRunning = false;
+    private static InMemoryDirectoryServer ds;
     private final String certFile;
     private final String keyPass;
 
@@ -50,12 +51,20 @@ public class LdapsServer {
             ));
             config.addInMemoryOperationInterceptor(new LdapServer());
 
-            InMemoryDirectoryServer ds = new InMemoryDirectoryServer(config);
+            ds = new InMemoryDirectoryServer(config);
             ds.startListening();
             isRunning = true;
             System.out.println(ansi().render("@|green [+]|@ LDAPS Server Start Listening on >> " + Config.ldapsPort + "..."));
         } catch (Exception e) {
             log.error("e: ", e);
+        }
+    }
+
+    public static void stop() {
+        if (ds != null) {
+            ds.shutDown(true);
+            isRunning = false;
+            System.out.println(ansi().render("@|yellow [!]|@ LDAPS Server stopped"));
         }
     }
 }

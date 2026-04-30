@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
@@ -52,6 +54,8 @@ public class JYsoWebApplication {
         System.out.println(ansi().render("@|yellow [+]|@   Password: " + webPassword));
         System.out.println(ansi().render("@|yellow [+]|@ ============================================"));
 
+        copyToClipboard(webPassword);
+
         startJndiServers(args);
 
         Properties props = new Properties();
@@ -74,6 +78,19 @@ public class JYsoWebApplication {
             latch.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private static void copyToClipboard(String text) {
+        try {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+                    new StringSelection(text), null
+            );
+            System.out.println(ansi().render("@|cyan [+]|@ Password copied to clipboard"));
+        } catch (HeadlessException e) {
+            // headless environment, clipboard unavailable
+        } catch (Exception e) {
+            System.out.println(ansi().render("@|yellow [!]|@ Could not copy to clipboard: " + e.getMessage()));
         }
     }
 

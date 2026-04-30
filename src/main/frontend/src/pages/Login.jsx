@@ -1,13 +1,11 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import LiquidGlass from 'liquid-glass-react'
 import { login, setAuthToken } from '../api'
 import { useTheme } from '../context/ThemeContext'
 
 export default function Login() {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
-  const containerRef = useRef(null)
   const [username, setUsername] = useState('qi')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -44,7 +42,7 @@ export default function Login() {
   }
 
   return (
-    <div className="login-wrapper" ref={containerRef}>
+    <div className="login-wrapper">
       <div style={{ position: 'fixed', top: 22, right: 22, zIndex: 200 }}>
         <button
           className="theme-toggle"
@@ -53,17 +51,7 @@ export default function Login() {
           title={theme === 'light' ? 'Dark mode' : 'Light mode'}
         />
       </div>
-      <LiquidGlass
-        mouseContainer={containerRef}
-        elasticity={0.10}
-        blurAmount={0.045}
-        saturation={128}
-        displacementScale={44}
-        cornerRadius={28}
-        aberrationIntensity={1.8}
-        overLight={theme === 'light'}
-        style={{ width: 380 }}
-      >
+      <div className="glass-card" style={{ width: 380 }}>
         <div className="login-inner">
           <h1>
             <span className="logo-dot" style={{ width: 12, height: 12, borderRadius: 6 }} />
@@ -96,7 +84,7 @@ export default function Login() {
             </button>
           </form>
         </div>
-      </LiquidGlass>
+      </div>
     </div>
   )
 }

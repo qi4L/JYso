@@ -30,10 +30,11 @@ public class HTTPServer {
     private static final Logger log = LogManager.getLogger(HTTPServer.class);
     public static boolean isRunning = false;
     public static String cwd = System.getProperty("user.dir");
+    private static HttpServer httpServer;
 
     public static void start() throws IOException {
 
-        HttpServer httpServer = HttpServer.create(new InetSocketAddress(Config.httpPort), 0);
+        httpServer = HttpServer.create(new InetSocketAddress(Config.httpPort), 0);
         httpServer.createContext("/", httpExchange -> {
             try {
                 System.out.println(ansi().render("@|green [+]|@ New HTTP Request From >>" + httpExchange.getRemoteAddress() + "  " + httpExchange.getRequestURI()));
@@ -80,6 +81,14 @@ public class HTTPServer {
         httpServer.start();
         isRunning = true;
         System.out.println(ansi().render("@|green [+]|@ HTTP Server Start Listening on >> " + Config.httpPort + "..."));
+    }
+
+    public static void stop() {
+        if (httpServer != null) {
+            httpServer.stop(0);
+            isRunning = false;
+            System.out.println(ansi().render("@|yellow [!]|@ HTTP Server stopped"));
+        }
     }
 
     private static void handleFileRequest(HttpExchange exchange) throws Exception {

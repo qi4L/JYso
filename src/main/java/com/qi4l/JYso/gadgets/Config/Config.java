@@ -29,8 +29,6 @@ public class Config {
 
     @Parameter(names = {"-hP", "--httpPort"}, description = "Http bind port", order = 3)
     public static int httpPort = 3456;
-    @Parameter(names = {"-c", " --command"}, help = true, description = "RMI this command")
-    public static String command = "whoami";
     @Parameter(names = {"-v", " --version"}, help = true, description = "Show version", order = 5)
     public static boolean showVersion;
     @Parameter(names = {"-ga", " --gadgets"}, help = true, description = "Show gadgets", order = 5)

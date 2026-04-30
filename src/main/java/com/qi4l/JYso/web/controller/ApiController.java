@@ -29,7 +29,13 @@ public class ApiController {
         status.put("httpPort", Config.httpPort);
         status.put("rmiPort", Config.rmiPort);
         status.put("codeBase", Config.codeBase);
-        status.put("version", "1.3.7");
+        status.put("AESkey", Config.AESkey);
+        status.put("user", Config.USER);
+        status.put("PASSWD", Config.PASSWD);
+        status.put("TLSProxy", Config.TLSProxy);
+        status.put("keyPass", Config.keyPass);
+        status.put("certFile", Config.certFile);
+        status.put("version", "1.3.8");
         return status;
     }
 
@@ -78,6 +84,83 @@ public class ApiController {
         result.put("started", started);
         result.put("errors", errors);
         result.put("success", true);
+        return result;
+    }
+
+    @PostMapping("/servers/stop")
+    public Map<String, Object> stopServer(@RequestBody Map<String, Object> body) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        String server = (String) body.get("server");
+        if (server == null) {
+            result.put("success", false);
+            result.put("error", "server name required");
+            return result;
+        }
+        switch (server.toLowerCase()) {
+            case "ldap":
+                LdapServer.stop();
+                break;
+            case "ldaps":
+                LdapsServer.stop();
+                break;
+            case "http":
+                HTTPServer.stop();
+                break;
+            case "rmi":
+                RMIServer.stop();
+                break;
+            default:
+                result.put("success", false);
+                result.put("error", "unknown server: " + server);
+                return result;
+        }
+        result.put("success", true);
+        result.put("server", server);
+        result.put("status", getStatus());
+        return result;
+    }
+
+    @PostMapping("/servers/toggle")
+    public Map<String, Object> toggleServer(@RequestBody Map<String, Object> body) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        String server = (String) body.get("server");
+        if (server == null) {
+            result.put("success", false);
+            result.put("error", "server name required");
+            return result;
+        }
+        boolean nowRunning;
+        switch (server.toLowerCase()) {
+            case "ldap":
+                if (LdapServer.isRunning) LdapServer.stop();
+                else new Thread(() -> { try { LdapServer.start(); } catch (Exception ignored) {} }, "ldap-toggler").start();
+                nowRunning = !LdapServer.isRunning;
+                break;
+            case "ldaps":
+                if (LdapsServer.isRunning) LdapsServer.stop();
+                else new Thread(() -> { try { LdapsServer.start(); } catch (Exception ignored) {} }, "ldaps-toggler").start();
+                nowRunning = !LdapsServer.isRunning;
+                break;
+            case "http":
+                if (HTTPServer.isRunning) HTTPServer.stop();
+                else new Thread(() -> { try { HTTPServer.start(); } catch (Exception ignored) {} }, "http-toggler").start();
+                nowRunning = !HTTPServer.isRunning;
+                break;
+            case "rmi":
+                if (RMIServer.isRunning) RMIServer.stop();
+                else new Thread(() -> { try { RMIServer.start(); } catch (Exception ignored) {} }, "rmi-toggler").start();
+                nowRunning = !RMIServer.isRunning;
+                break;
+            default:
+                result.put("success", false);
+                result.put("error", "unknown server: " + server);
+                return result;
+        }
+        try { Thread.sleep(800); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        result.put("success", true);
+        result.put("server", server);
+        result.put("running", nowRunning);
+        result.put("status", getStatus());
         return result;
     }
 
@@ -134,8 +217,13 @@ public class ApiController {
         if (body.containsKey("ldapsPort")) Config.ldapsPort = (Integer) body.get("ldapsPort");
         if (body.containsKey("httpPort")) Config.httpPort = (Integer) body.get("httpPort");
         if (body.containsKey("rmiPort")) Config.rmiPort = (Integer) body.get("rmiPort");
-        if (body.containsKey("command")) Config.command = (String) body.get("command");
         if (body.containsKey("codeBase")) Config.codeBase = (String) body.get("codeBase");
+        if (body.containsKey("AESkey")) Config.AESkey = (String) body.get("AESkey");
+        if (body.containsKey("user")) Config.USER = (String) body.get("user");
+        if (body.containsKey("PASSWD")) Config.PASSWD = (String) body.get("PASSWD");
+        if (body.containsKey("TLSProxy")) Config.TLSProxy = Boolean.TRUE.equals(body.get("TLSProxy"));
+        if (body.containsKey("keyPass")) Config.keyPass = (String) body.get("keyPass");
+        if (body.containsKey("certFile")) Config.certFile = (String) body.get("certFile");
 
         result.put("success", true);
         result.put("config", getStatus());

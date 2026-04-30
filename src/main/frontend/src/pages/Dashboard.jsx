@@ -1,38 +1,42 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import LiquidGlass from 'liquid-glass-react'
 import { useTheme } from '../context/ThemeContext'
 import {
-  getStatus, startServers as apiStartServers, getGadgets,
+  getStatus, toggleServer, getGadgets,
   generatePayload as apiGenerate, updateConfig, setAuthToken
 } from '../api'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
-  const containerRef = useRef(null)
+  const [mode, setMode] = useState('jndi')
+  const [animKey, setAnimKey] = useState(0)
   const [status, setStatus] = useState({})
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState({ success: '', error: '' })
-  const [activeTab, setActiveTab] = useState('servers')
+  const [toggling, setToggling] = useState(null)
   const [gadgets, setGadgets] = useState([])
   const [gadgetSearch, setGadgetSearch] = useState('')
   const [selectedGadget, setSelectedGadget] = useState('')
   const [payloadCmd, setPayloadCmd] = useState('')
   const [payloadResult, setPayloadResult] = useState('')
 
-  const [serverCfg, setServerCfg] = useState({
-    ldap: false, ldaps: false, http: false, rmi: false
-  })
-
   const [configForm, setConfigForm] = useState({
-    ip: '', ldapPort: 1389, ldapsPort: 1669, httpPort: 3456, rmiPort: 1099, codeBase: ''
+    ip: '', ldapPort: 1389, ldapsPort: 1669, httpPort: 3456, rmiPort: 1099,
+    AESkey: '123', user: '', PASSWD: '', TLSProxy: false, keyPass: '', certFile: ''
   })
 
   const filteredGadgets = useMemo(() => {
     if (!gadgetSearch) return gadgets
     return gadgets.filter(g => g.name.toLowerCase().includes(gadgetSearch.toLowerCase()))
   }, [gadgetSearch, gadgets])
+
+  const switchMode = useCallback((next) => {
+    if (next === mode) return
+    setMode(next)
+    setAnimKey(k => k + 1)
+    setMsg({ success: '', error: '' })
+  }, [mode])
 
   async function loadStatus() {
     try {
@@ -45,7 +49,12 @@ export default function Dashboard() {
         ldapsPort: res.data.ldapsPort || 1669,
         httpPort: res.data.httpPort || 3456,
         rmiPort: res.data.rmiPort || 1099,
-        codeBase: res.data.codeBase || ''
+        AESkey: res.data.AESkey || '123',
+        user: res.data.user || '',
+        PASSWD: res.data.PASSWD || '',
+        TLSProxy: res.data.TLSProxy || false,
+        keyPass: res.data.keyPass || '',
+        certFile: res.data.certFile || ''
       }))
     } catch (e) {
       if (e.response && e.response.status === 401) {
@@ -62,24 +71,18 @@ export default function Dashboard() {
     } catch (e) { /* ignore */ }
   }
 
-  async function handleStartServers() {
-    setLoading(true)
+  async function handleToggleServer(server) {
+    setToggling(server)
     setMsg({ success: '', error: '' })
     try {
-      const res = await apiStartServers({
-        ldap: serverCfg.ldap, ldaps: serverCfg.ldaps,
-        http: serverCfg.http, rmi: serverCfg.rmi,
-        ip: configForm.ip, ldapPort: configForm.ldapPort,
-        ldapsPort: configForm.ldapsPort, httpPort: configForm.httpPort,
-        rmiPort: configForm.rmiPort
-      })
+      const res = await toggleServer(server)
       if (res.data.success) {
-        setMsg({ success: 'Servers starting: ' + (res.data.started.join(', ') || 'none'), error: '' })
+        setMsg({ success: server.toUpperCase() + ' ' + (res.data.running ? 'started' : 'stopped'), error: '' })
+        setStatus(res.data.status)
       }
-      setTimeout(loadStatus, 2000)
     } catch (e) {
-      setMsg({ success: '', error: 'Failed to start servers' })
-    } finally { setLoading(false) }
+      setMsg({ success: '', error: 'Failed to toggle ' + server.toUpperCase() })
+    } finally { setToggling(null) }
   }
 
   async function handleSaveConfig() {
@@ -118,27 +121,31 @@ export default function Dashboard() {
 
   useEffect(() => { loadStatus(); loadGadgets() }, [])
 
-  const liquidProps = {
-    mouseContainer: containerRef,
-    elasticity: 0.07,
-    blurAmount: 0.042,
-    saturation: 120,
-    displacementScale: 36,
-    cornerRadius: 24,
-    overLight: theme === 'light',
-  }
-
   return (
-    <div ref={containerRef}>
+    <div>
       <div className="dashboard-bg" />
 
       <div className="page-shell">
-        <LiquidGlass {...liquidProps} style={{ marginBottom: 20 }}>
+        <div className="glass-card" style={{ marginBottom: 20 }}>
           <div className="header">
             <h1>
               <span className="logo-dot" />
               JYso
             </h1>
+            <div className={'mode-segment-control' + (mode === 'gadget' ? ' gadget-mode' : '')}>
+              <button
+                className={'mode-segment-btn' + (mode === 'jndi' ? ' active' : '')}
+                onClick={() => switchMode('jndi')}
+              >
+                JNDI EXP
+              </button>
+              <button
+                className={'mode-segment-btn' + (mode === 'gadget' ? ' active' : '')}
+                onClick={() => switchMode('gadget')}
+              >
+                Gadget
+              </button>
+            </div>
             <div className="header-right">
               <button
                 className="theme-toggle"
@@ -156,136 +163,130 @@ export default function Dashboard() {
               <button className="logout-btn" onClick={logout}>Logout</button>
             </div>
           </div>
-        </LiquidGlass>
+        </div>
 
-        {msg.success && <div className="success-msg">{msg.success}</div>}
-        {msg.error && <div className="error-msg">{msg.error}</div>}
+        {msg.success && <div className="success-msg section-enter">{msg.success}</div>}
+        {msg.error && <div className="error-msg section-enter">{msg.error}</div>}
 
-        <LiquidGlass {...liquidProps} style={{ marginBottom: 20 }}>
-          <div className="glass-card">
-            <h2>Server Status</h2>
-            <div className="status-grid">
-              <div className="status-item">
-                <span className="status-label">LDAP ({status.ldapPort})</span>
-                <span className={'status-value ' + (status.ldapRunning ? 'status-online' : 'status-offline')}>
-                  {status.ldapRunning ? 'ONLINE' : 'OFFLINE'}
-                </span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">LDAPS ({status.ldapsPort})</span>
-                <span className={'status-value ' + (status.ldapsRunning ? 'status-online' : 'status-offline')}>
-                  {status.ldapsRunning ? 'ONLINE' : 'OFFLINE'}
-                </span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">HTTP ({status.httpPort})</span>
-                <span className={'status-value ' + (status.httpRunning ? 'status-online' : 'status-offline')}>
-                  {status.httpRunning ? 'ONLINE' : 'OFFLINE'}
-                </span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">RMI ({status.rmiPort})</span>
-                <span className={'status-value ' + (status.rmiRunning ? 'status-online' : 'status-offline')}>
-                  {status.rmiRunning ? 'ONLINE' : 'OFFLINE'}
-                </span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">IP Address</span>
-                <span className="status-value" style={{ color: 'var(--accent)' }}>{status.ip || '0.0.0.0'}</span>
-              </div>
-              <div className="status-item">
-                <span className="status-label">Version</span>
-                <span className="status-value" style={{ color: 'var(--accent)' }}>{status.version || '-'}</span>
-              </div>
-            </div>
-          </div>
-        </LiquidGlass>
-
-        <LiquidGlass {...liquidProps}>
-          <div className="glass-card">
-            <h2>Controls</h2>
-            <div className="control-bar">
-              <button className="btn btn-primary" style={{ width: 'auto' }} onClick={loadStatus}>
-                Refresh Status
-              </button>
-              <button
-                className={'btn btn-secondary' + (activeTab === 'servers' ? ' active-tab' : '')}
-                onClick={() => setActiveTab('servers')}>Servers</button>
-              <button
-                className={'btn btn-secondary' + (activeTab === 'config' ? ' active-tab' : '')}
-                onClick={() => setActiveTab('config')}>Configuration</button>
-              <button
-                className={'btn btn-secondary' + (activeTab === 'payload' ? ' active-tab' : '')}
-                onClick={() => setActiveTab('payload')}>Payload Generator</button>
-            </div>
-
-            {activeTab === 'servers' && (
-              <div>
-                <div className="grid-2">
-                  <label className="form-group">
-                    <input type="checkbox" checked={serverCfg.ldap}
-                      onChange={e => setServerCfg({ ...serverCfg, ldap: e.target.checked })} /> LDAP
-                  </label>
-                  <label className="form-group">
-                    <input type="checkbox" checked={serverCfg.ldaps}
-                      onChange={e => setServerCfg({ ...serverCfg, ldaps: e.target.checked })} /> LDAPS
-                  </label>
-                  <label className="form-group">
-                    <input type="checkbox" checked={serverCfg.http}
-                      onChange={e => setServerCfg({ ...serverCfg, http: e.target.checked })} /> HTTP
-                  </label>
-                  <label className="form-group">
-                    <input type="checkbox" checked={serverCfg.rmi}
-                      onChange={e => setServerCfg({ ...serverCfg, rmi: e.target.checked })} /> RMI
-                  </label>
+        <div key={animKey}>
+          {mode === 'jndi' && (
+            <>
+              <div className="glass-card section-enter" style={{ marginBottom: 20 }}>
+                <h2>Server Status</h2>
+                <div className="status-grid">
+                  <div className={'status-item status-clickable' + (toggling === 'ldap' ? ' status-toggling' : '')}
+                    onClick={() => handleToggleServer('ldap')}
+                    title="Click to toggle LDAP server">
+                    <span className="status-label">LDAP ({status.ldapPort})</span>
+                    <span className={'status-value ' + (status.ldapRunning ? 'status-online' : 'status-offline')}>
+                      {status.ldapRunning ? 'ONLINE' : 'OFFLINE'}
+                    </span>
+                  </div>
+                  <div className={'status-item status-clickable' + (toggling === 'ldaps' ? ' status-toggling' : '')}
+                    onClick={() => handleToggleServer('ldaps')}
+                    title="Click to toggle LDAPS server">
+                    <span className="status-label">LDAPS ({status.ldapsPort})</span>
+                    <span className={'status-value ' + (status.ldapsRunning ? 'status-online' : 'status-offline')}>
+                      {status.ldapsRunning ? 'ONLINE' : 'OFFLINE'}
+                    </span>
+                  </div>
+                  <div className={'status-item status-clickable' + (toggling === 'http' ? ' status-toggling' : '')}
+                    onClick={() => handleToggleServer('http')}
+                    title="Click to toggle HTTP server">
+                    <span className="status-label">HTTP ({status.httpPort})</span>
+                    <span className={'status-value ' + (status.httpRunning ? 'status-online' : 'status-offline')}>
+                      {status.httpRunning ? 'ONLINE' : 'OFFLINE'}
+                    </span>
+                  </div>
+                  <div className={'status-item status-clickable' + (toggling === 'rmi' ? ' status-toggling' : '')}
+                    onClick={() => handleToggleServer('rmi')}
+                    title="Click to toggle RMI server">
+                    <span className="status-label">RMI ({status.rmiPort})</span>
+                    <span className={'status-value ' + (status.rmiRunning ? 'status-online' : 'status-offline')}>
+                      {status.rmiRunning ? 'ONLINE' : 'OFFLINE'}
+                    </span>
+                  </div>
+                  <div className="status-item">
+                    <span className="status-label">IP Address</span>
+                    <span className="status-value" style={{ color: 'var(--accent)' }}>{status.ip || '0.0.0.0'}</span>
+                  </div>
+                  <div className="status-item">
+                    <span className="status-label">Version</span>
+                    <span className="status-value" style={{ color: 'var(--accent)' }}>1.3.8</span>
+                  </div>
                 </div>
-                <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={handleStartServers} disabled={loading}>
-                  {loading ? 'Starting...' : 'Start Selected Servers'}
-                </button>
               </div>
-            )}
 
-            {activeTab === 'config' && (
-              <div>
+              <div className="glass-card section-enter">
+                <h2>Config</h2>
                 <div className="config-form">
-                  <div className="form-group">
-                    <label>IP Address</label>
-                    <input type="text" value={configForm.ip}
-                      onChange={e => setConfigForm({ ...configForm, ip: e.target.value })} />
-                  </div>
-                  <div className="form-group">
-                    <label>LDAP Port</label>
-                    <input type="number" value={configForm.ldapPort}
-                      onChange={e => setConfigForm({ ...configForm, ldapPort: parseInt(e.target.value) || 1389 })} />
-                  </div>
-                  <div className="form-group">
-                    <label>LDAPS Port</label>
-                    <input type="number" value={configForm.ldapsPort}
-                      onChange={e => setConfigForm({ ...configForm, ldapsPort: parseInt(e.target.value) || 1669 })} />
-                  </div>
-                  <div className="form-group">
-                    <label>HTTP Port</label>
-                    <input type="number" value={configForm.httpPort}
-                      onChange={e => setConfigForm({ ...configForm, httpPort: parseInt(e.target.value) || 3456 })} />
-                  </div>
-                  <div className="form-group">
-                    <label>RMI Port</label>
-                    <input type="number" value={configForm.rmiPort}
-                      onChange={e => setConfigForm({ ...configForm, rmiPort: parseInt(e.target.value) || 1099 })} />
-                  </div>
-                  <div className="form-group">
-                    <label>CodeBase URL</label>
-                    <input type="text" value={configForm.codeBase} placeholder="http://x.x.x.x:port/"
-                      onChange={e => setConfigForm({ ...configForm, codeBase: e.target.value })} />
-                  </div>
-                  <button className="btn btn-primary" onClick={handleSaveConfig} disabled={loading}>
-                    {loading ? 'Saving...' : 'Save Configuration'}
-                  </button>
-                </div>
+                      <div className="form-group">
+                        <label>IP Address</label>
+                        <input type="text" value={configForm.ip}
+                          onChange={e => setConfigForm({ ...configForm, ip: e.target.value })} />
+                      </div>
+                      <div className="form-group">
+                        <label>LDAP Port</label>
+                        <input type="number" value={configForm.ldapPort}
+                          onChange={e => setConfigForm({ ...configForm, ldapPort: parseInt(e.target.value) || 1389 })} />
+                      </div>
+                      <div className="form-group">
+                        <label>LDAPS Port</label>
+                        <input type="number" value={configForm.ldapsPort}
+                          onChange={e => setConfigForm({ ...configForm, ldapsPort: parseInt(e.target.value) || 1669 })} />
+                      </div>
+                      <div className="form-group">
+                        <label>HTTP Port</label>
+                        <input type="number" value={configForm.httpPort}
+                          onChange={e => setConfigForm({ ...configForm, httpPort: parseInt(e.target.value) || 3456 })} />
+                      </div>
+                      <div className="form-group">
+                        <label>RMI Port</label>
+                        <input type="number" value={configForm.rmiPort}
+                          onChange={e => setConfigForm({ ...configForm, rmiPort: parseInt(e.target.value) || 1099 })} />
+                      </div>
+                      <div className="form-group">
+                        <label>AES Key</label>
+                        <input type="text" value={configForm.AESkey}
+                          onChange={e => setConfigForm({ ...configForm, AESkey: e.target.value })} />
+                      </div>
+                      <div className="form-group">
+                        <label>LDAP User</label>
+                        <input type="text" value={configForm.user} placeholder="ldap bind account"
+                          onChange={e => setConfigForm({ ...configForm, user: e.target.value })} />
+                      </div>
+                      <div className="form-group">
+                        <label>LDAP Password</label>
+                        <input type="password" value={configForm.PASSWD} placeholder="ldap bind password"
+                          onChange={e => setConfigForm({ ...configForm, PASSWD: e.target.value })} />
+                      </div>
+                      <div className="form-group">
+                        <label>JKS Key Password</label>
+                        <input type="password" value={configForm.keyPass} placeholder="JKS key password"
+                          onChange={e => setConfigForm({ ...configForm, keyPass: e.target.value })} />
+                      </div>
+                      <div className="form-group">
+                        <label>JKS Cert File</label>
+                        <input type="text" value={configForm.certFile} placeholder="/path/to/cert.jks"
+                          onChange={e => setConfigForm({ ...configForm, certFile: e.target.value })} />
+                      </div>
+                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                        <label className="form-group" style={{ marginBottom: 0 }}>
+                          <input type="checkbox" checked={configForm.TLSProxy}
+                            onChange={e => setConfigForm({ ...configForm, TLSProxy: e.target.checked })} /> TLS Proxy (LDAPS Port Forwarding)
+                        </label>
+                      </div>
+                      <button className="btn btn-primary" onClick={handleSaveConfig} disabled={loading}>
+                        {loading ? 'Saving...' : 'Save Configuration'}
+                      </button>
+                    </div>
               </div>
-            )}
+            </>
+          )}
 
-            {activeTab === 'payload' && (
+          {mode === 'gadget' && (
+            <div className="glass-card section-enter">
+              <h2>Payload Generator</h2>
               <div className="grid-2">
                 <div>
                   <h3 style={{ fontSize: 13, marginBottom: 10, color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -320,9 +321,9 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
-            )}
-          </div>
-        </LiquidGlass>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

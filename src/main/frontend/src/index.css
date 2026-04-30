@@ -31,6 +31,10 @@
   --card-radius: 24px;
   --btn-radius: 13px;
   --input-radius: 13px;
+  --card-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --card-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  --card-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.05), 0 3px 10px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --card-bg: rgba(255, 255, 255, 0.72);
   --font-mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
   --transition-fast: 200ms cubic-bezier(0.22, 0.1, 0.22, 1);
   --transition-fluid: 420ms cubic-bezier(0.22, 0.1, 0.22, 1);
@@ -50,6 +54,10 @@
   --success-bg: rgba(48, 209, 88, 0.10);
   --danger: #FF453A;
   --danger-bg: rgba(255, 69, 58, 0.08);
+  --card-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.20), 0 1px 2px rgba(0, 0, 0, 0.30);
+  --card-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.24), 0 2px 6px rgba(0, 0, 0, 0.32), 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+  --card-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.28), 0 3px 10px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --card-bg: rgba(28, 28, 30, 0.68);
 }
 
 html {
@@ -171,6 +179,89 @@ code, pre, .mono {
 
 .glass-card {
   padding: 28px;
+  background: var(--card-bg);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow-md);
+  border: 1px solid var(--border-color);
+  transition: background var(--transition-fluid), box-shadow var(--transition-fluid), border-color var(--transition-fluid), transform var(--transition-fluid);
+}
+
+.mode-segment-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 2px;
+  transition: background var(--transition-fluid), border-color var(--transition-fluid);
+}
+
+.mode-segment-control::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(50% - 4px);
+  height: calc(100% - 6px);
+  background: var(--accent);
+  border-radius: 10px;
+  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 12px var(--accent-glow);
+  z-index: 0;
+}
+
+.mode-segment-control.gadget-mode::before {
+  transform: translateX(calc(100% + 2px));
+}
+
+.mode-segment-btn {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 7px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 320ms cubic-bezier(0.22, 0.1, 0.22, 1);
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mode-segment-btn:active {
+  transform: scale(0.96);
+  transition: transform 100ms cubic-bezier(0.22, 0.1, 0.22, 1);
+}
+
+.mode-segment-btn.active {
+  color: #FFFFFF;
+}
+
+.section-enter {
+  animation: sectionSlideIn 520ms cubic-bezier(0.22, 0.1, 0, 1) both;
+}
+
+.section-enter:nth-child(2) { animation-delay: 40ms; }
+.section-enter:nth-child(3) { animation-delay: 80ms; }
+
+@keyframes sectionSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .glass-card h2 {
@@ -199,6 +290,28 @@ code, pre, .mono {
   border: 1px solid var(--border-color);
   border-radius: 14px;
   transition: background var(--transition-fluid), border-color var(--transition-fluid);
+}
+
+.status-clickable {
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.status-clickable:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent);
+  box-shadow: var(--card-shadow-sm);
+  transform: translateY(-1px);
+}
+
+.status-clickable:active {
+  transform: scale(0.98);
+  transition: transform 100ms ease;
+}
+
+.status-toggling {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .status-label {
@@ -388,6 +501,78 @@ code, pre, .mono {
 }
 
 .control-bar .btn { padding: 8px 16px; font-size: 13px; }
+
+.tab-segment-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 11px;
+  padding: 3px;
+  gap: 2px;
+  transition: background var(--transition-fluid), border-color var(--transition-fluid);
+}
+
+.tab-segment-control::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(50% - 4px);
+  height: calc(100% - 6px);
+  background: var(--accent);
+  border-radius: 9px;
+  transition: transform 380ms cubic-bezier(0.34, 1.50, 0.64, 1);
+  box-shadow: 0 2px 10px var(--accent-glow);
+  z-index: 0;
+}
+
+.tab-segment-control.config-tab::before {
+  transform: translateX(calc(100% + 2px));
+}
+
+.tab-segment-btn {
+  position: relative;
+  z-index: 1;
+  padding: 6px 20px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 280ms cubic-bezier(0.22, 0.1, 0.22, 1);
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-segment-btn:active {
+  transform: scale(0.96);
+  transition: transform 100ms cubic-bezier(0.22, 0.1, 0.22, 1);
+}
+
+.tab-segment-btn.active {
+  color: #FFFFFF;
+}
+
+.tab-content-enter {
+  animation: tabContentSlide 380ms cubic-bezier(0.22, 0.1, 0, 1) both;
+}
+
+@keyframes tabContentSlide {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 .config-form {
   display: grid;

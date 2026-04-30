@@ -44,6 +44,14 @@ export function startServers(data) {
   return api.post('/servers/start', data)
 }
 
+export function stopServer(server) {
+  return api.post('/servers/stop', { server })
+}
+
+export function toggleServer(server) {
+  return api.post('/servers/toggle', { server })
+}
+
 export function getGadgets() {
   return api.get('/gadgets')
 }

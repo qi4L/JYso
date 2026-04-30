@@ -31,6 +31,7 @@ public class LdapServer extends InMemoryOperationInterceptor {
     private static final Logger log = LogManager.getLogger(LdapServer.class);
     public static TreeMap<String, LdapController> routes = new TreeMap<>();
     public static boolean isRunning = false;
+    private static InMemoryDirectoryServer ds;
 
     public LdapServer() throws Exception {
 
@@ -71,12 +72,20 @@ public class LdapServer extends InMemoryOperationInterceptor {
             //添加操作拦截器
             //将提供的操作拦截器添加到操作拦截器列表中，该列表可用于在请求被内存目录服务器处理之前转换请求，和/或在响应返回给客户端之前转换响应。
             serverConfig.addInMemoryOperationInterceptor(new LdapServer());
-            InMemoryDirectoryServer ds = new InMemoryDirectoryServer(serverConfig);
+            ds = new InMemoryDirectoryServer(serverConfig);
             ds.startListening();
             isRunning = true;
             System.out.println(ansi().render("@|green [+]|@ LDAP Server Start Listening on >> " + Config.ldapPort + "..."));
         } catch (Exception e) {
             log.error("e: ", e);
+        }
+    }
+
+    public static void stop() {
+        if (ds != null) {
+            ds.shutDown(true);
+            isRunning = false;
+            System.out.println(ansi().render("@|yellow [!]|@ LDAP Server stopped"));
         }
     }
 
