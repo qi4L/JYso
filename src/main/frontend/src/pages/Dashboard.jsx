@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import {
   getStatus, toggleServer, getGadgets,
-  generatePayload as apiGenerate, updateConfig, setAuthToken, getLogs
+  generatePayload as apiGenerate, updateConfig, setAuthToken, getLogs,
+  getFiles, downloadFile, deleteFile as apiDeleteFile
 } from '../api'
 
 export default function Dashboard() {
@@ -50,6 +51,8 @@ export default function Dashboard() {
   const [logLines, setLogLines] = useState([])
   const [logLoading, setLogLoading] = useState(false)
   const logEndRef = useRef(null)
+  const [files, setFiles] = useState([])
+  const [filesLoading, setFilesLoading] = useState(false)
 
   const ROUTING_OPTIONS = ['Basic', 'ELProcessor', 'Groovy', 'jdbcBypass1', 'jdbcBypass2', 'ldap2rmi', 'SnakeYaml', 'XStream', 'MemoryXXE']
 
@@ -140,6 +143,7 @@ export default function Dashboard() {
       if (res.data.success) {
         setPayloadResult(res.data.message || 'Payload generated successfully')
         setMsg({ success: 'Payload generated', error: '' })
+        if (res.data.saved) fetchFiles()
       } else {
         setPayloadResult('Error: ' + (res.data.error || 'unknown'))
         setMsg({ success: '', error: res.data.error || 'Generation failed' })
@@ -244,6 +248,38 @@ export default function Dashboard() {
   useEffect(() => { loadStatus(); loadGadgets() }, [])
 
   useEffect(() => {
+    if (mode !== 'gadget') return
+    fetchFiles()
+  }, [mode])
+
+  async function fetchFiles() {
+    try {
+      const res = await getFiles()
+      setFiles(res.data)
+    } catch { /* ignore */ }
+  }
+
+  async function handleDownloadFile(name) {
+    try {
+      const res = await downloadFile(name)
+      const url = window.URL.createObjectURL(new Blob([res.data]))
+      const a = document.createElement('a')
+      a.href = url
+      a.download = name
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch { /* ignore */ }
+  }
+
+  async function handleDeleteFile(name) {
+    if (!confirm(`Delete ${name}?`)) return
+    try {
+      await apiDeleteFile(name)
+      fetchFiles()
+    } catch { /* ignore */ }
+  }
+
+  useEffect(() => {
     if (activeJndiTab !== 'logs') return
     fetchLogs()
     const id = setInterval(fetchLogs, 2000)
@@ -280,6 +316,9 @@ export default function Dashboard() {
               </button>
             </div>
             <div className="header-right">
+              <a className="wiki-btn" href="https://github.com/qi4L/JYso/wiki" target="_blank" rel="noopener noreferrer" title="Wiki">
+                Wiki
+              </a>
               <button
                 className="theme-toggle"
                 onClick={toggleTheme}
@@ -633,8 +672,9 @@ export default function Dashboard() {
           )}
 
           {mode === 'gadget' && (
-            <div className="glass-card section-enter">
-              <div className="header" style={{ padding: 0, marginBottom: 16 }}>
+            <div style={{ display: 'flex', gap: 'var(--card-gap)', alignItems: 'flex-start' }}>
+              <div className="glass-card section-enter" style={{ flex: 3, marginBottom: 0 }}>
+                <div className="header" style={{ padding: 0, marginBottom: 16 }}>
                 <h2>Payload Generator</h2>
                 <button
                   className={`btn btn-secondary${showAdvanced ? ' active-tab' : ''}`}
@@ -766,6 +806,34 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
+            <div className="glass-card section-enter" style={{ flex: 2, marginBottom: 0 }}>
+              <div className="header" style={{ padding: 0, marginBottom: 16 }}>
+                <h2>File Manager</h2>
+                <button className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: 11, width: 'auto' }}
+                  onClick={fetchFiles} disabled={filesLoading}>
+                  {filesLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              </div>
+              <div className="file-list">
+                {files.length === 0 ? (
+                  <div className="file-empty">No saved files</div>
+                ) : (
+                  files.map(f => (
+                    <div key={f.name} className="file-row">
+                      <span className="file-name" title={f.name}>{f.name}</span>
+                      <span className="file-size">{f.size > 1024 ? (f.size / 1024).toFixed(1) + ' KB' : f.size + ' B'}</span>
+                      <button className="file-btn" onClick={() => handleDownloadFile(f.name)} title="Download">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 7l4 4 4-4M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </button>
+                      <button className="file-btn file-btn-del" onClick={() => handleDeleteFile(f.name)} title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M6 5V3h4v2M5 5v8h6V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
           )}
         </div>
       </div>

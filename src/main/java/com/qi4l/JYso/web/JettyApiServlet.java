@@ -52,6 +52,12 @@ public class JettyApiServlet extends HttpServlet {
                 handleStatus(resp);
             } else if ("/logs".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
                 handleLogs(req, resp);
+            } else if ("/files".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
+                handleFileList(resp);
+            } else if ("/files/download".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
+                handleFileDownload(req, resp);
+            } else if ("/files/delete".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
+                handleFileDelete(req, resp);
             } else {
                 resp.setStatus(404);
                 resp.getWriter().write("{\"error\":\"Not found\"}");
@@ -93,6 +99,63 @@ public class JettyApiServlet extends HttpServlet {
         List<String> logLines = RequestLogCollector.getLines(count);
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("logs", logLines);
+        resp.getWriter().write(JSON.toJSONString(result));
+    }
+
+    private void handleFileList(HttpServletResponse resp) throws IOException {
+        java.io.File dir = new java.io.File(".");
+        java.io.File[] files = dir.listFiles(f -> f.isFile() && f.getName().endsWith(".ser"));
+        List<Map<String, Object>> list = new ArrayList<>();
+        if (files != null) {
+            for (java.io.File f : files) {
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("name", f.getName());
+                item.put("size", f.length());
+                item.put("modified", f.lastModified());
+                list.add(item);
+            }
+        }
+        list.sort((a, b) -> Long.compare((long) b.get("modified"), (long) a.get("modified")));
+        resp.getWriter().write(JSON.toJSONString(list));
+    }
+
+    private void handleFileDownload(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String name = req.getParameter("name");
+        if (name == null || name.isEmpty()) {
+            resp.setStatus(400);
+            resp.getWriter().write("{\"error\":\"name required\"}");
+            return;
+        }
+        Path filePath = Paths.get(name);
+        if (!Files.exists(filePath)) {
+            resp.setStatus(404);
+            resp.getWriter().write("{\"error\":\"file not found\"}");
+            return;
+        }
+        resp.setContentType("application/octet-stream");
+        resp.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\"");
+        resp.setContentLengthLong(Files.size(filePath));
+        Files.copy(filePath, resp.getOutputStream());
+    }
+
+    private void handleFileDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject json = readJson(req);
+        String name = json.getString("name");
+        Map<String, Object> result = new LinkedHashMap<>();
+        if (name == null || name.isEmpty()) {
+            result.put("success", false);
+            result.put("error", "name required");
+            resp.getWriter().write(JSON.toJSONString(result));
+            return;
+        }
+        Path filePath = Paths.get(name);
+        if (!Files.exists(filePath)) {
+            result.put("success", false);
+            result.put("error", "file not found");
+        } else {
+            Files.delete(filePath);
+            result.put("success", true);
+        }
         resp.getWriter().write(JSON.toJSONString(result));
     }
 

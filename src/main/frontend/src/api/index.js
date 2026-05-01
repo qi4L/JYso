@@ -1,13 +1,18 @@
 import axios from 'axios'
 
-let authToken = null
+let authToken = localStorage.getItem('jyso_token')
 
 export function setAuthToken(token) {
   authToken = token
+  if (token) {
+    localStorage.setItem('jyso_token', token)
+  } else {
+    localStorage.removeItem('jyso_token')
+  }
 }
 
 export function getAuthToken() {
-  return authToken
+  return authToken || localStorage.getItem('jyso_token')
 }
 
 const api = axios.create({
@@ -27,6 +32,7 @@ api.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       authToken = null
+      localStorage.removeItem('jyso_token')
     }
     return Promise.reject(error)
   }
@@ -70,6 +76,18 @@ export function getConfig() {
 
 export function getLogs(count) {
   return api.get('/logs', { params: { count } })
+}
+
+export function getFiles() {
+  return api.get('/files')
+}
+
+export function downloadFile(name) {
+  return api.get('/files/download', { params: { name }, responseType: 'blob' })
+}
+
+export function deleteFile(name) {
+  return api.post('/files/delete', { name })
 }
 
 export default api
