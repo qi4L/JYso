@@ -15,6 +15,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.util.EnumSet;
@@ -70,7 +71,9 @@ public class JYsoWebApplication {
 
             context.addServlet(new ServletHolder(new AuthServlet()), "/api/auth/login");
 
-            context.addServlet(new ServletHolder(new JettyApiServlet()), "/api/*");
+            ServletHolder apiHolder = new ServletHolder(new JettyApiServlet());
+            apiHolder.getRegistration().setMultipartConfig(new MultipartConfigElement(""));
+            context.addServlet(apiHolder, "/api/*");
 
             context.addFilter(new FilterHolder(new SpaFallbackFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
 

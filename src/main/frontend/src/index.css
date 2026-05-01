@@ -906,6 +906,32 @@ select {
   font-family: 'Inter', sans-serif;
 }
 
+.file-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+}
+.file-upload-zone:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.file-upload-zone.drag-over {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--primary);
+}
+.file-upload-zone.uploading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: 0ms !important;

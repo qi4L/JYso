@@ -84,9 +84,7 @@ public class ysoserial {
         //载入gadget
         final Class<? extends ObjectPayload<?>> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
         if (payloadClass == null) {
-            System.err.println("Invalid payload type '" + payloadType + "'");
-            printUsage(options);
-            System.exit(1);
+            throw new IllegalArgumentException("Invalid payload type '" + payloadType + "'");
         }
 
 

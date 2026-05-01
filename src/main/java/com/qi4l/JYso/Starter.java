@@ -38,7 +38,12 @@ public class Starter {
 
         if (args[0].equals("-y")) {
             JYsoMode = true;
-            ysoserial.run(args);
+            try {
+                ysoserial.run(args);
+            } catch (Exception e) {
+                System.err.println("[!] " + e.getMessage());
+                System.exit(1);
+            }
         }
     }
 }

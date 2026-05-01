@@ -11,16 +11,21 @@ import com.qi4l.JYso.gadgets.Config.Config;
 import com.qi4l.JYso.gadgets.Config.ysoserial;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+@MultipartConfig
 public class JettyApiServlet extends HttpServlet {
 
     @Override
@@ -58,6 +63,8 @@ public class JettyApiServlet extends HttpServlet {
                 handleFileDownload(req, resp);
             } else if ("/files/delete".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
                 handleFileDelete(req, resp);
+            } else if ("/files/upload".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
+                handleFileUpload(req, resp);
             } else {
                 resp.setStatus(404);
                 resp.getWriter().write("{\"error\":\"Not found\"}");
@@ -159,6 +166,34 @@ public class JettyApiServlet extends HttpServlet {
         resp.getWriter().write(JSON.toJSONString(result));
     }
 
+    private void handleFileUpload(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Map<String, Object> result = new LinkedHashMap<>();
+        try {
+            Part filePart = req.getPart("file");
+            if (filePart == null || filePart.getSize() == 0) {
+                result.put("success", false);
+                result.put("error", "no file uploaded");
+                resp.getWriter().write(JSON.toJSONString(result));
+                return;
+            }
+            String fileName = filePart.getSubmittedFileName();
+            if (fileName == null || fileName.isEmpty()) {
+                fileName = "uploaded_file";
+            }
+            Path targetPath = Paths.get(fileName);
+            try (InputStream input = filePart.getInputStream()) {
+                Files.copy(input, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+            result.put("success", true);
+            result.put("name", fileName);
+            result.put("size", Files.size(targetPath));
+        } catch (ServletException e) {
+            result.put("success", false);
+            result.put("error", "upload failed: " + e.getMessage());
+        }
+        resp.getWriter().write(JSON.toJSONString(result));
+    }
+
     private void handleServersStart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         JSONObject json = readJson(req);
         Map<String, Object> result = new LinkedHashMap<>();
@@ -236,27 +271,39 @@ public class JettyApiServlet extends HttpServlet {
             resp.getWriter().write(JSON.toJSONString(result));
             return;
         }
-        boolean nowRunning;
+        boolean nowRunning = false;
         switch (server.toLowerCase()) {
             case "ldap":
-                if (LdapServer.isRunning) LdapServer.stop();
-                else new Thread(() -> { try { LdapServer.start(); } catch (Exception ignored) {} }, "ldap-toggler").start();
-                nowRunning = !LdapServer.isRunning;
+                if (LdapServer.isRunning) {
+                    LdapServer.stop();
+                } else {
+                    new Thread(() -> { try { LdapServer.start(); } catch (Exception ignored) {} }, "ldap-toggler").start();
+                    nowRunning = true;
+                }
                 break;
             case "ldaps":
-                if (LdapsServer.isRunning) LdapsServer.stop();
-                else new Thread(() -> { try { LdapsServer.start(); } catch (Exception ignored) {} }, "ldaps-toggler").start();
-                nowRunning = !LdapsServer.isRunning;
+                if (LdapsServer.isRunning) {
+                    LdapsServer.stop();
+                } else {
+                    new Thread(() -> { try { LdapsServer.start(); } catch (Exception ignored) {} }, "ldaps-toggler").start();
+                    nowRunning = true;
+                }
                 break;
             case "http":
-                if (HTTPServer.isRunning) HTTPServer.stop();
-                else new Thread(() -> { try { HTTPServer.start(); } catch (Exception ignored) {} }, "http-toggler").start();
-                nowRunning = !HTTPServer.isRunning;
+                if (HTTPServer.isRunning) {
+                    HTTPServer.stop();
+                } else {
+                    new Thread(() -> { try { HTTPServer.start(); } catch (Exception ignored) {} }, "http-toggler").start();
+                    nowRunning = true;
+                }
                 break;
             case "rmi":
-                if (RMIServer.isRunning) RMIServer.stop();
-                else new Thread(() -> { try { RMIServer.start(); } catch (Exception ignored) {} }, "rmi-toggler").start();
-                nowRunning = !RMIServer.isRunning;
+                if (RMIServer.isRunning) {
+                    RMIServer.stop();
+                } else {
+                    new Thread(() -> { try { RMIServer.start(); } catch (Exception ignored) {} }, "rmi-toggler").start();
+                    nowRunning = true;
+                }
                 break;
             default:
                 result.put("success", false);

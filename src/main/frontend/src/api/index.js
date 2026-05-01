@@ -90,4 +90,8 @@ export function deleteFile(name) {
   return api.post('/files/delete', { name })
 }
 
+export function uploadFile(formData) {
+  return api.post('/files/upload', formData)
+}
+
 export default api

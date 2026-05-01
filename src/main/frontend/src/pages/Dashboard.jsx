@@ -4,7 +4,8 @@ import { useTheme } from '../context/ThemeContext'
 import {
   getStatus, toggleServer, getGadgets,
   generatePayload as apiGenerate, updateConfig, setAuthToken, getLogs,
-  getFiles, downloadFile, deleteFile as apiDeleteFile
+  getFiles, downloadFile, deleteFile as apiDeleteFile,
+  uploadFile
 } from '../api'
 
 export default function Dashboard() {
@@ -53,6 +54,9 @@ export default function Dashboard() {
   const logEndRef = useRef(null)
   const [files, setFiles] = useState([])
   const [filesLoading, setFilesLoading] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef(null)
 
   const ROUTING_OPTIONS = ['Basic', 'ELProcessor', 'Groovy', 'jdbcBypass1', 'jdbcBypass2', 'ldap2rmi', 'SnakeYaml', 'XStream', 'MemoryXXE']
 
@@ -149,7 +153,7 @@ export default function Dashboard() {
         setMsg({ success: '', error: res.data.error || 'Generation failed' })
       }
     } catch (e) {
-      setMsg({ success: '', error: 'Failed to generate payload' })
+      setMsg({ success: '', error: e.response?.data?.error || 'Failed to generate payload' })
     } finally { setLoading(false) }
   }
 
@@ -277,6 +281,56 @@ export default function Dashboard() {
       await apiDeleteFile(name)
       fetchFiles()
     } catch { /* ignore */ }
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragOver(true)
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragOver(false)
+  }
+
+  function handleDrop(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragOver(false)
+    const droppedFiles = e.dataTransfer.files
+    if (droppedFiles.length > 0) {
+      doUpload(droppedFiles[0])
+    }
+  }
+
+  function handleFileSelect(e) {
+    const selectedFiles = e.target.files
+    if (selectedFiles.length > 0) {
+      doUpload(selectedFiles[0])
+    }
+    e.target.value = ''
+  }
+
+  async function doUpload(file) {
+    setUploading(true)
+    setMsg({ success: '', error: '' })
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await uploadFile(formData)
+      if (res.data.success) {
+        setMsg({ success: 'Uploaded: ' + res.data.name, error: '' })
+        fetchFiles()
+      } else {
+        setMsg({ success: '', error: res.data.error || 'Upload failed' })
+      }
+    } catch (e) {
+      setMsg({ success: '', error: 'Upload failed' })
+    } finally {
+      setUploading(false)
+    }
   }
 
   useEffect(() => {
@@ -813,6 +867,25 @@ export default function Dashboard() {
                   onClick={fetchFiles} disabled={filesLoading}>
                   {filesLoading ? 'Loading...' : 'Refresh'}
                 </button>
+              </div>
+              <div
+                className={'file-upload-zone' + (dragOver ? ' drag-over' : '') + (uploading ? ' uploading' : '')}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  style={{ display: 'none' }}
+                  onChange={handleFileSelect}
+                />
+                {uploading ? (
+                  <span>Uploading...</span>
+                ) : (
+                  <span>Drop file here or click to upload</span>
+                )}
               </div>
               <div className="file-list">
                 {files.length === 0 ? (
