@@ -72,7 +72,7 @@ public class ClassLoaderTemplate {
         } catch (Exception e) {
             try {
                 base64 = Class.forName("sun.misc.BASE64Decoder");
-                Object decoder = base64.newInstance();
+                Object decoder = base64.getDeclaredConstructor().newInstance();
                 value = (byte[]) decoder.getClass().getMethod("decodeBuffer", String.class).invoke(decoder, bs);
             } catch (Exception ignored) {
             }

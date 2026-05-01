@@ -39,7 +39,7 @@ public class Hibernate3JDBC implements ObjectPayload<Object>, DynamicDependencie
 
 
         Class<?> clazz = driverconimpl.toClass();
-        Object o1 = clazz.newInstance();
+        Object o1 = clazz.getDeclaredConstructor().newInstance();
         HashMap<Object, Object> map1 = new HashMap<>();
         map1.put("hibernate.connection.url", command);
         map1.put("hibernate.connection.pool_size", "0");

@@ -97,7 +97,7 @@ public class SignedObject implements ObjectPayload<Object> {
         String realCmd = com.qi4l.JYso.gadgets.utils.Utils.base64Decode(command);
 
         final Class<? extends ObjectPayload<?>> payloadClass = ObjectPayload.Utils.getPayloadClass(payloadType);
-        ObjectPayload<?> payload = payloadClass.newInstance();
+        ObjectPayload<?> payload = payloadClass.getDeclaredConstructor().newInstance();
         Object object = payload.getObject(realCmd);
 
         if (args.length >= 3) {

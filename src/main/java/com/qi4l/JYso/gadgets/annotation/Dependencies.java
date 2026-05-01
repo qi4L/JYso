@@ -16,7 +16,7 @@ public @interface Dependencies {
 
     String[] value() default {};
 
-    public static class Utils {
+    class Utils {
 
         public static String[] getDependencies(AnnotatedElement annotated) {
             Dependencies deps = annotated.getAnnotation(Dependencies.class);
@@ -24,7 +24,7 @@ public @interface Dependencies {
                 return deps.value();
             } else {
                 try {
-                    Class name = Class.forName(Reflections.getFieldValue(annotated, "name").toString());
+                    Class<?> name = Class.forName(Reflections.getFieldValue(annotated, "name").toString());
                     Method m = name.getDeclaredMethod("getDependencies");
                     m.setAccessible(true);
                     return (String[]) m.invoke(null);

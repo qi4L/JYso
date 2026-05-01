@@ -41,7 +41,7 @@ public class TemplatesUtil {
 
     public static <T> T createTemplatesImpl(final String[] args, Class<T> tplClass, Class<?> abstTranslet, Class<?> transFactory)
             throws Exception {
-        final T templates = tplClass.newInstance();
+        final T templates = tplClass.getDeclaredConstructor().newInstance();
 
         // use template gadget class
         ClassPool pool = ClassPool.getDefault();
@@ -81,7 +81,7 @@ public class TemplatesUtil {
 
         // required to make TemplatesImpl happy
         Reflections.setFieldValue(templates, "_name", "Pwnr");
-        Reflections.setFieldValue(templates, "_tfactory", transFactory.newInstance());
+        Reflections.setFieldValue(templates, "_tfactory", transFactory.getDeclaredConstructor().newInstance());
         return templates;
     }
 
