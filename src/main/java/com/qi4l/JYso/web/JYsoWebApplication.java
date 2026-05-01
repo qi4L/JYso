@@ -19,6 +19,7 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.util.EnumSet;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.qi4l.JYso.gadgets.Config.Config.logo;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -40,7 +41,7 @@ public class JYsoWebApplication {
 
         Config.applyCmdArgs(filterWebArgs(args));
 
-        int webPort = 8080;
+        int webPort = ThreadLocalRandom.current().nextInt(10000, 65536);
         for (int i = 0; i < args.length; i++) {
             if ("-wP".equals(args[i]) || "--webPort".equals(args[i])) {
                 if (i + 1 < args.length) {

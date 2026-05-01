@@ -104,7 +104,7 @@ public class JettyApiServlet extends HttpServlet {
 
     private void handleFileList(HttpServletResponse resp) throws IOException {
         java.io.File dir = new java.io.File(".");
-        java.io.File[] files = dir.listFiles(f -> f.isFile() && f.getName().endsWith(".ser"));
+        java.io.File[] files = dir.listFiles(f -> f.isFile());
         List<Map<String, Object>> list = new ArrayList<>();
         if (files != null) {
             for (java.io.File f : files) {
