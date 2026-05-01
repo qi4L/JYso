@@ -73,7 +73,7 @@ public class ClassNameHandler {
                                     JarEntry jarEntry = jarEntries.nextElement();
                                     String jarEntryName = jarEntry.getName();
                                     if (jarEntryName.endsWith(".class")) {
-                                        String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replaceAll("/", ".");
+                                        String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
                                         if (!className.contains("$") && className.startsWith(packageName)) {
                                             classSet.add(className);
                                         }

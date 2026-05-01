@@ -3,7 +3,6 @@ package com.qi4l.JYso.web;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,7 @@ public class SpaFallbackFilter implements Filter {
     private byte[] indexContent;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         try {
             URL indexUrl = getClass().getClassLoader().getResource("static/index.html");
             if (indexUrl != null) {
@@ -62,5 +61,6 @@ public class SpaFallbackFilter implements Filter {
 
     @Override
     public void destroy() {
+        Filter.super.destroy();
     }
 }

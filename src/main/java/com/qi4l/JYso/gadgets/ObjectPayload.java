@@ -1,9 +1,13 @@
 package com.qi4l.JYso.gadgets;
 
 import com.qi4l.JYso.LdapServer;
+import com.qi4l.JYso.gadgets.annotation.Authors;
+import com.qi4l.JYso.gadgets.annotation.Dependencies;
+import com.qi4l.JYso.gadgets.utils.StringUtil;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.Random;
 import java.util.Set;
 
@@ -72,6 +76,25 @@ public interface ObjectPayload<T> {
             }
 
             return sb.toString();
+        }
+
+        public static List<String> getPayloadTableLines() {
+            final List<Class<? extends ObjectPayload<?>>> payloadClasses =
+                    new ArrayList<>(getPayloadClasses());
+            payloadClasses.sort(new StringUtil.ToStringComparator());
+
+            final List<String[]> rows = new LinkedList<>();
+            rows.add(new String[]{"Payload", "Authors", "Dependencies"});
+            rows.add(new String[]{"-------", "-------", "------------"});
+            for (Class<? extends ObjectPayload<?>> payloadClass : payloadClasses) {
+                rows.add(new String[]{
+                        payloadClass.getSimpleName(),
+                        StringUtil.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
+                        StringUtil.join(Arrays.asList(Dependencies.Utils.getDependenciesSimple(payloadClass)), ", ", "", "")
+                });
+            }
+
+            return StringUtil.formatTable(rows);
         }
     }
 }

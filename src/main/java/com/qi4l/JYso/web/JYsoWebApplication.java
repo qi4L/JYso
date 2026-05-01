@@ -102,7 +102,7 @@ public class JYsoWebApplication {
                     new StringSelection(text), null
             );
             System.out.println(ansi().render("@|cyan [+]|@ Password copied to clipboard"));
-        } catch (HeadlessException e) {
+        } catch (HeadlessException ignored) {
         } catch (Exception e) {
             System.out.println(ansi().render("@|yellow [!]|@ Could not copy to clipboard: " + e.getMessage()));
         }

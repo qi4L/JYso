@@ -4,9 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.UnixStyleUsageFormatter;
 import com.qi4l.JYso.gadgets.ObjectPayload;
-import com.qi4l.JYso.gadgets.annotation.Authors;
-import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.StringUtil;
 import javassist.ClassPool;
 import org.fusesource.jansi.Ansi;
 
@@ -95,24 +92,7 @@ public class Config {
         }
 
         if (showGadgets) {
-            final List<Class<? extends ObjectPayload<?>>> payloadClasses =
-                    new ArrayList<>(ObjectPayload.Utils.getPayloadClasses());
-            payloadClasses.sort(new StringUtil.ToStringComparator()); // alphabetize
-
-            final List<String[]> rows = new LinkedList<>();
-            rows.add(new String[]{"Payload", "Authors", "Dependencies"});
-            rows.add(new String[]{"-------", "-------", "------------"});
-            for (Class<? extends ObjectPayload<?>> payloadClass : payloadClasses) {
-                rows.add(new String[]{
-                        payloadClass.getSimpleName(),
-                        StringUtil.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
-                        StringUtil.join(Arrays.asList(Dependencies.Utils.getDependenciesSimple(payloadClass)), ", ", "", "")
-                });
-            }
-
-            final List<String> lines = StringUtil.formatTable(rows);
-
-            for (String line : lines) {
+            for (String line : ObjectPayload.Utils.getPayloadTableLines()) {
                 System.out.println("     " + line);
             }
         }

@@ -1,10 +1,7 @@
 package com.qi4l.JYso.gadgets.Config;
 
 import com.qi4l.JYso.gadgets.ObjectPayload;
-import com.qi4l.JYso.gadgets.annotation.Authors;
-import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Serializer;
-import com.qi4l.JYso.gadgets.utils.StringUtil;
 import com.qi4l.JYso.gadgets.utils.dirty.DirtyDataWrapper;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.Logger;
@@ -90,7 +87,7 @@ public class ysoserial {
 
         try {
             //载入payload
-            ObjectPayload<?> payload = payloadClass.newInstance();
+            ObjectPayload<?> payload = payloadClass.getDeclaredConstructor().newInstance();
             Object object = payload.getObject(command);
 
             // 是否指定混淆
@@ -113,9 +110,9 @@ public class ysoserial {
             ObjectPayload.Utils.releasePayload(payload, object);
             out.flush();
             out.close();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             System.err.println("Error while generating or serializing payload");
-            log.error(String.valueOf(e));
+            log.error("Error while generating or serializing payload", e);
         }
     }
 
@@ -143,24 +140,7 @@ public class ysoserial {
         System.err.println("[root]#~  Usage: java -jar JYso-[version].jar -y -g [payload] -p [command] [options]");
         System.err.println("[root]#~  Available payload types:");
 
-        final List<Class<? extends ObjectPayload<?>>> payloadClasses =
-                new ArrayList<>(ObjectPayload.Utils.getPayloadClasses());
-        payloadClasses.sort(new StringUtil.ToStringComparator()); // alphabetize
-
-        final List<String[]> rows = new LinkedList<>();
-        rows.add(new String[]{"Payload", "Authors", "Dependencies"});
-        rows.add(new String[]{"-------", "-------", "------------"});
-        for (Class<? extends ObjectPayload<?>> payloadClass : payloadClasses) {
-            rows.add(new String[]{
-                    payloadClass.getSimpleName(),
-                    StringUtil.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
-                    StringUtil.join(Arrays.asList(Dependencies.Utils.getDependenciesSimple(payloadClass)), ", ", "", "")
-            });
-        }
-
-        final List<String> lines = StringUtil.formatTable(rows);
-
-        for (String line : lines) {
+        for (String line : ObjectPayload.Utils.getPayloadTableLines()) {
             System.err.println("       " + line);
         }
 

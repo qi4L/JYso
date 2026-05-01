@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -16,13 +15,12 @@ public class RequestLogCollector {
 
     private static final List<String> lines = new ArrayList<>();
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private static PrintStream originalOut;
     private static boolean installed = false;
 
     public static synchronized void install() {
         if (installed) return;
         installed = true;
-        originalOut = System.out;
+        PrintStream originalOut = System.out;
         System.setOut(new PrintStream(new TeeOutputStream(originalOut), true));
     }
 
@@ -58,10 +56,6 @@ public class RequestLogCollector {
         } finally {
             lock.readLock().unlock();
         }
-    }
-
-    public static List<String> getLines() {
-        return getLines(0);
     }
 
     private static class TeeOutputStream extends OutputStream {

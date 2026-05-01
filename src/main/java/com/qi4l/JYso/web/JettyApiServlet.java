@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,7 +30,7 @@ import java.util.*;
 public class JettyApiServlet extends HttpServlet {
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
@@ -111,7 +112,7 @@ public class JettyApiServlet extends HttpServlet {
 
     private void handleFileList(HttpServletResponse resp) throws IOException {
         java.io.File dir = new java.io.File(".");
-        java.io.File[] files = dir.listFiles(f -> f.isFile());
+        java.io.File[] files = dir.listFiles(File::isFile);
         List<Map<String, Object>> list = new ArrayList<>();
         if (files != null) {
             for (java.io.File f : files) {
