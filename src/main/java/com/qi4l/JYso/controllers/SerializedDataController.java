@@ -21,6 +21,7 @@ import java.util.Base64;
 
 import static com.qi4l.JYso.gadgets.Config.Config.BCEL1;
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/deserialization"})
 public class SerializedDataController implements LdapController {
     private static final Logger log = LogManager.getLogger(SerializedDataController.class);

@@ -17,6 +17,7 @@ import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import java.util.Enumeration;
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/jdbc2"})
 public class jdbcController2 implements LdapController {
 

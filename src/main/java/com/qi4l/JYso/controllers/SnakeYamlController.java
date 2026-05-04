@@ -15,6 +15,7 @@ import org.fusesource.jansi.Ansi;
 
 import javax.naming.StringRefAddr;
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/snakeyaml"})
 public class SnakeYamlController implements LdapController {
     private String[] params;

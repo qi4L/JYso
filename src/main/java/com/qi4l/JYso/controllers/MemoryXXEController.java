@@ -15,6 +15,7 @@ import org.fusesource.jansi.Ansi;
 
 import javax.naming.StringRefAddr;
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/memoryxxe"})
 public class MemoryXXEController implements LdapController {
     private String[] params;

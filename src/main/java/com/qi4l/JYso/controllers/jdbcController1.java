@@ -12,46 +12,34 @@ import org.fusesource.jansi.Ansi;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/jdbc1"})
-public class jdbcController1 implements LdapController {
+public class jdbcController1 extends BaseLdapController {
 
     private static final Logger log = LogManager.getLogger(jdbcController1.class);
     private static String driverq;
-
     private static String factoryType;
     private static String[] params;
     private static GadgetType gadgetType;
 
     public static void printResultJDBC1(String base) throws Exception {
         base = base.replace('\\', '/');
-        int fistIndex = base.indexOf("/");
-        int secondIndex = base.indexOf("/", fistIndex + 1);
-        if (secondIndex < 0) secondIndex = base.length();
 
-        try {
-            driverq = base.substring(fistIndex + 1, secondIndex);
-            System.out.println(Ansi.ansi().fgBrightMagenta().a("  driver: " + driverq).reset());
-        } catch (IllegalArgumentException e) {
-            throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(fistIndex + 1, secondIndex));
+        driverq = segment(base, 1);
+        if (driverq.isEmpty()) {
+            throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base);
         }
+        System.out.println(Ansi.ansi().fgBrightMagenta().a("  driver: " + driverq).reset());
 
-        int thirdIndex = base.indexOf("/", secondIndex + 1);
-        if (thirdIndex < 0) thirdIndex = base.length();
+        factoryType = segment(base, 2);
+        System.out.println(Ansi.ansi().fgBrightBlue().a("  Factory: " + factoryType).reset());
 
-        try {
-            factoryType = base.substring(secondIndex + 1, thirdIndex);
-            System.out.println(Ansi.ansi().fgBrightBlue().a("  Factory: " + factoryType).reset());
-        } catch (IllegalArgumentException e) {
-            throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(fistIndex + 1, secondIndex));
-        }
-
-        int fourthIndex = base.indexOf("/", thirdIndex + 1);
-
-        if (fourthIndex != -1) {
+        String gadgetStr = segment(base, 3);
+        if (!gadgetStr.isEmpty()) {
             try {
-                gadgetType = GadgetType.valueOf(base.substring(thirdIndex + 1, fourthIndex).toLowerCase());
+                gadgetType = GadgetType.valueOf(gadgetStr.toLowerCase());
             } catch (IllegalArgumentException e) {
-                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + base.substring(thirdIndex + 1, fourthIndex));
+                throw new UnSupportedPayloadTypeException("UnSupportedPayloadType : " + gadgetStr);
             }
         }
 
@@ -76,9 +64,9 @@ public class jdbcController1 implements LdapController {
 
             result.sendSearchEntry(e);
             result.setResult(new LDAPResult(0, ResultCode.SUCCESS));
-        } catch (Throwable er) {
+        } catch (Exception er) {
             System.err.println("Error while generating or serializing payload");
-            log.error(String.valueOf(er));
+            log.error("Error while generating or serializing payload", er);
         }
     }
 

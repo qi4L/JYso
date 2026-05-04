@@ -2,7 +2,7 @@ package com.qi4l.JYso;
 
 import com.qi4l.JYso.controllers.rmi.Basic;
 import com.qi4l.JYso.controllers.rmi.ELProcessor;
-import com.qi4l.JYso.gadgets.utils.JRMPUtils;
+import com.qi4l.JYso.gadgets.utils.Utils;
 import com.qi4l.JYso.gadgets.utils.MarshalOutputStream;
 import com.qi4l.JYso.gadgets.utils.Reflections;
 import com.sun.jndi.rmi.registry.ReferenceWrapper;
@@ -117,7 +117,7 @@ public class RMIServer implements Runnable {
                         bufIn.mark(4);
 
                         try (DataInputStream in = new DataInputStream(bufIn)) {
-                            DataOutputStream out = JRMPUtils.handshake(in, s);
+                            DataOutputStream out = Utils.handshake(in, s);
                             if (out == null) {
                                 continue;
                             }

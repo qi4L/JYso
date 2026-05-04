@@ -24,6 +24,7 @@ import javax.naming.StringRefAddr;
  *      - https://stackoverflow.com/questions/4689240/detecting-the-platform-window-or-linux-by-groovy-grails
  */
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/groovy"})
 public class GroovyController implements LdapController {
     private String[] params;

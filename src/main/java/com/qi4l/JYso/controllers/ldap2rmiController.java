@@ -11,6 +11,7 @@ import com.unboundid.ldap.sdk.LDAPResult;
 import com.unboundid.ldap.sdk.ResultCode;
 import org.fusesource.jansi.Ansi;
 
+@SuppressWarnings("unused")
 @LdapMapping(uri = {"/ldap2rmi"})
 public class ldap2rmiController implements LdapController {
 
