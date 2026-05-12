@@ -1,4 +1,4 @@
-import { useTheme } from '../context/ThemeContext'
+import { useState } from 'react'
 import { useToast } from '../components/Toast'
 import useDashboard from '../hooks/useDashboard'
 import CopyButton from '../components/CopyButton'
@@ -28,10 +28,56 @@ const FileIcon = () => (
   </svg>
 )
 
+const JndiIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+  </svg>
+)
+
+const GadgetIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+  </svg>
+)
+
+const ArrowRightIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="9 18 15 12 9 6"/>
+  </svg>
+)
+
+const CloseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+
+const MenuIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+)
+
+const WikiIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+)
+
+const LogoutIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+)
+
 export default function Dashboard() {
-  const { theme, toggleTheme } = useTheme()
   const { showToast } = useToast()
   const d = useDashboard()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   async function handleToggleServer(server) {
     await d.handleToggleServer(server)
@@ -76,48 +122,63 @@ export default function Dashboard() {
     <div>
       <div className="dashboard-bg" />
 
-      <div className="page-shell">
-        <div className="glass-card" style={{ marginBottom: 20 }}>
-          <div className="header">
-            <h1>
-              <span className="logo-dot" />
-              JYso
-            </h1>
-            <div className={'mode-segment-control' + (d.mode === 'gadget' ? ' gadget-mode' : '')}>
-              <button
-                className={'mode-segment-btn' + (d.mode === 'jndi' ? ' active' : '')}
-                onClick={() => d.switchMode('jndi')}
-              >
-                JNDI EXP
-              </button>
-              <button
-                className={'mode-segment-btn' + (d.mode === 'gadget' ? ' active' : '')}
-                onClick={() => d.switchMode('gadget')}
-              >
-                Gadget
-              </button>
-            </div>
-            <div className="header-right">
-              <a className="wiki-btn" href="https://github.com/qi4L/JYso/wiki" target="_blank" rel="noopener noreferrer" title="Wiki">
-                Wiki <ExternalLinkIcon />
-              </a>
-              <button
-                className="theme-toggle"
-                onClick={toggleTheme}
-                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                title={theme === 'light' ? 'Dark mode' : 'Light mode'}
-              />
-              <button className="logout-btn" onClick={d.logout}>Logout</button>
+      <div className="page-shell dashboard-layout">
+        <aside className={'sidebar' + (sidebarCollapsed ? ' collapsed' : '')}>
+          <div className="sidebar-content">
+            <button
+              className="sidebar-toggle-btn"
+              onClick={() => setSidebarCollapsed(v => !v)}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <span className="toggle-icon-default">
+                {sidebarCollapsed ? <MenuIcon /> : <CloseIcon />}
+              </span>
+              <span className="toggle-icon-hover">
+                <ArrowRightIcon />
+              </span>
+            </button>
+            <div className="header sidebar-header">
+              <h1>JYso <span style={{fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.35)', marginLeft: 4}}>v1.3.8</span></h1>
+              <div className="sidebar-nav">
+                <button
+                  className={'sidebar-nav-item' + (d.mode === 'jndi' ? ' active' : '')}
+                  onClick={() => d.switchMode('jndi')}
+                  title="JNDI EXP"
+                >
+                  <JndiIcon />
+                  <span>JNDI EXP</span>
+                </button>
+                <button
+                  className={'sidebar-nav-item' + (d.mode === 'gadget' ? ' active' : '')}
+                  onClick={() => d.switchMode('gadget')}
+                  title="Gadget"
+                >
+                  <GadgetIcon />
+                  <span>Gadget</span>
+                </button>
+              </div>
+              <div className="header-right sidebar-actions">
+                <a className="wiki-btn" href="https://github.com/qi4L/JYso/wiki" target="_blank" rel="noopener noreferrer" title="Wiki">
+                  <WikiIcon />
+                  <span>Wiki <ExternalLinkIcon /></span>
+                </a>
+                <button className="logout-btn" onClick={d.logout} title="Logout">
+                  <LogoutIcon />
+                  <span>Logout</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </aside>
 
-        <div key={d.animKey}>
+        <main className="main-content">
+          <div key={d.animKey}>
           {d.mode === 'jndi' && (
             <>
-              <div className="glass-card section-enter" style={{ marginBottom: 20 }}>
-                <h2>Server Status</h2>
-                <div className="status-grid">
+              <div style={{ display: 'flex', gap: 20, marginBottom: 20, alignItems: 'flex-start' }}>
+                <div className="glass-card section-enter" style={{ width: 200, flexShrink: 0, marginBottom: 0 }}>
+                  <h2>Server Status</h2>
+                  <div className="status-grid" style={{ gridTemplateColumns: '1fr' }}>
                   <div className={'status-item status-clickable' + (d.toggling === 'ldap' ? ' status-toggling' : '')}
                     onClick={() => handleToggleServer('ldap')}
                     title="Click to toggle LDAP server">
@@ -154,15 +215,11 @@ export default function Dashboard() {
                     <span className="status-label">IP Address</span>
                     <span className="status-value" style={{ color: 'var(--accent)' }}>{d.status.ip || '0.0.0.0'}</span>
                   </div>
-                  <div className="status-item">
-                    <span className="status-label">Version</span>
-                    <span className="status-value" style={{ color: 'var(--accent)' }}>1.3.8</span>
-                  </div>
                 </div>
               </div>
 
-              <div className="glass-card section-enter">
-                <div className="control-bar">
+              <div className="glass-card section-enter" style={{ flex: 1, marginBottom: 0 }}>
+                <div className="control-bar" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className={'tab-segment-control tabs-3' + (d.activeJndiTab === 'payload' ? ' config-tab' : '') + (d.activeJndiTab === 'logs' ? ' tab-3' : '')}>
                     <button
                       className={'tab-segment-btn' + (d.activeJndiTab === 'config' ? ' active' : '')}
@@ -183,6 +240,23 @@ export default function Dashboard() {
                       Logs
                     </button>
                   </div>
+                  {d.activeJndiTab === 'config' && (
+                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleSaveConfig} disabled={d.loading}>
+                      {d.loading ? 'Saving...' : 'Save Configuration'}
+                    </button>
+                  )}
+                  {d.activeJndiTab === 'payload' && d.payloadSubTab === 'gadget' && (
+                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGenerateJndiPayload}
+                      disabled={d.loading || (!(d.jndiGadgetInput || d.selectedGadget).trim()) || !d.payloadCmd}>
+                      {d.loading ? 'Generating...' : 'Generate'}
+                    </button>
+                  )}
+                  {d.activeJndiTab === 'payload' && d.payloadSubTab === 'classloader' && (
+                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGenerateClassLoader}
+                      disabled={d.loading || !d.filePath.trim() || !d.routing.trim()}>
+                      {d.loading ? 'Generating...' : 'Generate'}
+                    </button>
+                  )}
                 </div>
 
                 {d.activeJndiTab === 'config' && (
@@ -238,15 +312,12 @@ export default function Dashboard() {
                         <input type="text" value={d.configForm.certFile} placeholder="/path/to/cert.jks"
                           onChange={e => d.setConfigForm({ ...d.configForm, certFile: e.target.value })} />
                       </div>
-                      <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                      <div className="form-group" style={{ gridColumn: 'span 3' }}>
                         <label className="form-group" style={{ marginBottom: 0 }}>
                           <input type="checkbox" checked={d.configForm.TLSProxy}
                             onChange={e => d.setConfigForm({ ...d.configForm, TLSProxy: e.target.checked })} /> TLS Proxy (LDAPS Port Forwarding)
                         </label>
                       </div>
-                      <button className="btn btn-primary" onClick={handleSaveConfig} disabled={d.loading}>
-                        {d.loading ? 'Saving...' : 'Save Configuration'}
-                      </button>
                     </div>
                   </div>
                 )}
@@ -305,10 +376,6 @@ export default function Dashboard() {
                             onChange={e => d.setPayloadCmd(e.target.value)} />
                           <span className="input-icon" style={{ top: 38 }}><CommandIcon /></span>
                         </div>
-                        <button className="btn btn-primary" onClick={handleGenerateJndiPayload}
-                          disabled={d.loading || (!(d.jndiGadgetInput || d.selectedGadget).trim()) || !d.payloadCmd}>
-                          {d.loading ? 'Generating...' : 'Generate'}
-                        </button>
                         {d.jndiPayloadResult && (
                           <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
                             {d.jndiPayloadResult}
@@ -366,10 +433,6 @@ export default function Dashboard() {
                             onChange={e => d.setFilePath(e.target.value)} />
                           <span className="input-icon"><FileIcon /></span>
                         </div>
-                        <button className="btn btn-primary" onClick={handleGenerateClassLoader}
-                          disabled={d.loading || !d.filePath.trim() || !d.routing.trim()}>
-                          {d.loading ? 'Generating...' : 'Generate'}
-                        </button>
                         {d.classLoaderResult && (
                           <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
                             {d.classLoaderResult}
@@ -415,7 +478,8 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
-            </>
+            </div>
+          </>
           )}
 
           {d.mode === 'gadget' && (
@@ -423,13 +487,19 @@ export default function Dashboard() {
               <div className="glass-card section-enter" style={{ flex: 3, marginBottom: 0 }}>
                 <div className="header" style={{ padding: 0, marginBottom: 16 }}>
                   <h2>Payload Generator</h2>
-                  <button
-                    className={`btn btn-secondary${d.showAdvanced ? ' active-tab' : ''}`}
-                    style={{ padding: '6px 14px', fontSize: 12, width: 'auto' }}
-                    onClick={() => d.setShowAdvanced(v => !v)}
-                  >
-                    {d.showAdvanced ? 'Hide Options' : 'Advanced Options'}
-                  </button>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <button
+                      className={`btn btn-secondary${d.showAdvanced ? ' active-tab' : ''}`}
+                      style={{ padding: '6px 14px', fontSize: 12, width: 'auto' }}
+                      onClick={() => d.setShowAdvanced(v => !v)}
+                    >
+                      {d.showAdvanced ? 'Hide Options' : 'Advanced Options'}
+                    </button>
+                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGeneratePayload}
+                      disabled={d.loading || !(d.gadgetModeInput || d.selectedGadget).trim()}>
+                      {d.loading ? 'Generating...' : 'Generate'}
+                    </button>
+                  </div>
                 </div>
                 <div className="control-bar" style={{ marginBottom: 12 }}>
                   <label className="form-group" style={{ marginBottom: 0, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
@@ -539,10 +609,6 @@ export default function Dashboard() {
                     onChange={e => d.setSaveFilename(e.target.value)} />
                   <span className="input-icon"><FileIcon /></span>
                 </div>
-                <button className="btn btn-primary" onClick={handleGeneratePayload}
-                  disabled={d.loading || !(d.gadgetModeInput || d.selectedGadget).trim()}>
-                  {d.loading ? 'Generating...' : 'Generate'}
-                </button>
                 {d.payloadResult && (
                   <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
                     {d.payloadResult}
@@ -599,6 +665,7 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+        </main>
       </div>
     </div>
   )
