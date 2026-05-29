@@ -1,18 +1,23 @@
-import { createContext, useContext, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
-  const location = useLocation()
-  const theme = location.pathname === '/login' ? 'dark' : 'light'
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('jyso_theme') || 'dark'
+  })
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('jyso_theme', theme)
   }, [theme])
 
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+  }, [])
+
   return (
-    <ThemeContext.Provider value={{ theme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )

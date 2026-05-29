@@ -1,18 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useToast } from '../components/Toast'
 import useDashboard from '../hooks/useDashboard'
-import CopyButton from '../components/CopyButton'
+import ServerStatusCard from '../components/ServerStatusCard'
+import GadgetSelector from '../components/GadgetSelector'
+import PayloadOutput from '../components/PayloadOutput'
+import ConfigForm from '../components/ConfigForm'
 
 const ExternalLinkIcon = () => (
   <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
     <path d="M6 2H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M10 2h4v4M14 2L8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-)
-
-const SearchIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
   </svg>
 )
 
@@ -77,7 +74,22 @@ const LogoutIcon = () => (
 export default function Dashboard() {
   const { showToast } = useToast()
   const d = useDashboard()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarHidden, setSidebarHidden] = useState(true)
+
+  useEffect(() => {
+    function handleMouseMove(e) {
+      const cards = document.querySelectorAll('.glass-card')
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        card.style.setProperty('--mouse-x', `${x}px`)
+        card.style.setProperty('--mouse-y', `${y}px`)
+      })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   async function handleToggleServer(server) {
     await d.handleToggleServer(server)
@@ -113,25 +125,37 @@ export default function Dashboard() {
     }
   }
 
-  async function doUpload(file) {
-    await d.doUpload(file)
-    showToast(`Uploaded: ${file.name}`, 'success')
-  }
+  const servers = [
+    { key: 'ldap', label: 'LDAP', port: d.status.ldapPort, running: d.status.ldapRunning },
+    { key: 'ldaps', label: 'LDAPS', port: d.status.ldapsPort, running: d.status.ldapsRunning },
+    { key: 'http', label: 'HTTP', port: d.status.httpPort, running: d.status.httpRunning },
+    { key: 'rmi', label: 'RMI', port: d.status.rmiPort, running: d.status.rmiRunning },
+  ]
+
+  const ROUTING_ITEMS = d.ROUTING_OPTIONS.map(opt => ({ name: opt }))
 
   return (
     <div>
       <div className="dashboard-bg" />
 
       <div className="page-shell dashboard-layout">
-        <aside className={'sidebar' + (sidebarCollapsed ? ' collapsed' : '')}>
+        <button
+          className="sidebar-trigger-btn"
+          onClick={() => setSidebarHidden(v => !v)}
+          title={sidebarHidden ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {sidebarHidden ? <MenuIcon /> : <CloseIcon />}
+        </button>
+
+        <aside className={'sidebar sidebar-hidden' + (sidebarHidden ? '' : ' sidebar-visible')}>
           <div className="sidebar-content">
             <button
               className="sidebar-toggle-btn"
-              onClick={() => setSidebarCollapsed(v => !v)}
-              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              onClick={() => setSidebarHidden(v => !v)}
+              title={sidebarHidden ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               <span className="toggle-icon-default">
-                {sidebarCollapsed ? <MenuIcon /> : <CloseIcon />}
+                {sidebarHidden ? <MenuIcon /> : <CloseIcon />}
               </span>
               <span className="toggle-icon-hover">
                 <ArrowRightIcon />
@@ -171,7 +195,7 @@ export default function Dashboard() {
           </div>
         </aside>
 
-        <main className="main-content">
+        <main className={'main-content' + (sidebarHidden ? ' main-content-full' : '')}>
           <div key={d.animKey}>
           {d.mode === 'jndi' && (
             <>
@@ -179,307 +203,138 @@ export default function Dashboard() {
                 <div className="glass-card section-enter" style={{ width: 200, flexShrink: 0, marginBottom: 0 }}>
                   <h2>Server Status</h2>
                   <div className="status-grid" style={{ gridTemplateColumns: '1fr' }}>
-                  <div className={'status-item status-clickable' + (d.toggling === 'ldap' ? ' status-toggling' : '')}
-                    onClick={() => handleToggleServer('ldap')}
-                    title="Click to toggle LDAP server">
-                    <span className="status-label">LDAP ({d.status.ldapPort})</span>
-                    <span className={'status-value ' + (d.status.ldapRunning ? 'status-online' : 'status-offline')}>
-                      {d.status.ldapRunning ? 'ONLINE' : 'OFFLINE'}
-                    </span>
-                  </div>
-                  <div className={'status-item status-clickable' + (d.toggling === 'ldaps' ? ' status-toggling' : '')}
-                    onClick={() => handleToggleServer('ldaps')}
-                    title="Click to toggle LDAPS server">
-                    <span className="status-label">LDAPS ({d.status.ldapsPort})</span>
-                    <span className={'status-value ' + (d.status.ldapsRunning ? 'status-online' : 'status-offline')}>
-                      {d.status.ldapsRunning ? 'ONLINE' : 'OFFLINE'}
-                    </span>
-                  </div>
-                  <div className={'status-item status-clickable' + (d.toggling === 'http' ? ' status-toggling' : '')}
-                    onClick={() => handleToggleServer('http')}
-                    title="Click to toggle HTTP server">
-                    <span className="status-label">HTTP ({d.status.httpPort})</span>
-                    <span className={'status-value ' + (d.status.httpRunning ? 'status-online' : 'status-offline')}>
-                      {d.status.httpRunning ? 'ONLINE' : 'OFFLINE'}
-                    </span>
-                  </div>
-                  <div className={'status-item status-clickable' + (d.toggling === 'rmi' ? ' status-toggling' : '')}
-                    onClick={() => handleToggleServer('rmi')}
-                    title="Click to toggle RMI server">
-                    <span className="status-label">RMI ({d.status.rmiPort})</span>
-                    <span className={'status-value ' + (d.status.rmiRunning ? 'status-online' : 'status-offline')}>
-                      {d.status.rmiRunning ? 'ONLINE' : 'OFFLINE'}
-                    </span>
-                  </div>
-                  <div className="status-item">
-                    <span className="status-label">IP Address</span>
-                    <span className="status-value" style={{ color: 'var(--accent)' }}>{d.status.ip || '0.0.0.0'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="glass-card section-enter" style={{ flex: 1, marginBottom: 0 }}>
-                <div className="control-bar" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div className={'tab-segment-control tabs-3' + (d.activeJndiTab === 'payload' ? ' config-tab' : '') + (d.activeJndiTab === 'logs' ? ' tab-3' : '')}>
-                    <button
-                      className={'tab-segment-btn' + (d.activeJndiTab === 'config' ? ' active' : '')}
-                      onClick={() => d.setActiveJndiTab('config')}
-                    >
-                      Config
-                    </button>
-                    <button
-                      className={'tab-segment-btn' + (d.activeJndiTab === 'payload' ? ' active' : '')}
-                      onClick={() => d.setActiveJndiTab('payload')}
-                    >
-                      Payload
-                    </button>
-                    <button
-                      className={'tab-segment-btn' + (d.activeJndiTab === 'logs' ? ' active' : '')}
-                      onClick={() => d.setActiveJndiTab('logs')}
-                    >
-                      Logs
-                    </button>
-                  </div>
-                  {d.activeJndiTab === 'config' && (
-                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleSaveConfig} disabled={d.loading}>
-                      {d.loading ? 'Saving...' : 'Save Configuration'}
-                    </button>
-                  )}
-                  {d.activeJndiTab === 'payload' && d.payloadSubTab === 'gadget' && (
-                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGenerateJndiPayload}
-                      disabled={d.loading || (!(d.jndiGadgetInput || d.selectedGadget).trim()) || !d.payloadCmd}>
-                      {d.loading ? 'Generating...' : 'Generate'}
-                    </button>
-                  )}
-                  {d.activeJndiTab === 'payload' && d.payloadSubTab === 'classloader' && (
-                    <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGenerateClassLoader}
-                      disabled={d.loading || !d.filePath.trim() || !d.routing.trim()}>
-                      {d.loading ? 'Generating...' : 'Generate'}
-                    </button>
-                  )}
-                </div>
-
-                {d.activeJndiTab === 'config' && (
-                  <div key="jndi-config" className="tab-content-enter">
-                    <div className="config-form">
-                      <div className="form-group">
-                        <label>IP Address</label>
-                        <input type="text" value={d.configForm.ip}
-                          onChange={e => d.setConfigForm({ ...d.configForm, ip: e.target.value })} />
-                      </div>
-                      <div className="form-group">
-                        <label>LDAP Port</label>
-                        <input type="number" value={d.configForm.ldapPort}
-                          onChange={e => d.setConfigForm({ ...d.configForm, ldapPort: parseInt(e.target.value) || 1389 })} />
-                      </div>
-                      <div className="form-group">
-                        <label>LDAPS Port</label>
-                        <input type="number" value={d.configForm.ldapsPort}
-                          onChange={e => d.setConfigForm({ ...d.configForm, ldapsPort: parseInt(e.target.value) || 1669 })} />
-                      </div>
-                      <div className="form-group">
-                        <label>HTTP Port</label>
-                        <input type="number" value={d.configForm.httpPort}
-                          onChange={e => d.setConfigForm({ ...d.configForm, httpPort: parseInt(e.target.value) || 3456 })} />
-                      </div>
-                      <div className="form-group">
-                        <label>RMI Port</label>
-                        <input type="number" value={d.configForm.rmiPort}
-                          onChange={e => d.setConfigForm({ ...d.configForm, rmiPort: parseInt(e.target.value) || 1099 })} />
-                      </div>
-                      <div className="form-group">
-                        <label>AES Key</label>
-                        <input type="text" value={d.configForm.AESkey}
-                          onChange={e => d.setConfigForm({ ...d.configForm, AESkey: e.target.value })} />
-                      </div>
-                      <div className="form-group">
-                        <label>LDAP User</label>
-                        <input type="text" value={d.configForm.user} placeholder="ldap bind account"
-                          onChange={e => d.setConfigForm({ ...d.configForm, user: e.target.value })} />
-                      </div>
-                      <div className="form-group">
-                        <label>LDAP Password</label>
-                        <input type="password" value={d.configForm.PASSWD} placeholder="ldap bind password"
-                          onChange={e => d.setConfigForm({ ...d.configForm, PASSWD: e.target.value })} />
-                      </div>
-                      <div className="form-group">
-                        <label>JKS Key Password</label>
-                        <input type="password" value={d.configForm.keyPass} placeholder="JKS key password"
-                          onChange={e => d.setConfigForm({ ...d.configForm, keyPass: e.target.value })} />
-                      </div>
-                      <div className="form-group">
-                        <label>JKS Cert File</label>
-                        <input type="text" value={d.configForm.certFile} placeholder="/path/to/cert.jks"
-                          onChange={e => d.setConfigForm({ ...d.configForm, certFile: e.target.value })} />
-                      </div>
-                      <div className="form-group" style={{ gridColumn: 'span 3' }}>
-                        <label className="form-group" style={{ marginBottom: 0 }}>
-                          <input type="checkbox" checked={d.configForm.TLSProxy}
-                            onChange={e => d.setConfigForm({ ...d.configForm, TLSProxy: e.target.checked })} /> TLS Proxy (LDAPS Port Forwarding)
-                        </label>
-                      </div>
+                    {servers.map(s => (
+                      <ServerStatusCard
+                        key={s.key}
+                        label={s.label}
+                        port={s.port}
+                        isRunning={s.running}
+                        toggling={d.toggling === s.key}
+                        onClick={() => handleToggleServer(s.key)}
+                      />
+                    ))}
+                    <div className="status-item">
+                      <span className="status-label">IP Address</span>
+                      <span className="status-value" style={{ color: 'var(--accent)' }}>{d.status.ip || '0.0.0.0'}</span>
                     </div>
                   </div>
-                )}
+                </div>
 
-                {d.activeJndiTab === 'payload' && (
-                  <div key="jndi-payload" className="tab-content-enter">
-                    <div className="control-bar">
-                      <div className={'tab-segment-control' + (d.payloadSubTab === 'classloader' ? ' config-tab' : '')}>
-                        <button
-                          className={'tab-segment-btn' + (d.payloadSubTab === 'gadget' ? ' active' : '')}
-                          onClick={() => d.setPayloadSubTab('gadget')}
-                        >
-                          Gadget
-                        </button>
-                        <button
-                          className={'tab-segment-btn' + (d.payloadSubTab === 'classloader' ? ' active' : '')}
-                          onClick={() => d.setPayloadSubTab('classloader')}
-                        >
-                          ClassLoader
-                        </button>
-                      </div>
+                <div className="glass-card section-enter" style={{ flex: 1, marginBottom: 0 }}>
+                  <div className="control-bar" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className={'tab-segment-control tabs-3' + (d.activeJndiTab === 'payload' ? ' config-tab' : '') + (d.activeJndiTab === 'logs' ? ' tab-3' : '')}>
+                      <button className={'tab-segment-btn' + (d.activeJndiTab === 'config' ? ' active' : '')} onClick={() => d.setActiveJndiTab('config')}>Config</button>
+                      <button className={'tab-segment-btn' + (d.activeJndiTab === 'payload' ? ' active' : '')} onClick={() => d.setActiveJndiTab('payload')}>Payload</button>
+                      <button className={'tab-segment-btn' + (d.activeJndiTab === 'logs' ? ' active' : '')} onClick={() => d.setActiveJndiTab('logs')}>Logs</button>
                     </div>
-
-                    {d.payloadSubTab === 'gadget' && (
-                      <div key="payload-gadget" className="tab-content-enter">
-                        <div style={{ position: 'relative' }}>
-                          <div className="form-group input-icon-wrap">
-                            <label>Gadget</label>
-                            <input type="text"
-                              value={d.jndiGadgetInput}
-                              placeholder="Type or search..."
-                              onFocus={() => d.setGadgetOpen(true)}
-                              onBlur={() => setTimeout(() => d.setGadgetOpen(false), 150)}
-                              onChange={e => { d.setJndiGadgetInput(e.target.value); d.setGadgetSearch(e.target.value); }}
-                              style={{ cursor: 'text' }}
-                            />
-                            <span className="input-icon"><SearchIcon /></span>
-                          </div>
-                          {d.gadgetOpen && (
-                            <div className="gadget-dropdown" style={{ top: 'calc(100% - 8px)' }}>
-                              <div className="gadget-list" style={{ maxHeight: 180, border: 'none', borderRadius: 12 }}>
-                                {d.filteredGadgets.map(g => (
-                                  <div key={g.name}
-                                    className={'gadget-item' + (d.selectedGadget === g.name ? ' selected' : '')}
-                                    onMouseDown={e => { e.preventDefault(); d.setSelectedGadget(g.name); d.setJndiGadgetInput(g.name); d.setGadgetSearch(g.name); d.setGadgetOpen(false); }}>
-                                    {g.name}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <div className="form-group input-icon-wrap">
-                          <label>Command</label>
-                          <textarea rows={4} value={d.payloadCmd} placeholder="e.g. whoami"
-                            onChange={e => d.setPayloadCmd(e.target.value)} />
-                          <span className="input-icon" style={{ top: 38 }}><CommandIcon /></span>
-                        </div>
-                        {d.jndiPayloadResult && (
-                          <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
-                            {d.jndiPayloadResult}
-                            <CopyButton text={d.jndiPayloadResult} />
-                          </div>
-                        )}
-                        {d.rmiPayloadResult && (
-                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
-                            {d.rmiPayloadResult}
-                            <CopyButton text={d.rmiPayloadResult} />
-                          </div>
-                        )}
-                        {d.ldapsPayloadResult && (
-                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
-                            {d.ldapsPayloadResult}
-                            <CopyButton text={d.ldapsPayloadResult} />
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {d.payloadSubTab === 'classloader' && (
-                      <div key="payload-classloader" className="tab-content-enter">
-                        <div style={{ position: 'relative' }}>
-                          <div className="form-group input-icon-wrap">
-                            <label>Routing</label>
-                            <input type="text"
-                              value={d.routing}
-                              placeholder="Select route..."
-                              onFocus={() => d.setRoutingOpen(true)}
-                              onBlur={() => setTimeout(() => d.setRoutingOpen(false), 150)}
-                              onChange={e => d.setRouting(e.target.value)}
-                              style={{ cursor: 'text' }}
-                            />
-                            <span className="input-icon"><SearchIcon /></span>
-                          </div>
-                          {d.routingOpen && (
-                            <div className="gadget-dropdown" style={{ top: 'calc(100% - 8px)' }}>
-                              <div className="gadget-list" style={{ maxHeight: 220, border: 'none', borderRadius: 12 }}>
-                                {d.ROUTING_OPTIONS.map(opt => (
-                                  <div key={opt}
-                                    className={'gadget-item' + (d.routing === opt ? ' selected' : '')}
-                                    onMouseDown={e => { e.preventDefault(); d.setRouting(opt); d.setRoutingOpen(false); }}>
-                                    {opt}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <div className="form-group input-icon-wrap">
-                          <label>FilePath</label>
-                          <input type="text" value={d.filePath}
-                            placeholder="e.g. /Evil.class"
-                            onChange={e => d.setFilePath(e.target.value)} />
-                          <span className="input-icon"><FileIcon /></span>
-                        </div>
-                        {d.classLoaderResult && (
-                          <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
-                            {d.classLoaderResult}
-                            <CopyButton text={d.classLoaderResult} />
-                          </div>
-                        )}
-                        {d.rmiClassLoaderResult && (
-                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
-                            {d.rmiClassLoaderResult}
-                            <CopyButton text={d.rmiClassLoaderResult} />
-                          </div>
-                        )}
-                        {d.ldapsClassLoaderResult && (
-                          <div className="payload-output" style={{ marginTop: 8, position: 'relative', paddingRight: 42 }}>
-                            {d.ldapsClassLoaderResult}
-                            <CopyButton text={d.ldapsClassLoaderResult} />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {d.activeJndiTab === 'logs' && (
-                  <div key="jndi-logs" className="tab-content-enter">
-                    <div className="log-header">
-                      <span>Server Events</span>
-                      <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 11, width: 'auto' }}
-                        onClick={d.fetchLogs} disabled={d.logLoading}>
-                        {d.logLoading ? 'Loading...' : 'Refresh'}
+                    {d.activeJndiTab === 'config' && (
+                      <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleSaveConfig} disabled={d.loading}>
+                        {d.loading ? 'Saving...' : 'Save Configuration'}
                       </button>
-                    </div>
-                    <div className="log-container">
-                      {d.logLines.length === 0 ? (
-                        <div className="log-empty">No events yet. Start a server or wait for incoming requests.</div>
-                      ) : (
-                        d.logLines.map((line, i) => (
-                          <div key={i} className="log-line">{line}</div>
-                        ))
-                      )}
-                      <div ref={d.logEndRef} />
-                    </div>
+                    )}
+                    {d.activeJndiTab === 'payload' && d.payloadSubTab === 'gadget' && (
+                      <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGenerateJndiPayload}
+                        disabled={d.loading || !(d.jndiGadgetInput || d.selectedGadget).trim() || !d.payloadCmd}>
+                        {d.loading ? 'Generating...' : 'Generate'}
+                      </button>
+                    )}
+                    {d.activeJndiTab === 'payload' && d.payloadSubTab === 'classloader' && (
+                      <button className="btn btn-primary" style={{ width: 'auto', padding: '8px 18px', fontSize: 14 }} onClick={handleGenerateClassLoader}
+                        disabled={d.loading || !d.filePath.trim() || !d.routing.trim()}>
+                        {d.loading ? 'Generating...' : 'Generate'}
+                      </button>
+                    )}
                   </div>
-                )}
+
+                  {d.activeJndiTab === 'config' && (
+                    <div key="jndi-config" className="tab-content-enter">
+                      <ConfigForm config={d.configForm} onChange={d.setConfigForm} />
+                    </div>
+                  )}
+
+                  {d.activeJndiTab === 'payload' && (
+                    <div key="jndi-payload" className="tab-content-enter">
+                      <div className="control-bar">
+                        <div className={'tab-segment-control' + (d.payloadSubTab === 'classloader' ? ' config-tab' : '')}>
+                          <button className={'tab-segment-btn' + (d.payloadSubTab === 'gadget' ? ' active' : '')} onClick={() => d.setPayloadSubTab('gadget')}>Gadget</button>
+                          <button className={'tab-segment-btn' + (d.payloadSubTab === 'classloader' ? ' active' : '')} onClick={() => d.setPayloadSubTab('classloader')}>ClassLoader</button>
+                        </div>
+                      </div>
+
+                      {d.payloadSubTab === 'gadget' && (
+                        <div key="payload-gadget" className="tab-content-enter">
+                          <GadgetSelector
+                            value={d.jndiGadgetInput}
+                            onChange={d.setJndiGadgetInput}
+                            items={d.filteredGadgets}
+                            searchValue={d.gadgetSearch}
+                            onSearchChange={v => { d.setGadgetSearch(v); d.setSelectedGadget(v); }}
+                            open={d.gadgetOpen}
+                            onOpenChange={d.setGadgetOpen}
+                            selectedGadget={d.selectedGadget}
+                          />
+                          <div className="form-group input-icon-wrap">
+                            <label>Command</label>
+                            <textarea rows={4} value={d.payloadCmd} placeholder="e.g. whoami"
+                              onChange={e => d.setPayloadCmd(e.target.value)} />
+                            <span className="input-icon" style={{ top: 38 }}><CommandIcon /></span>
+                          </div>
+                          <PayloadOutput text={d.jndiPayloadResult} />
+                          <PayloadOutput text={d.rmiPayloadResult} style={{ marginTop: 8 }} />
+                          <PayloadOutput text={d.ldapsPayloadResult} style={{ marginTop: 8 }} />
+                        </div>
+                      )}
+
+                      {d.payloadSubTab === 'classloader' && (
+                        <div key="payload-classloader" className="tab-content-enter">
+                          <GadgetSelector
+                            value={d.routing}
+                            onChange={d.setRouting}
+                            items={ROUTING_ITEMS}
+                            open={d.routingOpen}
+                            onOpenChange={d.setRoutingOpen}
+                            selectedGadget={d.routing}
+                            label="Routing"
+                          />
+                          <div className="form-group input-icon-wrap">
+                            <label>FilePath</label>
+                            <input type="text" value={d.filePath}
+                              placeholder="e.g. /Evil.class"
+                              onChange={e => d.setFilePath(e.target.value)} />
+                            <span className="input-icon"><FileIcon /></span>
+                          </div>
+                          <PayloadOutput text={d.classLoaderResult} />
+                          <PayloadOutput text={d.rmiClassLoaderResult} style={{ marginTop: 8 }} />
+                          <PayloadOutput text={d.ldapsClassLoaderResult} style={{ marginTop: 8 }} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {d.activeJndiTab === 'logs' && (
+                    <div key="jndi-logs" className="tab-content-enter">
+                      <div className="log-header">
+                        <span>Server Events</span>
+                        <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: 11, width: 'auto' }}
+                          onClick={d.fetchLogs} disabled={d.logLoading}>
+                          {d.logLoading ? 'Loading...' : 'Refresh'}
+                        </button>
+                      </div>
+                      <div className="log-container">
+                        {d.logLines.length === 0 ? (
+                          <div className="log-empty">No events yet. Start a server or wait for incoming requests.</div>
+                        ) : (
+                          d.logLines.map((line, i) => (
+                            <div key={i} className="log-line">{line}</div>
+                          ))
+                        )}
+                        <div ref={d.logEndRef} />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </>
+            </>
           )}
 
           {d.mode === 'gadget' && (
@@ -569,32 +424,17 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <div style={{ position: 'relative', marginTop: d.showAdvanced ? 14 : 0 }}>
-                  <div className="form-group input-icon-wrap">
-                    <label>Gadget</label>
-                    <input type="text"
-                      value={d.gadgetModeInput}
-                      placeholder="Type or search..."
-                      onFocus={() => d.setGadgetOpen(true)}
-                      onBlur={() => setTimeout(() => d.setGadgetOpen(false), 150)}
-                      onChange={e => { d.setGadgetModeInput(e.target.value); d.setGadgetSearch(e.target.value); }}
-                      style={{ cursor: 'text' }}
-                    />
-                    <span className="input-icon"><SearchIcon /></span>
-                  </div>
-                  {d.gadgetOpen && (
-                    <div className="gadget-dropdown" style={{ top: 'calc(100% - 8px)' }}>
-                      <div className="gadget-list" style={{ maxHeight: 180, border: 'none', borderRadius: 12 }}>
-                        {d.filteredGadgets.map(g => (
-                          <div key={g.name}
-                            className={'gadget-item' + (d.selectedGadget === g.name ? ' selected' : '')}
-                            onMouseDown={e => { e.preventDefault(); d.setSelectedGadget(g.name); d.setGadgetModeInput(g.name); d.setGadgetSearch(g.name); d.setGadgetOpen(false); }}>
-                            {g.name}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                <div style={{ marginTop: d.showAdvanced ? 14 : 0 }}>
+                  <GadgetSelector
+                    value={d.gadgetModeInput}
+                    onChange={d.setGadgetModeInput}
+                    items={d.filteredGadgets}
+                    searchValue={d.gadgetSearch}
+                    onSearchChange={v => { d.setGadgetSearch(v); d.setSelectedGadget(v); }}
+                    open={d.gadgetOpen}
+                    onOpenChange={d.setGadgetOpen}
+                    selectedGadget={d.selectedGadget}
+                  />
                 </div>
                 <div className="form-group input-icon-wrap">
                   <label>Command</label>
@@ -609,12 +449,7 @@ export default function Dashboard() {
                     onChange={e => d.setSaveFilename(e.target.value)} />
                   <span className="input-icon"><FileIcon /></span>
                 </div>
-                {d.payloadResult && (
-                  <div className="payload-output" style={{ marginTop: 14, position: 'relative', paddingRight: 42 }}>
-                    {d.payloadResult}
-                    <CopyButton text={d.payloadResult} />
-                  </div>
-                )}
+                <PayloadOutput text={d.payloadResult} />
               </div>
               <div className="glass-card section-enter" style={{ flex: 2, marginBottom: 0 }}>
                 <div className="header" style={{ padding: 0, marginBottom: 16 }}>
@@ -637,11 +472,7 @@ export default function Dashboard() {
                     style={{ display: 'none' }}
                     onChange={d.handleFileSelect}
                   />
-                  {d.uploading ? (
-                    <span>Uploading...</span>
-                  ) : (
-                    <span>Drop file here or click to upload</span>
-                  )}
+                  {d.uploading ? <span>Uploading...</span> : <span>Drop file here or click to upload</span>}
                 </div>
                 <div className="file-list">
                   {d.files.length === 0 ? (

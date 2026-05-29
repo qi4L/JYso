@@ -9,7 +9,11 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/user-info" element={<UserInfo />} />
+      <Route path="/user-info" element={
+        <ProtectedRoute>
+          <UserInfo />
+        </ProtectedRoute>
+      } />
       <Route path="/dashboard" element={
         <ProtectedRoute>
           <Dashboard />

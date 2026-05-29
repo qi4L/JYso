@@ -3,9 +3,9 @@ package com.qi4l.JYso.gadgets;
 import com.qi4l.JYso.gadgets.annotation.Authors;
 import com.qi4l.JYso.gadgets.annotation.Dependencies;
 import com.qi4l.JYso.gadgets.utils.Gadgets;
+import com.qi4l.JYso.gadgets.utils.AttrCompare;
 import com.sun.org.apache.xerces.internal.dom.AttrNSImpl;
 import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
-import com.sun.org.apache.xml.internal.security.c14n.helper.AttrCompare;
 import org.apache.commons.beanutils.BeanComparator;
 
 import static com.qi4l.JYso.gadgets.cb_AttrCompare183.getCbSink_3;

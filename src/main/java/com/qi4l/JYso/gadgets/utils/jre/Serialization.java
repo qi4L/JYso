@@ -1,7 +1,5 @@
 package com.qi4l.JYso.gadgets.utils.jre;
 
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -22,7 +20,7 @@ public class Serialization {
 
     public Serialization() {
         try {
-            ObjectOutputStream output = new ObjectOutputStream(new ByteOutputStream());
+            ObjectOutputStream output = new ObjectOutputStream(new ByteArrayOutputStream());
             Field f = output.getClass().getDeclaredField("handles");
             f.setAccessible(true);
             this.handle = f.get(output);

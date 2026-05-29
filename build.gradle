@@ -120,6 +120,4 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 compileJava {
     options.compilerArgs << '-XDignore.symbol.file'
-    options.fork = true
-    options.forkOptions.executable = '/Users/qi4l/env/amazon-corretto-8.jdk/Contents/Home/bin/javac'
 }

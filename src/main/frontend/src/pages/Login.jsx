@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login, setAuthToken } from '../api'
+import ParticleBackground from '../components/ParticleBackground'
+
+const SpinnerIcon = () => (
+  <svg className="btn-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+  </svg>
+)
 
 export default function Login() {
   const navigate = useNavigate()
@@ -41,7 +48,8 @@ export default function Login() {
 
   return (
     <div className="login-wrapper">
-      <div className="glass-card" style={{ width: 400, borderRadius: 36 }}>
+      <ParticleBackground />
+      <div className="login-acrylic-card">
         <div className="login-inner">
           <h1>JYso</h1>
           <p className="subtitle">JNDI Exploitation Toolkit</p>
@@ -67,7 +75,14 @@ export default function Login() {
               />
             </div>
             <button className="btn btn-primary" type="submit" disabled={loading}>
-              {loading ? 'Logging in...' : 'Sign In'}
+              {loading ? (
+                <>
+                  <SpinnerIcon />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
             </button>
           </form>
         </div>

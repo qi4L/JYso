@@ -323,7 +323,7 @@ public class Utils {
         gzipOutputStream.write(bytes);
         gzipOutputStream.close();
 
-        String b64 = Base64.encodeBase64String(outBuf.toByteArray());
+        String b64 = Base64.encodeBase64String(outBuf.toByteArray()).replace("\r", "").replace("\n", "");
         StringBuilder code = new StringBuilder();
         if (b64.length() > 60000) {
             String[] arrays = splitString(b64, 60000);
