@@ -45,13 +45,6 @@
 ./gradlew shadowJar
 ```
 
-# GUI效果图
-
-![登陆页](docs/img/img.png)
-
-![img_1.png](docs/img/img_1.png)
-
-![img_2.png](docs/img/img_2.png)
 
 ## 🌲目录结构
 
